@@ -5,12 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Oleksandr Zalizniak - Product Engineer & Backend Architect</title>
     <style>
+        :root {
+            --background-color: #1e1e1e;
+            --text-color: #ccc;
+            --header-footer-bg: #2c2c2c;
+            --link-color: #00bfa5;
+            --btn-bg-color: #00bfa5;
+            --btn-hover-bg-color: #007d71;
+            --profile-border-color: transparent;
+        }
+
+        [data-theme="light"] {
+            --background-color: #fff;
+            --text-color: #000;
+            --header-footer-bg: #f1f1f1;
+            --link-color: #007d71;
+            --btn-bg-color: #007d71;
+            --btn-hover-bg-color: #004c44;
+            --profile-border-color: #007d71;
+        }
+
         body {
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #1e1e1e;
-            color: #ccc;
+            background-color: var(--background-color);
+            color: var(--text-color);
             line-height: 1.6;
         }
 
@@ -22,7 +42,7 @@
             background-size: cover;
             background-position: center;
             box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
-            border: 1px solid transparent;
+            border: 1px solid var(--profile-border-color);
             background-clip: padding-box;
             position: relative;
         }
@@ -46,7 +66,7 @@
         }
 
         header, section, footer {
-            background: #2c2c2c;
+            background: var(--header-footer-bg);
             padding: 20px;
             margin-bottom: 20px;
             border-radius: 10px;
@@ -71,7 +91,7 @@
 
         header p.subtitle {
             font-size: 1.2em;
-            color: #77aaff;
+            color: var(--link-color);
             text-align: center;
         }
 
@@ -81,7 +101,7 @@
         }
 
         nav a {
-            color: #00bfa5; /* A cooler teal color */
+            color: var(--link-color);
             text-decoration: underline;
             margin: 0 15px 0 0;
             font-size: 1.2em;
@@ -89,15 +109,15 @@
 
         section h2 {
             margin-top: 0;
-            color: #fff;
+            color: var(--text-color);
             text-align: left;
         }
 
         footer {
-            background: #2c2c2c;
-            color: #ccc;
+            background: var(--header-footer-bg);
+            color: var(--text-color);
             padding: 20px 0;
-            border-top: #00bfa5 3px solid;
+            border-top: var(--link-color) 3px solid;
             text-align: center;
         }
 
@@ -107,7 +127,7 @@
 
         .btn {
             display: inline-block;
-            background: #00bfa5;
+            background: var(--btn-bg-color);
             color: #fff;
             padding: 10px 20px;
             text-decoration: none;
@@ -116,7 +136,7 @@
         }
 
         .btn:hover {
-            background: #007d71;
+            background: var(--btn-hover-bg-color);
         }
 
         .social {
@@ -124,21 +144,31 @@
         }
 
         .social a {
-            color: #00bfa5;
+            color: var(--link-color);
             text-decoration: underline;
             margin-right: 10px;
             font-size: 1.5em;
         }
 
         .social a:hover {
-            color: #007d71;
+            color: var(--btn-hover-bg-color);
+        }
+
+        .theme-switch {
+            position: absolute;
+            top: 20px;
+            font-size: 1.5em;
+            cursor: pointer;
+        }
+
+        .theme-switch svg {
+            fill: var(--link-color);
         }
     </style>
 </head>
 <body>
 <div class="container">
     <header role="banner">
-<!--        <img src="https://my-app-ten-delta-86.vercel.app/static/media/alex-on-a-call.2ebd00f99c48c0f0950c.png" alt="Oleksandr Zalizniak">-->
         <center><div class="profile-image"></div></center>
         <h1>Oleksandr Zalizniak</h1>
         <p class="subtitle">Product Engineer & Backend Architect</p>
@@ -148,6 +178,9 @@
             <a href="#contact">Contact</a>
             <a href="https://zalizniak.com/Oleksandr-Zalizniak-Profile.pdf" target="_blank">Resume</a>
         </nav>
+        <div class="theme-switch" id="theme-toggle">
+            <svg id="theme-icon" width="24" height="24" viewBox="0 0 24 24"><path d="M12 2a1 1 0 010 2 8 8 0 108 8 1 1 0 112 0A10 10 0 1112 2zm0 4a6 6 0 000 12 6 6 0 000-12zM7.757 16.243a6 6 0 008.486 0 8 8 0 01-8.486 0z"></path></svg>
+        </div>
     </header>
 
     <section id="about" role="main">
@@ -170,7 +203,7 @@
     <section id="contact">
         <h2>Let’s Connect</h2>
         <p>Whether you’re looking for a technical lead for your next project, someone to brainstorm innovative solutions, or just want to chat about the latest in tech, I’d love to connect.</p>
-        <p>Email: <a href="mailto:aillusions@gmail.com" style="color: #00bfa5;">aillusions@gmail.com</a></p>
+        <p>Email: <a href="mailto:aillusions@gmail.com" style="color: var(--link-color);">aillusions@gmail.com</a></p>
         <div class="social">
             <a href="https://www.linkedin.com/in/ozalizniak/" target="_blank">LinkedIn</a>
             <a href="https://github.com/aillusions?tab=repositories" target="_blank">GitHub</a>
@@ -182,5 +215,38 @@
         <p>&copy; 2024 Oleksandr Zalizniak | Designed by ChatGPT</p>
     </footer>
 </div>
+
+<script>
+  const themeToggleBtn = document.getElementById('theme-toggle');
+  const themeIcon = document.getElementById('theme-icon');
+  const currentTheme = localStorage.getItem('theme') || 'dark';
+  document.body.setAttribute('data-theme', currentTheme);
+  console.log(`currentTheme: ${currentTheme}`);
+
+  const setIcon = (theme) => {
+    console.log(`setIcon: ${theme}`);
+    if (theme === 'dark') {
+      themeIcon.innerHTML = '<path d="M12 2a1 1 0 110 2 8 8 0 108 8 1 1 0 112 0A10 10 0 1112 2zm0 4a6 6 0 000 12 6 6 0 000-12zM7.757 16.243a6 6 0 008.486 0 8 8 0 01-8.486 0z"></path>'; // Moon icon
+    } else {
+      themeIcon.innerHTML = '<path d="M12 4.354a8 8 0 104.95 14.243 1 1 0 01-1.415-1.415 6 6 0 11-6.364-10.607 1 1 0 00-1.415-1.415A8 8 0 0012 4.354zM12 2a10 10 0 106.36 17.45A10 10 0 0012 2z"></path>'; // Sun icon
+    }
+  };
+
+  setIcon(currentTheme);
+
+  themeToggleBtn.addEventListener('click', () => {
+    let theme = document.body.getAttribute('data-theme');
+    if (theme === 'dark') {
+      theme = 'light';
+      document.body.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+    } else {
+      theme = 'dark';
+      document.body.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
+    }
+    setIcon(theme);
+  });
+</script>
 </body>
 </html>
