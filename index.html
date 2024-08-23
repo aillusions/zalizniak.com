@@ -164,7 +164,6 @@
         .theme-switch {
             position: absolute;
             top: 20px;
-            right: 20px;
             font-size: 1.5em;
             cursor: pointer;
         }
@@ -200,7 +199,7 @@
     <section id="about" role="main">
         <h2>About Me</h2>
         <p>I’m Oleksandr Zalizniak, a seasoned backend architect, product engineer, and tech enthusiast with over 15 years of experience in developing and leading innovative solutions in cloud infrastructure, SaaS, DevOps, and more. My passion lies in building products that not only meet business needs but also push the boundaries of technology.</p>
-        <p>I’ve worked across startups and established enterprises, where I’ve been responsible for designing complex architectures, leading cross-functional teams, and driving product success from ideation to deployment.</p>
+        <p>I’ve worked across startups and established enterprises, where I’ve been responsible for designing complex architectures, leading cross-functional teams, and driving product success from ideation to deployment. I'm currently located in Geneva, NY, where I enjoy hiking, rollerblading, and watching shows like Kill Tony.</p>
     </section>
 
     <section id="projects">
@@ -217,7 +216,7 @@
     <section id="contact">
         <h2>Let’s Connect</h2>
         <p>Whether you’re looking for a technical lead for your next project, someone to brainstorm innovative solutions, or just want to chat about the latest in tech, I’d love to connect.</p>
-        <p>Email: <a href="mailto:aillusions@gmail.com" style="color: var(--link-color);">aillusions@gmail.com</a></p>
+        <p>Email: <a href="#" id="email-link" style="color: var(--link-color);"></a></p>
         <div class="social">
             <a href="https://www.linkedin.com/in/ozalizniak/" target="_blank">LinkedIn</a>
             <a href="https://github.com/aillusions?tab=repositories" target="_blank">GitHub</a>
@@ -231,13 +230,20 @@
 </div>
 
 <script>
+  // Email protection script
+  document.getElementById('email-link').innerHTML = 'aillusions@gmail.com'.replace('@', '&#64;');
+  document.getElementById('email-link').href = 'mailto:aillusions@gmail.com';
+</script>
+<script>
   const themeToggleBtn = document.getElementById('theme-toggle');
   const themeIcon = document.getElementById('theme-icon');
   const currentTheme = localStorage.getItem('theme') || 'dark';
   document.body.setAttribute('data-theme', currentTheme);
+  console.log(`currentTheme: ${currentTheme}`);
 
   const setIcon = (theme) => {
-    if (theme === 'light') {
+    console.log(`setIcon: ${theme}`);
+    if (theme === 'dark') {
       themeIcon.innerHTML = '<path d="M12 2a1 1 0 110 2 8 8 0 108 8 1 1 0 112 0A10 10 0 1112 2zm0 4a6 6 0 000 12 6 6 0 000-12zM7.757 16.243a6 6 0 008.486 0 8 8 0 01-8.486 0z"></path>'; // Moon icon
     } else {
       themeIcon.innerHTML = '<path d="M12 4.354a8 8 0 104.95 14.243 1 1 0 01-1.415-1.415 6 6 0 11-6.364-10.607 1 1 0 00-1.415-1.415A8 8 0 0012 4.354zM12 2a10 10 0 106.36 17.45A10 10 0 0012 2z"></path>'; // Sun icon
@@ -249,11 +255,13 @@
   themeToggleBtn.addEventListener('click', () => {
     let theme = document.body.getAttribute('data-theme');
     if (theme === 'dark') {
-      document.body.setAttribute('data-theme', 'light');
-      localStorage.setItem('theme', 'light');
+      theme = 'light';
+      document.body.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
     } else {
-      document.body.setAttribute('data-theme', 'dark');
-      localStorage.setItem('theme', 'dark');
+      theme = 'dark';
+      document.body.setAttribute('data-theme', theme);
+      localStorage.setItem('theme', theme);
     }
     setIcon(theme);
   });
