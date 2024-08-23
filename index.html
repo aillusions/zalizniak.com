@@ -102,11 +102,21 @@
 
         nav a {
             color: var(--link-color);
-            text-decoration: underline;
+            text-decoration: none;
             margin: 0 15px 0 0;
             font-size: 1.2em;
             display: inline-flex;
             align-items: center;
+            background: linear-gradient(90deg, #00bfa5, #007d71);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transition: color 0.3s ease, text-decoration-color 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #00d1b2; /* Change color slightly on hover */
+            text-decoration: underline;
+            text-decoration-color: #007d71; /* Hover effect on underline */
         }
 
         nav a svg {
@@ -155,13 +165,19 @@
 
         .social a {
             color: var(--link-color);
-            text-decoration: underline;
+            text-decoration: none;
             margin-right: 10px;
             font-size: 1.5em;
+            background: linear-gradient(90deg, #00bfa5, #007d71);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            transition: color 0.3s ease, text-decoration-color 0.3s ease;
         }
 
         .social a:hover {
-            color: var(--btn-hover-bg-color);
+            color: #00d1b2; /* Change color slightly on hover */
+            text-decoration: underline;
+            text-decoration-color: #007d71; /* Hover effect on underline */
         }
 
         .theme-switch {
