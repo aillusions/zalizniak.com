@@ -105,6 +105,13 @@
             text-decoration: underline;
             margin: 0 15px 0 0;
             font-size: 1.2em;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        nav a svg {
+            margin-left: 5px;
+            fill: var(--link-color);
         }
 
         section h2 {
@@ -157,6 +164,7 @@
         .theme-switch {
             position: absolute;
             top: 20px;
+            right: 20px;
             font-size: 1.5em;
             cursor: pointer;
         }
@@ -176,7 +184,13 @@
             <a href="#about">About Me</a>
             <a href="#projects">What I Do</a>
             <a href="#contact">Contact</a>
-            <a href="https://zalizniak.com/Oleksandr-Zalizniak-Profile.pdf" target="_blank">Resume</a>
+            <a href="https://zalizniak.com/Oleksandr-Zalizniak-Profile.pdf" target="_blank">
+                Resume
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-download" viewBox="0 0 16 16">
+                    <path d="M.5 9.9a.5.5 0 0 1 .5-.5h4v-6a.5.5 0 0 1 1 0v6h4a.5.5 0 0 1 .374.833l-4 4a.5.5 0 0 1-.748 0l-4-4A.5.5 0 0 1 .5 9.9z"/>
+                    <path d="M5 13.5a.5.5 0 0 0 .5.5h5a.5.5 0 0 0 .5-.5V9.9a.5.5 0 0 0-1 0v3.6H6v-3.6a.5.5 0 0 0-1 0v3.6z"/>
+                </svg>
+            </a>
         </nav>
         <div class="theme-switch" id="theme-toggle">
             <svg id="theme-icon" width="24" height="24" viewBox="0 0 24 24"><path d="M12 2a1 1 0 010 2 8 8 0 108 8 1 1 0 112 0A10 10 0 1112 2zm0 4a6 6 0 000 12 6 6 0 000-12zM7.757 16.243a6 6 0 008.486 0 8 8 0 01-8.486 0z"></path></svg>
@@ -212,7 +226,7 @@
     </section>
 
     <footer role="contentinfo">
-        <p>&copy; 2024 Oleksandr Zalizniak | Designed by ChatGPT</p>
+        <p>&copy; 2024 Oleksandr Zalizniak | Designed by Generative AI</p>
     </footer>
 </div>
 
@@ -221,11 +235,9 @@
   const themeIcon = document.getElementById('theme-icon');
   const currentTheme = localStorage.getItem('theme') || 'dark';
   document.body.setAttribute('data-theme', currentTheme);
-  console.log(`currentTheme: ${currentTheme}`);
 
   const setIcon = (theme) => {
-    console.log(`setIcon: ${theme}`);
-    if (theme === 'dark') {
+    if (theme === 'light') {
       themeIcon.innerHTML = '<path d="M12 2a1 1 0 110 2 8 8 0 108 8 1 1 0 112 0A10 10 0 1112 2zm0 4a6 6 0 000 12 6 6 0 000-12zM7.757 16.243a6 6 0 008.486 0 8 8 0 01-8.486 0z"></path>'; // Moon icon
     } else {
       themeIcon.innerHTML = '<path d="M12 4.354a8 8 0 104.95 14.243 1 1 0 01-1.415-1.415 6 6 0 11-6.364-10.607 1 1 0 00-1.415-1.415A8 8 0 0012 4.354zM12 2a10 10 0 106.36 17.45A10 10 0 0012 2z"></path>'; // Sun icon
@@ -237,13 +249,11 @@
   themeToggleBtn.addEventListener('click', () => {
     let theme = document.body.getAttribute('data-theme');
     if (theme === 'dark') {
-      theme = 'light';
-      document.body.setAttribute('data-theme', theme);
-      localStorage.setItem('theme', theme);
+      document.body.setAttribute('data-theme', 'light');
+      localStorage.setItem('theme', 'light');
     } else {
-      theme = 'dark';
-      document.body.setAttribute('data-theme', theme);
-      localStorage.setItem('theme', theme);
+      document.body.setAttribute('data-theme', 'dark');
+      localStorage.setItem('theme', 'dark');
     }
     setIcon(theme);
   });
