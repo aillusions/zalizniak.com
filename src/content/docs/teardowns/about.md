@@ -1,6 +1,8 @@
 ---
 title: About
 description: What this project is and how to read it.
+sidebar:
+  order: 0
 ---
 
 **Applied AI Teardowns** reconstruct how applied-AI startups likely build and operate their products — stack, architecture, infrastructure, and engineering practices — from public signals alone.

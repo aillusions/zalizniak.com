@@ -49,7 +49,7 @@ export default defineConfig({
 				// teardown, generated from the files in src/content/docs/teardowns/.
 				{
 					label: 'Teardowns',
-					items: [{ label: 'About', slug: 'about' }, { autogenerate: { directory: 'teardowns' } }],
+					items: [{ autogenerate: { directory: 'teardowns' } }],
 				},
 			],
 		}),
