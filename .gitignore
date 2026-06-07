@@ -18,4 +18,5 @@ npm-debug.log*
 # macOS-specific files
 .DS_Store
 
-temp
+# private planning notes & raw discovery scratch (not for the public site)
+notes/

@@ -1,0 +1,30 @@
+flowchart LR
+  classDef human fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef agent fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef gw fill:#e7f6ef,stroke:#2f9e6f,stroke-width:1.5px,color:#0f172a;
+  classDef ext fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+
+  subgraph Callers["Callers"]
+    direction TB
+    Eng("Engineers<br/>Claude Code · Codex · Cursor · Cowork<br/>Google SSO"):::human
+    Clueso("Clueso<br/>incident agent · Modal VM<br/>Claude Agent SDK harness"):::agent
+    Svc("Other internal services<br/>service-account + allowlist"):::agent
+  end
+
+  Sat{{"Satellite<br/>one unified MCP endpoint<br/>2 identity layers · ~30k telemetry lines/hr"}}:::gw
+
+  subgraph Providers["36 connected providers"]
+    direction TB
+    Work("Google Workspace · Slack · Notion · Figma · Granola"):::ext
+    Dev("GitHub · Linear · Better Stack · PostHog"):::ext
+    Data[("Neon Postgres branches<br/>24h TTL · cap 5/user")]:::ext
+    Biz("HubSpot · Gong · People Data Labs · NetSuite · Knock"):::ext
+  end
+
+  Eng --> Sat
+  Clueso --> Sat
+  Svc --> Sat
+  Sat --> Work
+  Sat --> Dev
+  Sat --> Data
+  Sat --> Biz

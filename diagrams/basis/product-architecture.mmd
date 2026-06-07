@@ -1,0 +1,29 @@
+flowchart LR
+  classDef io fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef sup fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef sub fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+  classDef ctx fill:#e7f6ef,stroke:#2f9e6f,stroke-width:1.5px,color:#0f172a;
+  classDef human fill:#fdecec,stroke:#e0564f,stroke-width:1.5px,color:#0f172a;
+
+  Task("Accounting task<br/>reconciliation · journal entry · tax workbook"):::io
+
+  Sup("Supervising agent<br/>GPT-5 (was o3)<br/>routes by task · complexity · latency · input"):::sup
+
+  subgraph Subs["Specialized sub-agents · model picked by internal benchmark suite"]
+    direction TB
+    Fast("Speed-critical steps<br/>GPT-4.1<br/>clarifying Qs · quick feedback"):::sub
+    Deep("Complex reasoning<br/>GPT-5<br/>ambiguous classifications · month-end close"):::sub
+  end
+
+  Ctx[("Central context layer<br/>assumptions · data sources · decision logic")]:::ctx
+  Tools("Function calling<br/>retrieve data · complete multi-step work"):::io
+
+  Acct("Accountant review<br/>entry + explanation + confidence"):::human
+
+  Task --> Sup
+  Sup --> Subs
+  Subs --> Tools
+  Sup <--> Ctx
+  Subs <--> Ctx
+  Subs -- "decision-grade output" --> Acct
+  Acct -. "approve / correct at key decision points" .-> Sup

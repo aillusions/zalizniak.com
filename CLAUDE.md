@@ -9,7 +9,7 @@ Working spec for authoring and editing teardowns in **Applied AI Teardowns** —
 - **Site:** Astro Starlight — chosen for light static output, SEO, content-heavy prose + diagrams.
 - **Deploy:** AWS Amplify, static output, build dir `dist/`.
 - **Diagrams:** text-based sources — **Mermaid** primary; **D2** only if a diagram needs it. Rendered to static SVG by a **GitHub Action (render-and-commit)**, never browser- or build-time-rendered, so the site build stays dumb and host-agnostic. *Exception:* the first Pallet post uses a one-off manual SVG render until the Action exists.
-  - **Sources are tracked.** `.mmd` sources live in `diagrams/<company>/`, rendered SVGs in `public/diagrams/<company>/`. Do **not** keep diagram sources in `temp/` — it's gitignored and they'd be lost.
+  - **Sources are tracked.** `.mmd` sources live in `diagrams/<company>/`, rendered SVGs in `public/diagrams/<company>/`. Do **not** keep diagram sources in a gitignored scratch dir — they'd be lost.
   - **Always theme — never ship default Mermaid.** Render every diagram with the shared `diagrams/mermaid-theme.json` (system font, slate/indigo palette, rounded nodes, generous spacing). Default Mermaid (Trebuchet MS, pale-yellow clusters, hairline borders) looks dated and is not acceptable. Use color to carry meaning (e.g. verified vs assumed; distinct node roles).
   - **Lay out for proportion.** Prefer horizontal (`flowchart LR`) for pipelines and two-part shapes so boxes don't stack into a tall column of oversized blocks; reserve vertical (`TB`) for genuinely layered systems. A diagram should be wide and scannable, not 25%-of-screen boxes down the page.
   - **Keep the Mermaid source on the page, but collapsed.** Under each rendered SVG, put the source in a `<details><summary>Mermaid source</summary>` block (collapsed by default — no `open`). The reader sees the diagram; the code is one click away, not a wall of text. Keep it in sync with the rendered SVG.
@@ -21,8 +21,8 @@ Working spec for authoring and editing teardowns in **Applied AI Teardowns** —
 How a teardown is *produced* — authoring tooling, distinct from the product stack above (which is what the site is *built with*).
 
 - **Browse sources with Claude Code `--chrome`** (the claude-in-chrome MCP): navigate sources under the author's own logged-in browser profile, extract page content, and capture login-walled pages that can't be archived. It pauses on login/CAPTCHA for manual handling.
-- **Record the supporting quote as you write.** For every cited source, capture the exact quote/signal that backs each claim into an evidence map (`temp/<company>-evidence-map.md`: claim → VERIFIED/INFERRED/UNSUPPORTED → source URL → quote). That map — not an external archive — is what keeps citations durable and verifiable as pages change.
-- **File flow:** raw discovery output and the evidence map → `temp/`; finished teardowns → `src/content/docs/teardowns/`; fallback screenshots → `assets/<company>/`.
+- **Record the supporting quote as you write.** For every cited source, capture the exact quote/signal that backs each claim into an evidence map (`evidence/<company>-evidence-map.md`: claim → VERIFIED/INFERRED/UNSUPPORTED → source URL → quote). That map — not an external archive — is what keeps citations durable and verifiable as pages change, so it is **tracked in the repo** (the teardowns cite it as living "in this repo's evidence map").
+- **File flow:** the evidence map → `evidence/` (tracked); finished teardowns → `src/content/docs/teardowns/`; fallback screenshots → `assets/<company>/`. Private planning and raw discovery scratch (e.g. the teardown pipeline queue) → `notes/`, which is **gitignored** — keep it out of the public repo. There is no `temp/`.
 
 ## Evidence discipline (the core credibility rule)
 
