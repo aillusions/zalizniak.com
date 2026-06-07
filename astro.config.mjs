@@ -15,6 +15,10 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'Oleksandr Zalizniak',
+			components: {
+				// Make header social icons open in a new tab.
+				SocialIcons: './src/components/SocialIcons.astro',
+			},
 			description:
 				'Oleksandr Zalizniak — Product Engineer & Backend Architect building AI-native products, and Applied AI Teardowns: architecture teardowns of applied-AI startups reconstructed from public signals.',
 			favicon: '/favicon.ico',
