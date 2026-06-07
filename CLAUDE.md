@@ -54,6 +54,7 @@ Match format to content type:
 
 - Ruthlessly cut filler: no "in this section," "it's worth noting," connective throat-clearing.
 - Dense **and** legible — every table/diagram gets just enough connective prose to carry the reader; no inert data dumps.
+- **Link the company on first mention.** The first time the company name appears in the body (the "what they do" opener), link it to the company's homepage so a reader instantly knows who it is — `[Acme][home]`, with `[home]: https://www.acme.com/` defined among the source links. Inline only; no banner, no logo header.
 - **Value first.** Open on substance — what they do, the sharpest finding — never on a methodology banner. The "reconstructed from public sources / how to read the confidence tiers" note is compact (a sentence or two) and lives at the **bottom**, near Sources. No top-of-page disclaimer.
 - **Don't over-disclaim.** One tier label per claim is enough; the reader is an engineer, not a child. No repeated hedges, no re-explaining the methodology every few sentences. State it once, move on.
 - **Asides are tight.** `:::note` / `:::caution` / `:::tip` blocks — including "Key finding" notes — are ≤2 sentences: the insight and the so-what, nothing else. No restating surrounding prose, no "this is reasoned from…" meta. If it needs a paragraph, it belongs in body prose, not an aside.

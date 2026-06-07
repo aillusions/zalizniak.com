@@ -8,7 +8,7 @@ lastUpdated: 2026-06-07
 
 ## What they do
 
-Pallet sells AI agents that run logistics back-office work — quoting, order entry, load building, appointment setting, POD retrieval, invoice auditing, customs processing — for freight brokers, 3PLs, carriers, and warehouses ([product page][agent], [Forge post][forge]). The wedge: these buyers run frozen, often legacy systems (TMS, WMS, ERP, sometimes on-prem AS400) they can't or won't replace, so Pallet's agents meet each system at whatever interface it offers rather than asking the customer to migrate — "any system with an API, including on-premise AS400-based databases" ([product page][agent]).
+[Pallet][home] sells AI agents that run logistics back-office work — quoting, order entry, load building, appointment setting, POD retrieval, invoice auditing, customs processing — for freight brokers, 3PLs, carriers, and warehouses ([product page][agent], [Forge post][forge]). The wedge: these buyers run frozen, often legacy systems (TMS, WMS, ERP, sometimes on-prem AS400) they can't or won't replace, so Pallet's agents meet each system at whatever interface it offers rather than asking the customer to migrate — "any system with an API, including on-premise AS400-based databases" ([product page][agent]).
 
 The buyer's motivation, in a customer's own words: *"We have to decouple headcount growth from revenue growth, and the only way to do that is to accelerate AI. Pallet increases our operating margin by 10%"* — David Radom, CEO of Prism Logistix ([Pallet Core post][core]). That is the value prop in one line: labor arbitrage on back-office ops.
 
