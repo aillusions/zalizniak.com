@@ -36,7 +36,6 @@ export default defineConfig({
 				{ label: 'Home', link: '/' },
 				// One entry per teardown, generated from the files in src/content/docs/teardowns/.
 				{ label: 'Teardowns', items: [{ autogenerate: { directory: 'teardowns' } }] },
-				{ label: 'About', items: [{ label: 'About', slug: 'about' }] },
 			],
 		}),
 	],
