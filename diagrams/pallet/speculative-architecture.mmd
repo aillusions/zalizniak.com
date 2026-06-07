@@ -1,0 +1,42 @@
+flowchart TB
+  classDef verified fill:#e8f1fd,stroke:#2563eb,stroke-width:2px,color:#0f172a;
+  classDef spec fill:#ffffff,stroke:#b4bdca,stroke-width:1.3px,stroke-dasharray:6 4,color:#475569;
+
+  FE("Next.js frontend<br/>on Vercel"):::verified
+
+  subgraph Triggers["Triggers / ingestion · likely"]
+    direction LR
+    Email("Email"):::spec
+    Webhook("Webhooks"):::spec
+    Cron("Cron / polling"):::spec
+    Voice("Voice"):::spec
+  end
+
+  Ingest("Ingestion service"):::spec
+  Orch("Agent orchestration<br/>Deep Reasoning — generator / judge<br/>+ cross-model confidence scoring"):::verified
+  Mem("Memory service"):::spec
+  PG[("Cloud SQL Postgres<br/>memory store · likely pgvector")]:::spec
+  Sim("Simulation / Forge<br/>backtest + sim harness"):::spec
+  FabricSvc("Fabric connector service"):::spec
+  MCP("MCP connectors<br/>TMS / WMS / ERP"):::verified
+  Browser("Browserbase + Playwright<br/>legacy web / on-prem AS400"):::verified
+  Models("Model layer<br/>OpenAI · Anthropic · Google<br/>· Vertex fine-tuned · Pallet Core"):::verified
+  Obs("Datadog<br/>+ OpenTelemetry · likely"):::spec
+
+  Triggers --> Ingest
+  FE --> Ingest
+  Ingest -- "Pub/Sub event" --> Orch
+  Orch <-- "retrieve / write" --> Mem
+  Mem --- PG
+  Orch --> Models
+  Orch --> FabricSvc
+  FabricSvc --> MCP
+  FabricSvc --> Browser
+  Sim -. validates pre-deploy .-> Orch
+  Orch -. traces .-> Obs
+
+  subgraph Legend[" "]
+    direction LR
+    Lv("verified"):::verified
+    Ls("assumed"):::spec
+  end

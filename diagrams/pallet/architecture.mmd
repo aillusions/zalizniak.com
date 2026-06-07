@@ -1,0 +1,17 @@
+flowchart LR
+  classDef shared fill:#e8f1fd,stroke:#3b82f6,stroke-width:1.5px,color:#0f172a;
+  classDef tenant fill:#fdf1e7,stroke:#e0892f,stroke-width:1.5px,color:#0f172a;
+
+  subgraph Shared["Convergence — built once, amortized across all tenants"]
+    direction TB
+    Fabric("Fabric — pre-built MCP connectors<br/>to common TMS / WMS / ERP"):::shared
+    Fallback("Fallback hierarchy:<br/>browser automation for legacy web apps,<br/>then any system with an API — incl. on-prem AS400"):::shared
+    Reason("Reasoning Layer — Deep Reasoning<br/>generator / judge + cross-model validation<br/>tenant-agnostic code"):::shared
+    Fabric --> Fallback
+  end
+  subgraph PerTenant["Divergence — per tenant, in data not code"]
+    direction TB
+    Memory("Enterprise Memory Layer<br/>plain-English memories inferred from SOPs,<br/>system logs, inbox and human interventions,<br/>indexed in a knowledge taxonomy"):::tenant
+  end
+  Memory -. customer-scoped context .-> Reason
+  Reason --> Fabric

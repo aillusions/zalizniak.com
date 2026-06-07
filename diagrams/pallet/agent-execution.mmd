@@ -1,0 +1,13 @@
+flowchart LR
+  classDef io fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef ai fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef human fill:#fdecec,stroke:#e0564f,stroke-width:1.5px,color:#0f172a;
+
+  Event("Event trigger<br/>email · webhook · API · portal · voice<br/>event-driven, async over Pub/Sub"):::io
+  Event --> Retrieve("Retrieve customer-scoped memories<br/>from the Enterprise Memory Layer"):::io
+  Retrieve --> Gen("Generator — 'AI Operations Specialist'<br/>plan steps · reference data · draft output"):::ai
+  Gen --> Judge{"Judge — 'AI Quality Controller'<br/>were the memories correctly applied?"}
+  Judge -- approved --> Exec("Execute via Interaction Layer<br/>send email · API call · portal nav · voice"):::io
+  Judge -- "rejected: feedback, retry" --> Gen
+  Judge -- rejected after N iterations --> Human("Escalate to human in the loop"):::human
+  class Judge ai

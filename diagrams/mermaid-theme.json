@@ -1,0 +1,27 @@
+{
+  "theme": "base",
+  "themeVariables": {
+    "fontFamily": "-apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif",
+    "fontSize": "15px",
+    "primaryColor": "#eef2f8",
+    "primaryBorderColor": "#94a3b8",
+    "primaryTextColor": "#0f172a",
+    "secondaryColor": "#e2e8f0",
+    "tertiaryColor": "#f8fafc",
+    "lineColor": "#7c8aa0",
+    "clusterBkg": "#f6f8fb",
+    "clusterBorder": "#d3dbe6",
+    "titleColor": "#0f172a",
+    "edgeLabelBackground": "#ffffff",
+    "nodeTextColor": "#0f172a"
+  },
+  "flowchart": {
+    "curve": "basis",
+    "htmlLabels": true,
+    "nodeSpacing": 55,
+    "rankSpacing": 62,
+    "padding": 14,
+    "useMaxWidth": true,
+    "diagramPadding": 12
+  }
+}
