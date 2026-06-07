@@ -8,21 +8,21 @@ lastUpdated: 2026-06-07
 
 ## What they do
 
-[Traba][home] runs a **light-industrial staffing marketplace**: businesses (warehousing, manufacturing, distribution, logistics, fulfillment) post shifts, and vetted flexible workers claim them from a mobile app — *"Traba is a tech staffing platform that helps our business customers … find flexible workers to handle fluctuations in demand. Workers see shifts posted by businesses on the Traba mobile app and can sign up for them"* ([engineering blog][pg]). Founded in 2021 in Miami, now headquartered in SoHo, New York ([about][about], [JD][jd]).
+[Traba][home] runs a **light-industrial staffing marketplace**: businesses (warehousing, manufacturing, distribution, logistics, fulfillment) post shifts, and vetted flexible workers claim them from a mobile app — *"Traba is a tech staffing platform that helps our business customers … find flexible workers to handle fluctuations in demand. Workers see shifts posted by businesses on the Traba mobile app and can sign up for them"* ([engineering blog][pg]). Founded in 2021 in Miami, now run from New York City with a San Francisco office ([about][about], [Ashby][ashby]).
 
-The wedge is reliability, not just liquidity: the headline metric is a **98% show rate** against a stated industry norm of ~30%, plus 55% less turnover and 150+ assessed skill attributes per worker ([home][home]). Staffing is explicitly the beachhead, not the destination — *"We started in staffing — the biggest daily operational pain point — and used it to embed ourselves inside how these facilities actually run … now the foundation for something bigger: an AI platform that connects to the systems running every facility"* ([JD][jd]).
+The wedge is reliability, not just liquidity: the headline metric is a **98% show rate** against a stated industry norm of ~30%, plus 55% less turnover and 150+ assessed skill attributes per worker ([home][home]). Staffing is explicitly the beachhead, not the destination — *"We started in workforce—temp staffing, the biggest operational pain point … and used it to embed ourselves inside their daily operations … by connecting to the systems running across every facility … we are building applied AI"* ([Ashby][ashby]).
 
 The numbers Traba states publicly:
 
-- **$45.6M total funding**, backed by **Founders Fund, Khosla Ventures, and General Catalyst** ([JD][jd], [careers][careers]); Keith Rabois is a visible backer ([press][press]).
-- **~100 employees**; **249K workers on platform**, **996+ light-industrial customers**, **1.0M workers connected to businesses**, operating across **33 states** ([about][about], [JD][jd]).
-- **5X revenue growth** ([careers][careers]).
+- Backed by **Founders Fund, Khosla Ventures, and General Catalyst** ([Ashby][ashby], [careers][careers]); Keith Rabois is a visible backer ([press][press]).
+- **249K workers on platform**, **996+ light-industrial customers**, **1.0M workers connected to businesses**, operating across **33 states** ([about][about]).
+- **5X revenue growth** ([careers][careers]); the addressable wedge is a *"$50B labor market"* in light-industrial staffing ([Ashby][ashby]).
 - Co-founders: **CEO Mike Shebat** (ex-Uber) and **CTO Akshay Buddiga** ([about][about]).
 
-Three product surfaces are visible in the public record: the **marketplace** itself (worker mobile app + business web platform + internal Ops tooling), **Scout** — an AI phone interviewer that vets workers ([Scout post][scout]) — and **Neo**, a newer cross-system AI ops agent ([JD][jd]).
+Three product surfaces are visible in the public record: the **marketplace** itself (React Native worker app + React/Node business web app + internal Ops tooling), **Scout** — an AI phone interviewer that vets workers ([Scout post][scout]) — and a founding **Agents team** building *"an agentic platform that … operates autonomously inside our customers' supply chain workflows"* ([Ashby][ashby]).
 
 :::note[Positioning is mid-pivot — confidence: high]
-Marketing still leads with "Labor That Works" staffing, but hiring and engineering content now frame Traba as *"building the autonomous future of industrial labor"* via *"fully autonomous, orchestrated multi-agent AI workflows"* ([JD][jd]). The marketplace is becoming the data + distribution layer under an agent platform.
+Marketing still leads with "Labor That Works" staffing, but the job board now opens every engineering role with *"Traba is the AI operating layer for the industrial supply chain"* ([Ashby][ashby]). The marketplace is becoming the data + distribution layer under an agent platform.
 :::
 
 ## Stack
@@ -31,10 +31,10 @@ A pragmatic, TypeScript-centric marketplace stack, with Python reserved for the 
 
 | Layer | Choice | Evidence |
 | --- | --- | --- |
-| **Web frontend** | React / TypeScript (business platform + internal Ops tools) | [JD][jd] |
-| **Mobile** | React Native (separate worker and business apps) | [JD][jd] |
-| **Backend** | Node.js + TypeScript | [pg post][pg], [JD][jd] |
-| **AI / ML services** | Python | [JD][jd] |
+| **Web frontend** | React / Node.js (business web app + internal Ops tools platform) | [Ashby][ashby] |
+| **Mobile** | React Native (worker app) | [Ashby][ashby] |
+| **Backend** | Node.js + TypeScript | [pg post][pg], [Ashby][ashby] |
+| **AI / ML services** | Python | [Ashby][ashby] |
 | **Primary DB** | PostgreSQL on **Aiven** (managed; chosen over GCP Cloud SQL) | [pg post][pg] |
 | **ORM** | **Prisma** (chosen over TypeORM) | [pg post][pg] |
 | **Legacy / secondary DB** | **Firestore** — retained for feature flags + remaining NoSQL cases | [pg post][pg] |
@@ -44,15 +44,18 @@ A pragmatic, TypeScript-centric marketplace stack, with Python reserved for the 
 | **Batch / scheduled** | Firebase cron jobs + scheduled tasks for pre-computing metrics | [pg post][pg] |
 | **Internal tooling** | **Retool** workflows for the Ops team | [pg post][pg] |
 | **Load testing** | **Artillery** | [pg post][pg] |
+| **Foundation LLMs** | **Anthropic + OpenAI** frontier models (agent reasoning, vetting, eval) | [Ashby][ashby] |
+| **Agent stack** | tool use, sub-agents, retrieval, structured outputs, **MCP servers**, orchestration layer | [Ashby][ashby] |
 | **Voice AI** | **ElevenLabs** — TTS/ASR, telephony, multi-agent transfer, language detection/switching | [Scout post][scout] |
-| **LLM eval / datasets** | **Langfuse** — human-annotated ground-truth datasets + prompt testing | [Scout post][scout] |
+| **LLM eval / datasets** | **Langfuse** + **Braintrust** — human-annotated ground-truth datasets + prompt testing | [Scout post][scout], [Ashby][ashby] |
+| **System integration** | customers' **WMS / TMS / ERP** environments | [Ashby][ashby] |
 | **Worker comms** | SMS + VOIP (telephony) | [Scout post][scout] |
 
 :::note[Key finding — managed-DB bet over GCP-native]
 Despite living "deep in the GCP ecosystem," Traba put its primary Postgres on **Aiven**, not Cloud SQL — trading granular tuning for a managed pool, backups, and a Datastream→BigQuery path that dodged a Kafka bill ([pg post][pg]). Velocity over control.
 :::
 
-The foundation LLM behind Scout's reasoning/evaluation, the worker/business auth vendor, and the Node backend's specific GCP compute target are not stated publicly — reconstructed in [Likely stack & infra choices](#likely-stack--infra-choices).
+The worker/business auth vendor and the Node backend's specific GCP compute target are not stated publicly — reconstructed in [Likely stack & infra choices](#likely-stack--infra-choices).
 
 ## Architecture
 
@@ -150,9 +153,17 @@ Assessment isn't N static prompts — it's *"a single prompt template"* with que
 
 The outcomes Traba reports: **250,000+ AI-led interviews** to date; **85%+ of all vetting now AI-conducted** (targeting ~100% within half a year); and — counterintuitively — **AI-vetted workers are 15% more likely to complete their shifts** than human-vetted ones, attributed to a more consistent, empirically-refined process ([Scout post][scout]).
 
+### The emerging agent layer
+
+Scout is the first agent; the job board describes a founding **Agents team** generalizing the pattern into *"production agent systems on top of frontier LLMs: tool use, sub-agents, retrieval, structured outputs, MCP servers, and the orchestration layer that ties them together,"* integrating with customers' **WMS, TMS, and ERP** environments ([Ashby][ashby]). The reasoning substrate is explicitly **frontier model APIs (Anthropic, OpenAI)**, with evaluation run on **Langfuse / Braintrust** and internal harnesses ([Ashby][ashby]).
+
+:::note[Inference — marketplace data is the moat under the agents — confidence: high]
+The agent platform is pitched as synthesizing *"the data flowing through our marketplace"* and operating *"autonomously inside our customers' supply chain workflows"* ([Ashby][ashby]). Staffing produced the proprietary shift data and the MCP/WMS/TMS/ERP connectors; the agents monetize both — the same convergence-vs-divergence shape seen at vertical-AI peers.
+:::
+
 ## Team
 
-~100 employees, **~12 engineers** by the end of the Postgres migration ([pg post][pg], [JD][jd]). The named, attributable picture:
+**~12 engineers** by the end of the Postgres migration ([pg post][pg]); today the job board lists **24 open roles** across New York City, San Francisco, and offshore ops hubs (Colombia, Ecuador, the Philippines), including a dedicated **AI Agents** engineering track ([Ashby][ashby]). The named, attributable picture:
 
 | Role | People | Source |
 | --- | --- | --- |
@@ -163,13 +174,13 @@ The outcomes Traba reports: **250,000+ AI-led interviews** to date; **85%+ of al
 | Analytics | Javier Rodriguez | [pg post][pg] |
 | Scout team | Sumeet Bansal, Chirag Galani, Austin Carter, Shiv Godhia, Jeff Chen | [Scout post][scout] |
 
-The engineering role is explicitly **full-stack, founding-team product engineering** — *"Lead the development of both frontend and backend applications … Architect … from real-time job matching algorithms to autonomous worker vetting pipelines powered by ML and AI agents"* — reporting directly to the CTO, working across mobile, web, and Ops surfaces ([JD][jd]). Traba advertises pedigree from Uber, Google, Meta, Twitter, Airbnb, DoorDash, Palantir, Square, LinkedIn, Amazon, and TikTok ([about][about]).
+The generalist role is explicitly **full-stack, founding-team product engineering** — building *"the React Native worker mobile app, the React/Node.js business web app, and a React/Node.js tools platform for our ops team,"* partnering directly with the CTO. The parallel **AI Agents** track ships *"production agent systems on top of frontier LLMs"* and treats *"evaluation as a first-class discipline,"* explicitly FDE-style — *"embed with our customers and operators"* (Palantir/Scale lineage) ([Ashby][ashby]). Traba advertises pedigree from Uber, Google, Meta, Twitter, Airbnb, DoorDash, Palantir, Square, LinkedIn, Amazon, and TikTok ([about][about]).
 
 :::note[Inference — small, generalist eng org; no public ML-research function — confidence: medium]
-The migration ran with ~12 engineers "chipping in when they had bandwidth," and the open role is a generalist full-stack product engineer, not a researcher ([pg post][pg], [JD][jd]). The AI work is applied — orchestration, prompting, eval — over third-party models (ElevenLabs voice, an unnamed LLM), consistent with no advertised in-house ML-research org.
+The migration ran with ~12 engineers "chipping in when they had bandwidth," and even the AI Agents role is an *applied* agent engineer, not a researcher ([pg post][pg], [Ashby][ashby]). The AI work is applied — orchestration, prompting, eval — over third-party frontier models (ElevenLabs voice; Anthropic/OpenAI reasoning), consistent with no advertised in-house ML-research org.
 :::
 
-Culture markers: 100% in-person in SoHo, "Olympian's Work Ethic," equity "optimized for upside," and a stated preference for *"motors, not gears"* ([JD][jd], [careers][careers]).
+Culture markers: 100% in-person (New York City + San Francisco), "Olympian's Work Ethic," and a stated preference for *"motors, not gears"* ([Ashby][ashby], [careers][careers]).
 
 ## Process
 
@@ -185,7 +196,7 @@ Both the DB migration (per-collection read/write flags, bake-in periods) and Sco
 
 ## Notable bets
 
-1. **Staffing as a data wedge.** Win the "biggest daily operational pain point" first, accumulate *"millions of shifts of proprietary data"* and embedded customer relationships, then build the agent platform on top ([JD][jd]).
+1. **Staffing as a data wedge.** Win the "biggest operational pain point" first, accumulate *"proprietary data from millions of shifts"* and embedded customer relationships, then build the agent platform on top ([Ashby][ashby]).
 2. **Relational core, kept NoSQL where it fits.** A full year and zero downtime to move the system of record to Postgres — but Firestore stays for feature flags and cron. Right tool per job, not ideology ([pg post][pg]).
 3. **Managed infra over control.** Aiven over Cloud SQL; Datastream over self-run Kafka; Prisma for migrations and type safety. Spend the team's scarce hours on product, not pool tuning ([pg post][pg]).
 4. **AI as the default vetter, human as the shrinking loop.** From an operator "safety net" to 85%+ AI vetting, justified by a *measured* 15% lift in shift completion — autonomy earned with metrics, not asserted ([Scout post][scout]).
@@ -197,13 +208,12 @@ Both the DB migration (per-collection read/write flags, bake-in periods) and Sco
 :::caution[What the public record can't confirm]
 Open questions where even a best-practice guess would be a stretch (conventional infra guesses live in [Likely stack & infra choices](#likely-stack--infra-choices)):
 
-- **Foundation LLM for Scout** — ElevenLabs (voice) and Langfuse (eval) are confirmed; the reasoning/evaluation model (OpenAI / Anthropic / Google) is never named.
-- **Neo's internals** — only a one-line positioning blurb exists: *"cross-system reasoning, early warnings, and routine actions"* ([JD][jd]); no architecture, surfaces, or integration model is public.
-- **Real-time job-matching algorithm** — named as a core system ([JD][jd]) but never described (heuristics vs ML ranking, features used).
+- **Agent-platform internals** — the Agents team builds on tool use, sub-agents, retrieval, structured outputs, and MCP servers ([Ashby][ashby]), but the orchestration design, which model runs which step, and per-customer rollout mechanics aren't public.
+- **Model routing** — Anthropic + OpenAI frontier models are confirmed ([Ashby][ashby]); whether a gateway/router sits in front and how models are selected per task is not stated.
 - **Node backend compute target** — GCP is confirmed; Cloud Run vs GKE vs App Engine is not stated.
 - **Auth vendor** — worker app + business platform + Ops tooling clearly need authn/authz; no vendor is named.
 - **Semantic dedup mechanism** — "semantically similar questions" implies embeddings + a vector index, but the model and store aren't stated.
-- **The second office** — "SoHo, New York +1" ([JD][jd]); the original Miami footprint's current status is unconfirmed.
+- **Miami origin status** — founded in Miami (2021); the current footprint is New York City + San Francisco + offshore ops hubs ([Ashby][ashby]), and the original Miami office's status is unconfirmed.
 :::
 
 ## Sources
@@ -219,12 +229,12 @@ Reconstructed from public sources only — no insider information. Crawled 2026-
 | S5 | Engineering index | <https://traba.work/company/engineering> |
 | S6 | Project Scout: Building an AI Interviewer | <https://traba.work/company/engineering/building-scout> |
 | S7 | Out of the Fire(store): Traba's Journey to Postgres | <https://traba.work/company/engineering/firestore-postgres-migration> |
-| J1 | JD — Software Engineer (All Levels; NYC), via Paraform | <https://www.paraform.com/lists/cmpvai1zv00380dl2gnp66bl9/role/clw5sn7ct002ijq0c9r5k6dca> |
+| S8 | Job board (Ashby) — incl. Software Engineer (Generalist) and Senior Software Engineer (AI Agents) | <https://jobs.ashbyhq.com/traba> |
 
 ## Speculative reconstruction
 
 :::tip[Best-practice reconstruction, not fact]
-Nothing in this section is stated on a public page. It is what a ~100-person, Series-A/B team with *this* stack — Node/TypeScript on GCP, Postgres on Aiven via Prisma, React/React Native clients, ElevenLabs voice + an LLM for vetting, and a small generalist eng org — would *typically* build. It is here to complete the picture. In the diagram, solid boxes are verified anchors carried up from the sections above; everything dashed is assumed. Read every dashed box as "likely," not confirmed.
+Nothing in this section is stated on a public page. It is what a team with *this* stack — Node/TypeScript on GCP, Postgres on Aiven via Prisma, React/React Native clients, ElevenLabs voice + Anthropic/OpenAI for vetting, and a small generalist eng org — would *typically* build. It is here to complete the picture. In the diagram, solid boxes are verified anchors carried up from the sections above; everything dashed is assumed. Read every dashed box as "likely," not confirmed.
 :::
 
 ### Likely stack & infra choices
@@ -234,7 +244,7 @@ None of these appear on a public page, but for a team on GCP + Aiven Postgres ru
 | Component | Likely choice | Why |
 | --- | --- | --- |
 | Backend compute | Cloud Run (containers) | GCP-native, scales to zero, fits a small team avoiding cluster ops; matches the "managed over self-run" pattern |
-| Foundation LLM | OpenAI or Anthropic via a thin gateway | Scout needs strong instruction-following for interview + eval; ElevenLabs handles voice, so the LLM is a separate, swappable call |
+| LLM gateway / router | thin internal abstraction over Anthropic + OpenAI | the *providers* are confirmed ([Ashby][ashby]); a routing layer that picks model per task/cost is the conventional pattern, but unstated |
 | Semantic dedup | embeddings + pgvector in Postgres | "semantically similar questions" implies vector similarity; Postgres is already the system of record |
 | Auth | a managed IdP (Auth0 / Stytch / Firebase Auth) | Firebase Auth is the zero-friction holdover given the Firebase history; an IdP is the conventional alternative |
 | Secrets / config | GCP Secret Manager | GCP-native default; table stakes once off Firebase-only |
@@ -269,7 +279,7 @@ flowchart TB
     direction TB
     Py("AI services · Python · likely"):::spec
     EL("ElevenLabs voice<br/>TTS/ASR · SMS + VOIP"):::verified
-    LLM("LLM gateway<br/>OpenAI / Anthropic · likely"):::spec
+    LLM("LLM gateway · likely<br/>over Anthropic + OpenAI (confirmed)"):::spec
     LF("Langfuse<br/>datasets + prompt eval"):::verified
     Py --> EL
     Py --> LLM
@@ -298,4 +308,4 @@ flowchart TB
 [eng]: https://traba.work/company/engineering
 [scout]: https://traba.work/company/engineering/building-scout
 [pg]: https://traba.work/company/engineering/firestore-postgres-migration
-[jd]: https://www.paraform.com/lists/cmpvai1zv00380dl2gnp66bl9/role/clw5sn7ct002ijq0c9r5k6dca
+[ashby]: https://jobs.ashbyhq.com/traba

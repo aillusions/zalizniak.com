@@ -15,7 +15,7 @@ flowchart TB
     direction TB
     Py("AI services · Python · likely"):::spec
     EL("ElevenLabs voice<br/>TTS/ASR · SMS + VOIP"):::verified
-    LLM("LLM gateway<br/>OpenAI / Anthropic · likely"):::spec
+    LLM("LLM gateway · likely<br/>over Anthropic + OpenAI (confirmed)"):::spec
     LF("Langfuse<br/>datasets + prompt eval"):::verified
     Py --> EL
     Py --> LLM
