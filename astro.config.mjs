@@ -34,8 +34,12 @@ export default defineConfig({
 			lastUpdated: true,
 			sidebar: [
 				{ label: 'Home', link: '/' },
-				// One entry per teardown, generated from the files in src/content/docs/teardowns/.
-				{ label: 'Teardowns', items: [{ autogenerate: { directory: 'teardowns' } }] },
+				// About (the teardowns methodology) first, then one entry per
+				// teardown, generated from the files in src/content/docs/teardowns/.
+				{
+					label: 'Teardowns',
+					items: [{ label: 'About', slug: 'about' }, { autogenerate: { directory: 'teardowns' } }],
+				},
 			],
 		}),
 	],
