@@ -14,7 +14,9 @@ resource "aws_amplify_app" "web" {
   # it, so the connection can later be migrated to the AWS Amplify GitHub App in
   # the console without `apply` trying to re-attach the token (which would break
   # the repo clone). See hashicorp/terraform-provider-aws#25122.
-  access_token = var.github_access_token
+  # null (not "") when unset, so routine applies without a token pass schema
+  # validation; ignore_changes keeps the existing connection untouched.
+  access_token = var.github_access_token != "" ? var.github_access_token : null
 
   lifecycle {
     ignore_changes = [access_token]
