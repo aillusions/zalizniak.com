@@ -1,0 +1,35 @@
+flowchart TB
+  classDef verified fill:#e8f1fd,stroke:#2563eb,stroke-width:2px,color:#0f172a;
+  classDef spec fill:#ffffff,stroke:#b4bdca,stroke-width:1.3px,stroke-dasharray:6 4,color:#475569;
+
+  Clients("Worker app · Business platform · Ops<br/>React Native + React"):::verified
+  Auth("Auth / IdP<br/>Firebase Auth or Auth0 · likely"):::spec
+  Compute("Backend on Cloud Run · likely<br/>Node.js + TypeScript · Prisma"):::spec
+  PG[("PostgreSQL on Aiven<br/>system of record")]:::verified
+  Vec[("pgvector — question / skill embeddings · likely")]:::spec
+  FB[("Firebase<br/>feature flags · cron · residual NoSQL")]:::verified
+  BQ[("BigQuery<br/>via Datastream CDC")]:::verified
+  Retool("Retool<br/>internal Ops"):::verified
+
+  subgraph Vetting["Scout vetting service"]
+    direction TB
+    Py("AI services · Python · likely"):::spec
+    EL("ElevenLabs voice<br/>TTS/ASR · SMS + VOIP"):::verified
+    LLM("LLM gateway<br/>OpenAI / Anthropic · likely"):::spec
+    LF("Langfuse<br/>datasets + prompt eval"):::verified
+    Py --> EL
+    Py --> LLM
+    Py --> LF
+  end
+
+  Obs("Observability<br/>Datadog / Cloud Monitoring · likely"):::spec
+
+  Clients --> Auth --> Compute
+  Compute --> PG
+  Compute --> FB
+  Compute --> Vec
+  Compute --> Vetting
+  Retool --> Compute
+  PG -- "Datastream" --> BQ
+  Compute -. traces .-> Obs
+  Vetting -. results .-> Compute

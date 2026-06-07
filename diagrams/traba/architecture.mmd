@@ -1,0 +1,23 @@
+flowchart LR
+  classDef client fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef core fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef data fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+  classDef legacy fill:#fdf1e7,stroke:#e0892f,stroke-width:1.5px,color:#0f172a;
+
+  Worker("Worker app<br/>React Native"):::client
+  Biz("Business platform + Ops<br/>React / React Native"):::client
+  API("Node.js + TypeScript backend<br/>Prisma ORM"):::core
+  Retool("Retool<br/>internal Ops workflows"):::client
+
+  PG[("PostgreSQL on Aiven<br/>relational system of record")]:::data
+  FS[("Firestore<br/>feature flags · residual NoSQL")]:::legacy
+  Cron("Firebase cron / scheduled jobs<br/>pre-computed metrics"):::legacy
+  BQ[("BigQuery<br/>analytics warehouse")]:::data
+
+  Worker --> API
+  Biz --> API
+  Retool --> API
+  API --> PG
+  API --> FS
+  Cron --> FS
+  PG -- "Datastream CDC" --> BQ

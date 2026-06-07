@@ -1,0 +1,27 @@
+flowchart LR
+  classDef io fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef ai fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef eval fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+  classDef human fill:#fdecec,stroke:#e0564f,stroke-width:1.5px,color:#0f172a;
+
+  Apply("Worker applies to role(s)"):::io
+  Dedup("Semantic dedup pre-processor<br/>drop questions already answered<br/>(10–20% omitted for repeats)"):::ai
+  Voice("ElevenLabs voice layer<br/>TTS / ASR · SMS + VOIP · multilingual"):::io
+
+  subgraph Agents["Multi-agent interview · agent transfer"]
+    direction TB
+    Intro("Job intro agent"):::ai
+    Vet("Vetting agent<br/>+ Custom Scout rubric"):::ai
+    Logi("Shift-logistics agent"):::ai
+    QA("Worker Q&A agent"):::ai
+    Intro --> Vet --> Logi --> QA
+  end
+
+  Eval("Evaluation prompt<br/>single template, variables injected<br/>tested vs Langfuse datasets"):::eval
+  Auto("Auto-qualify → eligible for shift"):::eval
+  Op("Operator review / final vetting"):::human
+
+  Apply --> Dedup --> Voice --> Agents
+  Agents -- transcript --> Eval
+  Eval -- high confidence --> Auto
+  Eval -- needs review --> Op
