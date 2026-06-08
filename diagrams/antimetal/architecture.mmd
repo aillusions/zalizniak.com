@@ -1,0 +1,34 @@
+flowchart LR
+  classDef client fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef data fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+  classDef model fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef agent fill:#eafbf1,stroke:#16a34a,stroke-width:1.5px,color:#0f172a;
+  classDef human fill:#fdecec,stroke:#e0564f,stroke-width:1.5px,color:#0f172a;
+
+  subgraph Cust["Customer environment"]
+    direction TB
+    SA("system-agent<br/>Go + eBPF · Helm/K8s<br/>perf + hardware collectors"):::client
+    Obs("50+ integrations<br/>Datadog · CloudWatch · Grafana · PagerDuty"):::client
+  end
+
+  Norm("Ingest + normalize<br/>shared ontology · OTEL"):::data
+  WM[("Live world model<br/>structural · temporal · causal · semantic")]:::model
+
+  subgraph Agents["Army of specialized agents"]
+    direction TB
+    Patrol("Patrol · proactive<br/>risks · regressions · drift"):::agent
+    Triage("Triage · reactive<br/>signals → structured issues"):::agent
+    Builder("Agent Builder<br/>custom agents in natural language"):::agent
+  end
+
+  App("Antimetal app<br/>React · NestJS · Postgres"):::client
+  Code("Coding agent<br/>Claude Code · Cursor<br/>via MCP @ mcp.antimetal.com"):::client
+  Appr("Your approval flow<br/>PR · deploy pipeline · Slack"):::human
+
+  SA --> Norm
+  Obs --> Norm
+  Norm --> WM
+  WM --> Agents
+  Agents --> App
+  Agents --> Code
+  Agents -. "changes gated by" .-> Appr
