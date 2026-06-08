@@ -4,6 +4,7 @@ company: Pylon Lending
 author: Oleksandr Zalizniak
 description: Applied AI Teardown of Pylon Lending — coming soon.
 sidebar:
+  order: 2
   label: Pylon · Lending
   badge:
     text: Soon

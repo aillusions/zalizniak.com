@@ -5,6 +5,7 @@ author: Oleksandr Zalizniak
 description: How Pallet builds AI agents for logistics back-office work — stack, architecture, and GTM reconstructed from the public record.
 lastUpdated: 2026-06-07
 sidebar:
+  order: 1
   label: Pallet · Logistics
 ---
 

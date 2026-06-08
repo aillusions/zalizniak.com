@@ -4,6 +4,7 @@ company: Antimetal
 author: Oleksandr Zalizniak
 description: Applied AI Teardown of Antimetal — coming soon.
 sidebar:
+  order: 2
   label: Antimetal · Cloud FinOps
   badge:
     text: Soon
