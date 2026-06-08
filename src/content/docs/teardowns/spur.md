@@ -4,7 +4,7 @@ company: Spur
 author: Oleksandr Zalizniak
 description: Applied AI Teardown of Spur — coming soon.
 sidebar:
-  order: 25
+  order: 26
   label: Spur · Test automation
   badge:
     text: Soon

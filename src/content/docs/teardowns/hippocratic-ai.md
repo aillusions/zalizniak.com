@@ -4,7 +4,7 @@ company: Hippocratic AI
 author: Oleksandr Zalizniak
 description: Applied AI Teardown of Hippocratic AI — coming soon.
 sidebar:
-  order: 19
+  order: 22
   label: Hippocratic AI · Healthcare
   badge:
     text: Soon

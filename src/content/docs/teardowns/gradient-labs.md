@@ -4,7 +4,7 @@ company: Gradient Labs
 author: Oleksandr Zalizniak
 description: Applied AI Teardown of Gradient Labs — coming soon.
 sidebar:
-  order: 9
+  order: 11
   label: Gradient Labs · Customer support
   badge:
     text: Soon

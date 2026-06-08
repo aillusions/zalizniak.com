@@ -4,7 +4,7 @@ company: Confido
 author: Oleksandr Zalizniak
 description: Applied AI Teardown of Confido — coming soon.
 sidebar:
-  order: 6
+  order: 8
   label: Confido · CPG fintech
   badge:
     text: Soon

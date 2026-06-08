@@ -5,7 +5,7 @@ author: Oleksandr Zalizniak
 description: How Glean builds enterprise "Work AI" — a permissions-aware hybrid search engine (vector + lexical + a triplet knowledge graph) running single-tenant inside each customer's own cloud, with an agentic-reasoning layer that decomposes questions into multi-step plans over search tools. Reconstructed from the public record.
 lastUpdated: 2026-06-08
 sidebar:
-  order: 21
+  order: 7
   label: Glean · Enterprise search
 ---
 

@@ -5,7 +5,7 @@ author: Oleksandr Zalizniak
 description: How Pylon turns mortgage origination into a single GraphQL API — a vertically integrated, AI-native platform (TypeScript/NestJS/Temporal on AWS) that compiles underwriting guidelines into executable DSLs, automates the application-to-settlement pipeline, and reps & warrants every loan into the capital markets. Reconstructed from public signals.
 lastUpdated: 2026-06-07
 sidebar:
-  order: 3
+  order: 2
   label: Pylon · Lending
 ---
 

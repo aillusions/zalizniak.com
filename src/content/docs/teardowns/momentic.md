@@ -4,7 +4,7 @@ company: Momentic
 author: Oleksandr Zalizniak
 description: Applied AI Teardown of Momentic — coming soon.
 sidebar:
-  order: 23
+  order: 24
   label: Momentic · Test automation
   badge:
     text: Soon

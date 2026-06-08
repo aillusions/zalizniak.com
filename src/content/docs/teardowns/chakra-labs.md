@@ -4,7 +4,7 @@ company: Chakra Labs
 author: Oleksandr Zalizniak
 description: Applied AI Teardown of Chakra Labs — coming soon.
 sidebar:
-  order: 26
+  order: 27
   label: Chakra Labs · AI infra
   badge:
     text: Soon

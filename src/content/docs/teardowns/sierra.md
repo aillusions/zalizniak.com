@@ -4,7 +4,7 @@ company: Sierra
 author: Oleksandr Zalizniak
 description: Applied AI Teardown of Sierra — coming soon.
 sidebar:
-  order: 15
+  order: 18
   label: Sierra · Customer support
   badge:
     text: Soon

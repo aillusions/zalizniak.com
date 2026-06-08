@@ -4,7 +4,7 @@ company: QA Wolf
 author: Oleksandr Zalizniak
 description: Applied AI Teardown of QA Wolf — coming soon.
 sidebar:
-  order: 22
+  order: 23
   label: QA Wolf · Test automation
   badge:
     text: Soon

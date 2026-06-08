@@ -5,7 +5,7 @@ author: Oleksandr Zalizniak
 description: How Rilla builds conversation intelligence for in-person sales — a React Native capture app, a custom speech-to-text pipeline on Baseten, LLM coaching via LiteLLM/OpenAI, and an emerging voice-first agent layer on LiveKit. Reconstructed from the public record.
 lastUpdated: 2026-06-07
 sidebar:
-  order: 4
+  order: 3
   label: Rilla · Field sales
 ---
 

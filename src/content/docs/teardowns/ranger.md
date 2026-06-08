@@ -4,7 +4,7 @@ company: Ranger
 author: Oleksandr Zalizniak
 description: Applied AI Teardown of Ranger — coming soon.
 sidebar:
-  order: 24
+  order: 25
   label: Ranger · Test automation
   badge:
     text: Soon

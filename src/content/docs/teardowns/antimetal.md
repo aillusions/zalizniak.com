@@ -5,7 +5,7 @@ author: Oleksandr Zalizniak
 description: How Antimetal builds the "autonomous system for production" — a Go/eBPF in-cluster agent feeding a four-layer world model (structural, temporal, causal, semantic), an army of specialized agents on top, and an MCP that drops production context into your coding agent. Reconstructed from the public record.
 lastUpdated: 2026-06-07
 sidebar:
-  order: 20
+  order: 6
   label: Antimetal · Production eng
 ---
 
