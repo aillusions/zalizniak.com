@@ -4,7 +4,7 @@ company: Harper
 author: Oleksandr Zalizniak
 description: Applied AI Teardown of Harper — coming soon.
 sidebar:
-  order: 9
+  order: 13
   label: Harper · Insurance brokerage
   badge:
     text: Soon

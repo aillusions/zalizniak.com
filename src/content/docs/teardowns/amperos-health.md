@@ -4,7 +4,7 @@ company: Amperos Health
 author: Oleksandr Zalizniak
 description: Applied AI Teardown of Amperos Health — coming soon.
 sidebar:
-  order: 3
+  order: 7
   label: Amperos · Healthcare RCM
   badge:
     text: Soon

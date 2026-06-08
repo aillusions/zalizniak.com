@@ -4,7 +4,7 @@ company: FurtherAI
 author: Oleksandr Zalizniak
 description: Applied AI Teardown of FurtherAI — coming soon.
 sidebar:
-  order: 6
+  order: 10
   label: FurtherAI · Insurance
   badge:
     text: Soon

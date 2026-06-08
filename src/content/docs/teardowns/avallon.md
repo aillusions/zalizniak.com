@@ -4,7 +4,7 @@ company: Avallon
 author: Oleksandr Zalizniak
 description: Applied AI Teardown of Avallon — coming soon.
 sidebar:
-  order: 8
+  order: 12
   label: Avallon · Insurance claims
   badge:
     text: Soon

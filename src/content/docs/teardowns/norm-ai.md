@@ -4,7 +4,7 @@ company: Norm Ai
 author: Oleksandr Zalizniak
 description: Applied AI Teardown of Norm Ai — coming soon.
 sidebar:
-  order: 10
+  order: 14
   label: Norm Ai · Regulatory compliance
   badge:
     text: Soon
