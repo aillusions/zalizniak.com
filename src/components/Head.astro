@@ -1,0 +1,96 @@
+---
+// Override of Starlight's default Head: render it unchanged, then add a tiny,
+// dependency-free lightbox for diagram images. Clicking a diagram in the page
+// body enlarges it in an overlay; backdrop-click or Esc dismisses. Scoped to
+// content images only, so it never touches icons, the logo, or social links.
+import Default from '@astrojs/starlight/components/Head.astro';
+---
+
+<Default><slot /></Default>
+
+<style is:global>
+	/* Signal that body images are clickable. */
+	.sl-markdown-content img {
+		cursor: zoom-in;
+	}
+
+	.diagram-lightbox {
+		position: fixed;
+		inset: 0;
+		z-index: 999;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		padding: 2.5vmin;
+		background: rgba(15, 23, 42, 0.85); /* slate-900, matches diagram theme */
+		backdrop-filter: blur(2px);
+		cursor: zoom-out;
+		opacity: 0;
+		transition: opacity 0.15s ease;
+	}
+	.diagram-lightbox[data-open] {
+		opacity: 1;
+	}
+	.diagram-lightbox img {
+		max-width: 95vw;
+		max-height: 92vh;
+		border-radius: 0.5rem;
+		background: #fff; /* keep transparent SVGs legible on the dark backdrop */
+		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.diagram-lightbox {
+			transition: none;
+		}
+	}
+</style>
+
+<script>
+	// One delegated listener on document survives Starlight's page navigations.
+	function setup() {
+		let overlay: HTMLDivElement | null = null;
+
+		const close = () => {
+			if (!overlay) return;
+			overlay.removeAttribute('data-open');
+			const el = overlay;
+			setTimeout(() => el.remove(), 150);
+			overlay = null;
+			document.removeEventListener('keydown', onKey);
+		};
+
+		const onKey = (e: KeyboardEvent) => {
+			if (e.key === 'Escape') close();
+		};
+
+		const open = (src: string, alt: string) => {
+			overlay = document.createElement('div');
+			overlay.className = 'diagram-lightbox';
+			overlay.setAttribute('role', 'dialog');
+			overlay.setAttribute('aria-modal', 'true');
+			overlay.setAttribute('aria-label', alt || 'Enlarged diagram');
+
+			const img = document.createElement('img');
+			img.src = src;
+			img.alt = alt;
+			overlay.appendChild(img);
+
+			overlay.addEventListener('click', close);
+			document.addEventListener('keydown', onKey);
+			document.body.appendChild(overlay);
+			// Next frame so the opacity transition runs.
+			requestAnimationFrame(() => overlay?.setAttribute('data-open', ''));
+		};
+
+		document.addEventListener('click', (e) => {
+			const target = e.target as HTMLElement;
+			const img = target.closest<HTMLImageElement>('.sl-markdown-content img');
+			if (!img) return;
+			e.preventDefault();
+			open(img.currentSrc || img.src, img.alt);
+		});
+	}
+
+	setup();
+</script>

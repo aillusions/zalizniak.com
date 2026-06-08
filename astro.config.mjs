@@ -18,6 +18,8 @@ export default defineConfig({
 			components: {
 				// Make header social icons open in a new tab.
 				SocialIcons: './src/components/SocialIcons.astro',
+				// Add click-to-enlarge (lightbox) for diagram images.
+				Head: './src/components/Head.astro',
 			},
 			description:
 				'Oleksandr Zalizniak — Product Engineer & Backend Architect building AI-native products, and Applied AI Teardowns: architecture teardowns of applied-AI startups reconstructed from public signals.',
