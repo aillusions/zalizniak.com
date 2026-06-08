@@ -1,0 +1,43 @@
+flowchart LR
+  classDef src fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef data fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+  classDef kg fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef agent fill:#eafbf1,stroke:#16a34a,stroke-width:1.5px,color:#0f172a;
+  classDef io fill:#fdf4e8,stroke:#d97706,stroke-width:1.5px,color:#0f172a;
+
+  Q(["User / agent question"]):::io
+
+  subgraph Plan["Plan"]
+    direction TB
+    LLM0("LLM gathers background<br/>+ rewrites into a multi-step plan"):::agent
+  end
+
+  subgraph Exec["Execute · sub-agents pick tools"]
+    direction TB
+    T1("hybrid search"):::agent
+    T2("data analysis"):::agent
+    T3("employee / expert search"):::agent
+    T4("email · calendar · code"):::agent
+  end
+
+  subgraph Retr["Hybrid retrieval · 'the basis for many tools is search'"]
+    direction TB
+    Vec("vector search<br/>semantic"):::data
+    Lex("lexical search<br/>keyword precision"):::data
+    Sig("anchors &amp; signals<br/>intent · popularity · personalization"):::data
+  end
+
+  KG[("Knowledge graph<br/>triplets (subject,predicate,object)<br/>+ personal graph · edge ACLs")]:::kg
+
+  Reflect("Self-reflection<br/>assess confidence in answer"):::agent
+  Ans(["Grounded answer / action"]):::io
+
+  Q --> Plan --> Exec
+  T1 --> Retr
+  Vec --- Lex --- Sig
+  Retr --> KG
+  KG --> Reflect
+  T2 --> Reflect
+  T3 --> Reflect
+  T4 --> Reflect
+  Reflect --> Ans

@@ -1,0 +1,29 @@
+flowchart LR
+  classDef src fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef data fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+  classDef kg fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef ext fill:#fdecec,stroke:#e0564f,stroke-width:1.5px,color:#0f172a;
+  classDef io fill:#fdf4e8,stroke:#d97706,stroke-width:1.5px,color:#0f172a;
+
+  subgraph Sources["Customer data sources"]
+    direction TB
+    SaaS("100+ SaaS connectors<br/>(over HTTPS)"):::src
+    OnPrem("On-prem sources<br/>(VPN / Shared VPC)"):::src
+  end
+
+  subgraph Tenant["Single-tenant project · customer's own GCP / AWS / Azure (or Glean-hosted)"]
+    direction TB
+    Ingest("Google Dataflow pipelines<br/>crawl · extract · permission mapping"):::data
+    Index[("Tenant index + knowledge graph<br/>data never leaves the tenant")]:::kg
+    QE("Query endpoint<br/>&lt;tenant_id&gt;-be.glean.com"):::data
+    Ingest --> Index --> QE
+  end
+
+  User(["Employee / agent<br/>SSO-authenticated"]):::io
+  LLM("LLM providers<br/>OpenAI · Anthropic · Gemini<br/>zero-retention"):::ext
+
+  SaaS --> Ingest
+  OnPrem --> Ingest
+  User -->|"search · chat · agents API"| QE
+  QE -. "RAG context, permission-filtered" .-> LLM
+  LLM -. "grounded answer" .-> QE
