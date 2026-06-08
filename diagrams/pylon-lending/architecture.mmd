@@ -1,0 +1,41 @@
+flowchart LR
+  classDef client fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef api fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+  classDef stage fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef engine fill:#eafbf1,stroke:#16a34a,stroke-width:1.5px,color:#0f172a;
+  classDef ext fill:#fff7ed,stroke:#d97706,stroke-width:1.5px,color:#0f172a;
+  classDef human fill:#fdecec,stroke:#e0564f,stroke-width:1.5px,color:#0f172a;
+
+  Cons("Originators<br/>brokers · fintechs · lenders · banks"):::client
+  Surf("Integration surface<br/>Browser · API · Agents (MCP)"):::client
+
+  API("GraphQL API · the product<br/>TypeScript · NestJS · event-driven"):::api
+
+  subgraph Pipe["Origination pipeline · orchestrated by Temporal.io"]
+    direction LR
+    Intake("Intake<br/>eligibility · income/asset<br/>verify · preapproval"):::stage
+    Struct("Structure<br/>pricing · rate-lock<br/>best-option"):::stage
+    Proc("Process<br/>order-outs · disclosures<br/>conditions"):::stage
+    UW("Underwrite<br/>DSL + AI rules<br/>AUS · compliance · fraud"):::engine
+    Settle("Settle<br/>closing disclosure · eSign<br/>notary · recording"):::stage
+    Intake --> Struct --> Proc --> UW --> Settle
+  end
+
+  PG[("PostgreSQL<br/>loan state")]:::api
+
+  subgraph Ext["External rails · REST / SOAP / file"]
+    direction TB
+    Bureaus("Credit bureaus"):::ext
+    Title("Title · insurance"):::ext
+    Docs("Document services"):::ext
+  end
+
+  Cap("Capital-markets takeout<br/>direct Wall St · Citi trading desk<br/>rep &amp; warrant every loan"):::ext
+  Ovr("Technical Oversight<br/>licensed mortgage ops · exceptions"):::human
+
+  Cons --> Surf --> API --> Pipe
+  Ext --> Proc
+  Ext --> UW
+  Settle --> Cap
+  Pipe -. "state in" .-> PG
+  Pipe -. "exceptions escalate to" .-> Ovr
