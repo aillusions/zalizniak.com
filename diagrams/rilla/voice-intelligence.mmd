@@ -1,0 +1,21 @@
+flowchart LR
+  classDef io fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef ml fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef data fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+
+  User("User speaks to Rilla<br/>natural-speech command"):::io
+  LK("LiveKit<br/>real-time audio transport"):::io
+
+  subgraph Agents["Voice-first agent layer"]
+    direction TB
+    Agent("Agents on real-world audio<br/>OpenAI via LiteLLM · agent tooling"):::ml
+    Search("Search engine over voice data<br/>insights never before searchable"):::ml
+    Agent <--> Search
+  end
+
+  Corpus[("Indexed conversation corpus<br/>millions of in-person conversations")]:::data
+  Answer("Spoken / chat answer<br/>real-time inference"):::io
+
+  User --> LK --> Agents
+  Search --> Corpus
+  Agents --> Answer --> User

@@ -4,6 +4,8 @@ company: Traba
 author: Oleksandr Zalizniak
 description: How Traba builds its light-industrial staffing marketplace and AI worker-vetting stack — Firestore→Postgres, an ElevenLabs multi-agent interviewer, and the GTM around it, reconstructed from the public record.
 lastUpdated: 2026-06-07
+sidebar:
+  label: Traba · Staffing
 ---
 
 ## What they do

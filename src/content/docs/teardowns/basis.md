@@ -4,6 +4,8 @@ company: Basis
 author: Oleksandr Zalizniak
 description: How Basis builds long-horizon AI agents that do end-to-end accounting work — a GPT-5 supervisor routing to model-benchmarked sub-agents over a reviewable context layer, plus the agent-native engineering org (Atlas, Satellite MCP, Clueso) behind it. Reconstructed from the public record.
 lastUpdated: 2026-06-07
+sidebar:
+  label: Basis · Accounting
 ---
 
 ## What they do

@@ -1,0 +1,22 @@
+flowchart LR
+  classDef client fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef ml fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef data fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+  classDef human fill:#fdecec,stroke:#e0564f,stroke-width:1.5px,color:#0f172a;
+
+  Rep("Field rep<br/>in-person conversation<br/>React Native app"):::client
+  S3[("Audio capture → S3")]:::data
+
+  subgraph Pipe["Audio intelligence pipeline · messy real-world speech"]
+    direction TB
+    ASR("Speech-to-text<br/>custom models · PyTorch on Baseten"):::ml
+    LLM("LLM analysis<br/>OpenAI via LiteLLM<br/>scorecards · objections · insights"):::ml
+    ASR --> LLM
+  end
+
+  PG[("PostgreSQL + Redis<br/>transcripts · scores · index")]:::data
+  Mgr("Manager review + AI coaching<br/>React web app"):::human
+
+  Rep --> S3 --> Pipe
+  LLM --> PG --> Mgr
+  Mgr -. "feedback to rep" .-> Rep
