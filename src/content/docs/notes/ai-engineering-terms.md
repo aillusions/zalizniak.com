@@ -1,13 +1,73 @@
 ---
 title: AI Engineering Terms
-description: A tight glossary of the LLM, retrieval, agent, and reliability terms that recur across the teardowns — defined for engineers, a definition plus a sentence or two each.
+description: Practical applied-AI patterns and recipes distilled from the teardowns — autonomy gating, agent eval, model routing, durable execution — plus the foundational LLM/agent/retrieval vocabulary underneath.
 sidebar:
   order: 2
 ---
 
-A working glossary of the applied-AI engineering vocabulary that recurs across the teardowns — models and inference, retrieval, agents and orchestration, reliability and evaluation. Same rule as the [startup terms](/notes/startup-gtm-terms/): a definition plus a sentence or two of explanation, not an essay.
+A working reference for applied-AI engineering, in two parts. First, **patterns and recipes** distilled from how the teardown companies actually build — the recurring solutions to the genuinely hard problems, each linked to the teardowns it's drawn from. Then the **foundational vocabulary** those patterns are built on. Same rule throughout: a definition plus a sentence or two, not an essay.
 
-## Models & inference
+## Patterns from the teardowns
+
+The reusable moves that recur once you read enough teardowns — how teams make non-deterministic agents safe, cheap, and trustworthy enough to put in production. Each links to the teardown(s) where the signal appears.
+
+### Autonomy, trust & safety
+
+**Confidence-graduated autonomy** — Ship the agent as an assistant first, then graduate it to act on its own one *action class* at a time, gated on measured acceptance and override rates and on each action's blast radius. The crossing from "suggest" to "act" is the irreversible step, so trust is earned per action type, not granted wholesale. — [Antimetal](/teardowns/antimetal/), [Prophet Security](/teardowns/prophet-security/), [Pallet](/teardowns/pallet/), [Basis](/teardowns/basis/)
+
+**Human-in-the-loop as the validation gate** — Auto-process the confident majority and route low-confidence or high-dollar items to a person, whose corrections feed back as training and eval signal. It's what lets a finance or ops team trust AI-produced figures in a system of record. — [Confido](/teardowns/confido/), [Amperos](/teardowns/amperos-health/), [Pallet](/teardowns/pallet/)
+
+**Self-audit before handoff** — Have the agent review its own actions and emit proof-of-work artifacts — call recordings and transcripts, exported PDFs, reasoning traces — so output is pre-audited before a human ever sees it. Turns "trust me" into "here's the evidence." — [Amperos](/teardowns/amperos-health/)
+
+**Show-your-work / explainability gating** — Make every output carry its data lineage and a confidence score, and gate go-live on how clearly the system can *explain* its reasoning, not just on accuracy. In regulated domains a confident-but-unexplained answer is a liability, so explainability becomes a first-class eval metric. — [Basis](/teardowns/basis/), [Pylon](/teardowns/pylon-lending/), [Prophet Security](/teardowns/prophet-security/), [Confido](/teardowns/confido/)
+
+### Evaluating non-deterministic agents
+
+**Eval as the only safety rail** — Because output isn't reproducible, a golden set scored by an LLM-as-judge becomes the agentic analog of a test suite, gating every prompt and model change in CI. Without it you can't tell whether a change actually helped or quietly regressed. — [Glean](/teardowns/glean/), [Rilla](/teardowns/rilla/), [Traba](/teardowns/traba/), [Momentic](/teardowns/momentic/)
+
+**Trajectory-level eval & credit assignment** — When an agent runs for hours across thousands of decisions, the hard part is attributing a bad outcome back to the one reasoning step that caused it — and tuning judges when the "right" answer is subjective. Pass/fail on the final output isn't enough. — [Basis](/teardowns/basis/)
+
+**Shadow / replay & simulation harness** — Run agent changes against recorded production events or historical scenarios in a sandbox before they touch anything live, scoring on acceptance/override before promotion. Lets you regression-test a system that can't be safely tested in prod. — [Antimetal](/teardowns/antimetal/), [Pallet](/teardowns/pallet/)
+
+**Versioned eval datasets** — Keep human-annotated evaluation datasets (e.g. in Langfuse) under version control alongside templated prompts, so a change can be scored against ground truth in minutes instead of hours. Makes eval iterate at the speed of development. — [Traba](/teardowns/traba/)
+
+### Cost & latency
+
+**Per-step model routing** — A supervisor routes each step to the cheapest model that can handle it, picked off an internal benchmark re-run every release; a small classifier often gates whether an expensive frontier call is needed at all. Most steps don't need the biggest model. — [Basis](/teardowns/basis/), [Glean](/teardowns/glean/)
+
+**Compiled / semantic caching** — Cache the *result* of an expensive resolution (a located element, a retrieved answer) so the LLM fires only on a cache miss — Momentic runs inference on ~1 step in 20, ~300ms cached vs >5s uncached. The key encodes intent, so cosmetic changes don't bust it. — [Momentic](/teardowns/momentic/), [Glean](/teardowns/glean/)
+
+**Cap plan depth / fan-out** — Explicitly bound how deep an agent can recurse and how many sub-calls it can spawn, so a multi-step plan can't multiply LLM calls without limit. Predictable cost beats unbounded autonomy. — [Glean](/teardowns/glean/), [Momentic](/teardowns/momentic/)
+
+### Integrating the messy real world
+
+**API → built-API → drive-the-UI fallback hierarchy** — Reach each system at the best interface it offers: native API first, an API you build second, and — where none exists — drive the legacy web UI with browser automation (Browserbase/Playwright) like a human would. The customer never has to migrate. — [Pallet](/teardowns/pallet/), [Amperos](/teardowns/amperos-health/), [Confido](/teardowns/confido/)
+
+**Read-and-reason over record-and-replay** — Instead of brittle RPA that replays fixed clicks, an LLM agent reads the live screen/DOM, understands it, and adapts — so it survives portal redesigns and unscripted turns that break record-and-replay automation. — [Amperos](/teardowns/amperos-health/), [Momentic](/teardowns/momentic/)
+
+### Knowledge & retrieval
+
+**Knowledge as data, not code** — Build the connectors and reasoning once and amortize them across customers; keep each tenant's uniqueness as learned "memories" and facts in a data layer rather than per-customer code. Pallet's agents run on 20,000+ customer-specific memories. — [Pallet](/teardowns/pallet/), [Glean](/teardowns/glean/)
+
+**Permissioned / ACL-faithful retrieval** — Carry access-control metadata on the index itself (Glean puts ACLs on knowledge-graph edges) so a query can never return a document the user isn't allowed to open. In enterprise search the bottleneck is access fidelity, not recall. — [Glean](/teardowns/glean/)
+
+**Proprietary corpus → semantic search** — Capture data no competitor has (in-person sales conversations), embed it, and turn it into a queryable corpus — the data becomes the moat under a search index. — [Rilla](/teardowns/rilla/)
+
+### Architecture & orchestration
+
+**Durable execution, idempotent activities, saga compensation** — Run long, multi-party, multi-day workflows on a durable engine (Temporal) so they survive crashes and replays; make each activity idempotent and use saga-style compensation to unwind partial failures, with humans as exception handlers. — [Pylon](/teardowns/pylon-lending/)
+
+**Multi-agent phase-splitting to dodge context degradation** — When one agent's context grows long enough that quality degrades, split the job into specialized phase agents (intro / vetting / logistics / Q&A) that hand off, keeping each one's context small and sharp. — [Traba](/teardowns/traba/), [Antimetal](/teardowns/antimetal/)
+
+**Compile domain logic to a tested DSL** — Encode dense rules (regulatory guidelines, underwriting policy) into an executable DSL with a golden-file/snapshot test suite gating every change; AI drafts the rules, humans approve, and the DSL stays the audited artifact. — [Pylon](/teardowns/pylon-lending/)
+
+**Own the hard model, rent the reasoning** — Fine-tune and self-host the model that's genuinely hard for your domain (e.g. ASR on noisy field audio), but rent the frontier LLM for general reasoning behind a router — and keep both swappable. Spend your training budget only where off-the-shelf fails. — [Rilla](/teardowns/rilla/)
+
+## Foundational vocabulary
+
+The base terms the patterns above are built from — models and inference, retrieval, agents and orchestration, reliability and evaluation.
+
+### Models & inference
 
 **LLM (large language model)** — the core engine: a model trained on huge text corpora that predicts the next token to generate language. Everything else in an applied-AI product is plumbing around getting good output from one (or several) of these.
 
@@ -21,7 +81,7 @@ A working glossary of the applied-AI engineering vocabulary that recurs across t
 
 **Fine-tuning** — further-training a base model on your own examples to specialize it for a narrower task or style. It trades flexibility for sharper, cheaper performance on the specific job, but needs data and re-training when the task shifts.
 
-## Retrieval & memory
+### Retrieval & memory
 
 **RAG (retrieval-augmented generation)** — fetch documents relevant to the query and feed them into the prompt so the model answers from your data instead of its training. The standard way to ground an LLM in private, current, or domain-specific knowledge without fine-tuning.
 
@@ -35,7 +95,7 @@ A working glossary of the applied-AI engineering vocabulary that recurs across t
 
 **Grounding** — tying model output to specific cited source data rather than letting it free-associate from training. It's the main defense against hallucination and what lets a system show its receipts.
 
-## Agents & orchestration
+### Agents & orchestration
 
 **Agentic** — an LLM that doesn't just answer but *acts*: it plans steps, calls tools, observes the results, and loops until a goal is met, rather than producing one response and stopping. This shift from single-shot answer to autonomous action is what most of the teardowns are really building.
 
@@ -53,7 +113,7 @@ A working glossary of the applied-AI engineering vocabulary that recurs across t
 
 **Guardrails** — constraints that block unsafe, off-policy, or malformed model behavior — input/output filters, validation, allowed-action limits. They bound what an agent can do so a bad generation doesn't become a bad action.
 
-## Reliability & evaluation
+### Reliability & evaluation
 
 **Eval (evaluation)** — systematic measurement of model or agent output quality against expected results, the AI analog of a test suite. Because output is non-deterministic, evals are how teams catch regressions and decide whether a prompt or model change actually helped.
 
