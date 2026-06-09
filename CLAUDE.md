@@ -63,7 +63,9 @@ Match format to content type:
 
 Section order, so entries compose into a comparative map:
 
-`what they do → stack → architecture → team → process → notable bets → hard problems → unknowns`
+`what they do → the heavy lifting → stack → architecture → team → process → notable bets → hard problems → unknowns`
+
+**The heavy lifting** sits right after `what they do`: **2–4 bullets, no intro prose**, each one a concrete *technical mechanism + the specific constraint it beats* — the company's differentiated engineering know-how, where the hard work concentrates. It is a **synthesis** of the page's sharpest technical findings, tier-cited like everything else — not a restatement of `notable bets`. Hard rule: every bullet must say something an engineer couldn't get off the homepage; ban promo register (verbs like "cracks/owns/unlocks", nouns like "moat/seamless", scope inflation like "the entire X"). If a bullet can't be phrased as mechanism + constraint, cut it — better empty than fluffy.
 
 **Hard problems** is a compact **table** (not prose), placed after `notable bets`, before `unknowns`. Each row is a challenge that's genuinely hard *for this kind of company* — agent eval/testing, inference cost, observability of non-deterministic agents, and the like. Columns: **Problem | Why it's hard | Public signal | Likely approach (speculative)**. The *public signal* cell is verified+cited; the *likely approach* cell is labeled speculation (the column header carries the SPECULATIVE label) with hedge language. Keep it tight — pick the 2–4 problems that are real and specific to the company; drop generic ones (e.g. "latency" with no company-specific signal). Designed to tabularize across companies into a later comparative map.
 
@@ -76,6 +78,7 @@ Frontmatter (complete on every entry): `title`, `company`, `author`, `descriptio
 - Every factual claim has a cited public source (live link) with its supporting quote recorded in the evidence map.
 - Every claim is tier-labeled: inferred claims flagged as inference with a confidence level; **speculative claims explicitly carry the SPECULATIVE label + hedge language** (never presented as fact).
 - Stack is a table; architecture is at least one diagram; comparison data is tabular; **hard problems is a table** (2–4 company-specific rows, speculative column labeled).
+- **The heavy lifting** is present: 2–4 mechanism+constraint bullets, no promo language, nothing a reader could get off the homepage.
 - No filler prose; reads dense but legible.
 - Follows the template section order.
 - Frontmatter complete (`title`, `company`, `author`, `description`).

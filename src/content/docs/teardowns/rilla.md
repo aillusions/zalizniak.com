@@ -25,6 +25,12 @@ The numbers Rilla states publicly:
 Today's product is batch coaching (record → analyze → review). The Applied AI team is building three new surfaces — *"a voice-first interface,"* *"a search engine that uncovers business-critical insights from voice data that's never been searchable,"* and *"agents that operate natively on real-world audio"* ([Applied AI JD][jd-ai]). The coaching tool is becoming the data moat under a voice-native intelligence layer.
 :::
 
+## The heavy lifting
+
+- **Own the speech models for field audio; rent the reasoning.** Custom/fine-tuned ASR runs on PyTorch + Baseten to survive doorstep, showroom, and job-site noise and accents that wreck off-the-shelf ASR; OpenAI behind a LiteLLM router does the language reasoning, both swappable ([Applied AI JD][jd-ai]).
+- **The proprietary corpus is the moat under a search index.** Millions of in-person conversations no competitor captures become a queryable corpus — *"voice data that's never been searchable"* — embedded for semantic search ([Applied AI JD][jd-ai], [home][home]).
+- **Voice-native real-time layer on LiveKit.** A spoken interface plus agents operating on raw audio run over LiveKit transport with a fast LLM tier — built around streaming speech and turn-taking, not chat with audio bolted on ([Applied AI JD][jd-ai]).
+
 ## Stack
 
 A TypeScript + Python monorepo with React/React Native clients, a Python AI surface, and a deliberately managed-infra posture on AWS. Every component below is named in a first-party job description.

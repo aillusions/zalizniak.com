@@ -22,6 +22,12 @@ This is a **mature, late-stage build**, not an early-stage scramble — and that
 - *"The platform is already powering more than 100 million agent actions annually,"* with a stated goal of *"one billion agent actions by the end of the year"* ([press release][press-f]).
 - ~$768M raised total; third-party trackers put headcount near ~1,600 ([Sacra][sacra]).
 
+## The heavy lifting
+
+- **A permissioned knowledge graph, not just a vector store.** A triplet store carries ACLs, timestamps, and provenance on the *edges*, enabling multi-hop, access-faithful retrieval; the index — not the model — is the asset (LLMs are multi-provider, routed, zero-retention) ([knowledge graph][kg-blog], [Runtime JD][jd-runtime]).
+- **Permission enforcement is the retrieval invariant.** Connectors map and maintain each source's ACLs so a query never returns a document the user can't open — the enterprise-search bottleneck is access fidelity, not recall ([Data flow][dataflow], [Security][security]).
+- **Single-tenant inside the customer's own cloud.** Ingestion, index, and knowledge graph run in the customer's GCP/AWS/Azure project via Dataflow pipelines; *"data never leaves your tenant's environment"* — a full per-tenant deployment traded for enterprise data residency ([Data flow][dataflow], [Security][security]).
+
 ## Stack
 
 A Go-leaning backend, a Bazel monorepo, Kubernetes on a major cloud, and a deliberately **model-neutral** AI layer. Every row is named in a first-party JD, doc, or repo.

@@ -25,6 +25,12 @@ This is a **vertical-AI system-of-record** play. The interesting engineering isn
 Confido's durable asset is a unified financial data model stitched from *"50+ critical data sources, including leading retailers, distributors, ERP platforms, and accounting systems"* ([Integrations][integ]). The AI that makes it possible is LLM extraction of structured line items from *"messy"* documents — the bottleneck every back-office competitor stalls on.
 :::
 
+## The heavy lifting
+
+- **The AI surface is structured extraction, not chat.** Per-retailer deduction backup, invoices, and reports parse into a fixed line-item schema via a *"format-agnostic"* pipeline — one extractor across sources, not a template per retailer ([ML JD][jd-ml], [AI hire][blog-ai]).
+- **Agents substitute for missing APIs.** Retailer/distributor systems often expose no clean API; agents *"retrieve data from legacy systems"* to assemble the context — POS, contracts, promo plans — a deduction needs to be adjudicated ([ML JD][jd-ml]).
+- **Human review is the validation gate.** Low-confidence / high-dollar items route to a reviewer, with *"automated and human-in-the-loop validation"* and *"full traceability"* per record — what lets a finance team post AI-extracted figures to the ledger ([AI hire][blog-ai]).
+
 ## Stack
 
 The JDs describe *what the systems do* (AI document ingestion, financial data pipelines, analytics) but deliberately don't name languages or frameworks. So this table is the **AI + data stack** that *is* public; the conventional infra (languages, DB, cloud) is unconfirmed and reconstructed in [Likely internals](#likely-internals).

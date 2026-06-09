@@ -26,6 +26,12 @@ What it's built on:
 - The CEO frames the wedge as a category error in tooling: *"More dashboards, more alerts, more tools. It's not a headcount problem. It's a complexity problem"* ([press release][pr]).
 - **SOC 2, GDPR, and HIPAA compliant**; built in NYC ([home][home]).
 
+## The heavy lifting
+
+- **A four-layer world model, not a bigger context window.** Signals compile into structural (ontology + runtime graph + code call graph), temporal (streaming + time-travel diff), causal (learned DAGs), and semantic layers, each constraining the next — the fix for a v1 agent that *"latched onto symptoms over causes"* ([world-model post][worldmodel]).
+- **Own the collection layer with a Go + eBPF in-cluster agent.** The `system-agent` ships kernel-level performance and hardware collectors as a Helm chart, producing first-party telemetry the vendor dashboards never expose — raw signal for the model, not just scraped metrics ([system-agent repo][gh-agent]).
+- **An explicit shared model as a multi-agent coordination surface.** Because the representation is explicit, many agents investigate different regions of the system in parallel over the full model without duplicating work — how it scales to *"trillions of data points per day"* ([world-model post][worldmodel]).
+
 ## Stack
 
 A TypeScript product core, a Go + eBPF agent in the customer's cluster, and a Python research surface. Every component below is named in a first-party JD, blog post, or public repo.

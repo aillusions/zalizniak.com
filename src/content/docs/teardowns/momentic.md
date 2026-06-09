@@ -26,6 +26,12 @@ The interesting part is not the natural-language front door — every competitor
 Momentic *"runs an AI agent that controls a real browser or emulator,"* but the cache is what makes it viable: a *"95%+ cache hit rate … execute steps in 300ms on average, while a completely uncached step takes over 5s due to LLM latency"* ([intent blog][blog-intent]). AI is the fallback, not the hot path.
 :::
 
+## The heavy lifting
+
+- **A locator is a compiled multi-signal matcher.** A step's NL description resolves once into stored signals — on-screen position, appearance, text, accessibility + structural attributes — plus validity conditions; replay matches those against the live page with no LLM call, so inference runs on ~1 step in 20 ([intent blog][blog-intent], [step cache][cache]).
+- **Invalidation keys on intent, not DOM identity.** The cache busts when the element no longer satisfies the attributes / related-elements the user named — not when the DOM node changes — so randomized classnames and restructures don't bust it, but a renamed semantic does ([intent blog][blog-intent]).
+- **The cache is an OLTP lookup on ClickHouse.** Keyed by test / step / version / branch / commit and served via a sparse primary index + materialized view at ~250ms over ~20B entry-touches/day — an OLAP engine repurposed for high-write key-value reads after Postgres hit lock contention ([ClickHouse blog][blog-ch]).
+
 ## Stack
 
 A TypeScript-first CLI, tests as YAML in git, and a ClickHouse cache plane. Every row is named in a first-party doc, repo, or engineering post.

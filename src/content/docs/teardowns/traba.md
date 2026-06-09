@@ -28,6 +28,12 @@ Three product surfaces are visible in the public record: the **marketplace** its
 Marketing still leads with "Labor That Works" staffing, but the job board now opens every engineering role with *"Traba is the AI operating layer for the industrial supply chain"* ([Ashby][ashby]). The marketplace is becoming the data + distribution layer under an agent platform.
 :::
 
+## The heavy lifting
+
+- **Thousands of parallel phone interviews via multi-agent transfer.** Scout splits an interview into separate intro / vetting / logistics / Q&A agents to dodge context degradation (*"at a certain threshold of context, they begin to degrade"*), on an ElevenLabs voice layer over SMS/VOIP ([Scout post][scout]).
+- **Vetting eval as a versioned, templated artifact.** A single prompt template with variables injected per call is tested against continuously-updated human-annotated Langfuse datasets, turning prompt changes around *"in minutes rather than hours"* — autonomy widened to 85%+ on a measured 15% shift-completion lift ([Scout post][scout]).
+- **Trigger-based, zero-downtime Firestore→Postgres migration.** A year-long live cutover via Cloud Function triggers translating documents into Postgres rows, behind per-collection feature flags, with self-healing reconciliation crons and 15+-attempt retry logic, reaching 99.99% replication precision ([pg post][pg]).
+
 ## Stack
 
 A pragmatic, TypeScript-centric marketplace stack, with Python reserved for the AI/ML surface and a deliberate "buy the managed thing" bias on infrastructure.

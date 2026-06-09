@@ -26,6 +26,12 @@ What it's built on:
 
 The product is **five composable products** on the API — **Decisioning, Capital, Command Center, Elements, Compliance** ([introducing][intro]) — sold to **brokers, fintechs, lenders, and banks** ([home][home]).
 
+## The heavy lifting
+
+- **Underwriting compiled to a tested DSL, not staffed.** Dense regulatory guidelines are encoded — with AI as draft-generator — into executable DSL rules built *"side-by-side with mortgage experts"*; a mis-encoded rule costs *"tens of thousands of dollars on a single loan"* because Pylon reps & warrants the loan ([Underwriting JD][jd-uw], [fintechs][fintechs]).
+- **Temporal orchestrates every multi-day origination workflow.** A mortgage is multi-party and failure-prone across days; Temporal (named in every eng JD) gives durable, replayable workflows over Postgres state, with humans as exception handlers ([API JD][jd-api], [Infra JD][jd-infra]).
+- **One GraphQL API encodes a path-dependent domain.** The contract models mortgage branching and path-dependence natively rather than papering over it, and is treated as the product customers build on — versioned, event-driven, surfacing *"what happened, why, and what you can do next"* ([API JD][jd-api]).
+
 ## Stack
 
 A single-language TypeScript shop: TS everywhere, GraphQL as the contract, NestJS services, Postgres for state, and **Temporal.io** orchestrating every long-running mortgage workflow — on AWS. Every row below is named in a first-party JD or shown on the product site.

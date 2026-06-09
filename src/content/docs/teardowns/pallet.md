@@ -28,6 +28,12 @@ The company pivoted into this in early 2025: it spent ~three years building a tr
 The live site decomposes the platform into **Agents, Forge, Memory, Intelligence, Fabric, and Platform** ([product page][agent]), with Atlas as a sibling product. "CoPallet" persists as the agent brand (job descriptions, the footer CTA, and the trust-center name) but the top-nav now reads "Agents." The four-surface framing above still holds; the platform is just described in finer-grained parts now.
 :::
 
+## The heavy lifting
+
+- **Connectors converge, knowledge diverges.** Tenant-agnostic Fabric MCP connectors and the core reasoning are built once and amortized across customers; per-tenant uniqueness lives as *data, not code*, in the Enterprise Memory Layer ([product page][agent], [Forge post][forge], [blog][memory]).
+- **SOPs are learned as plain-English "memories," not configured.** Customer tribal knowledge is inferred from the inbox into thousands of discrete facts (*"Auto-approve 5% discounts for Gold customers"*) indexed in a taxonomy — Everest runs on *"more than 20,000 customer-specific memories"* ([blog][memory], [Forge post][forge]).
+- **Meet frozen legacy systems at whatever interface they offer.** A fallback hierarchy — native API → built API → driving the legacy web UI via Browserbase/Playwright — reaches *"any system with an API, including on-premise AS400-based databases"* so the customer never migrates ([product page][agent], [Browserbase JD][jd-sec]).
+
 ## Stack
 
 A small, deliberately boring, velocity-optimized stack, shaped by one constraint the CTO states plainly: he's a product engineer who doesn't want his team touching infra — *"I've used Terraform, but generally I don't want me or my team to deal with it"* ([Encore][encore]).

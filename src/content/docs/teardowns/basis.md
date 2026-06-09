@@ -26,6 +26,12 @@ The numbers Basis states publicly:
 Basis builds **a product** (the accounting agents, run on OpenAI models) *and* **an agent-native company** to build it — an internal team (Atlas) shipping internal agents, a unified tool gateway, and an agent-ergonomic monorepo ([building-for-AGI][agi], [Satellite][satellite]). The teardown covers both; they're deliberately the same playbook applied inward and outward.
 :::
 
+## The heavy lifting
+
+- **Per-step model routing off an internal benchmark.** A supervisor (GPT-5, was o3) routes each step to a sub-agent whose model is chosen by a scored internal benchmark suite re-run every release — GPT-4.1 for latency-sensitive steps, GPT-5 for hard reasoning ([OpenAI case study][openai]).
+- **Autonomy gated on explainability, not just accuracy.** Each release is benchmarked on *"how clearly the model can explain its reasoning"*; a workflow ships only when the model both performs and emits the data lineage + confidence a CPA signs off on ([OpenAI case study][openai]).
+- **The company is the product's test harness.** Internal agents hit one Satellite MCP gateway over 36 providers; the Clueso incident agent (Modal + Claude Agent SDK) clears 78% of bugs first-pass — the same supervisor/sub-agent + shared-context patterns sold to firms ([Satellite][satellite], [Clueso][clueso]).
+
 ## Stack
 
 TypeScript + Python across the board, with OpenAI frontier models as the product's reasoning substrate and a mix of coding-agent harnesses internally. Two columns of evidence: the customer-facing product, and the internal "Atlas" platform.
