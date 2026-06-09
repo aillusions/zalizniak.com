@@ -9,22 +9,18 @@ sidebar:
   label: Antimetal · Production eng
 ---
 
-## What they do
+[Antimetal][home] is building *"the autonomous system for production"* — *"a new layer between your team and your running systems"* that *"diagnoses … fixes … prevents,"* sitting *"on top of the observability tools you already use"* and using their data ([home][home]). The architecture is two halves: *"a live world model, a continuous understanding of how your stack behaves"* and *"an army of specialized agents [that] acts on the model to diagnose, fix, prevent, and answer any question"* ([home][home]). The engineering core is the world model itself — a four-layer representation fed by a first-party **Go/eBPF in-cluster agent** — plus an MCP that drops production context into your coding agent.
 
-[Antimetal][home] is building *"the autonomous system for production"* — *"a new layer between your team and your running systems"* that *"diagnoses … fixes … prevents,"* and *"learns how your systems run and operates production for you"* ([home][home]). The org bio is the one-liner: *"For everything that happens after you deploy"* ([GitHub][gh]).
+**Vitals:** founded 2022 · Series A ($20M, Sound Ventures) · ~20 people · NYC (on-site).
 
-The architecture has two halves. *"At its core sits a live world model, a continuous understanding of how your stack behaves. On top, an army of specialized agents acts on the model to diagnose, fix, prevent, and answer any question"* ([home][home]). Crucially, Antimetal does not replace your monitoring — it *"sits on top of the observability tools you already use and uses their data to build and maintain its world model"* ([home][home]).
-
-:::note[The pivot is the story — confidence: high]
-Antimetal launched in 2022 as **AWS cost optimization** — a model that promised to *"save customers up to 75% on their AWS bill"* and auto-resold reserved instances ([TechCrunch][tc]). The current product is a different company: autonomous production engineering built on a world model. The cost-optimizer was the wedge that mapped the harder problem.
-:::
-
-What it's built on:
+<details>
+<summary>Business context — founders, funding, the pivot</summary>
 
 - Founded 2022 in NYC by **Matthew Parkhurst** (CEO) and **Shreyas Iyer** (CTO) ([TechCrunch][tc], [press release][pr]).
 - **$4.3M seed** led by Framework Ventures (2023, [TechCrunch][tc]); **$20M Series A** led by **Sound Ventures** (June 2025), with Buckley Ventures, Nat Friedman, Daniel Gross, Aravind Srinivas, Ben Uretsky, Aaron Levie, and Arash Ferdowsi ([press release][pr]).
-- The CEO frames the wedge as a category error in tooling: *"More dashboards, more alerts, more tools. It's not a headcount problem. It's a complexity problem"* ([press release][pr]).
-- **SOC 2, GDPR, and HIPAA compliant**; built in NYC ([home][home]).
+- The CEO frames the wedge as a category error in tooling: *"More dashboards, more alerts, more tools. It's not a headcount problem. It's a complexity problem"* ([press release][pr]). **SOC 2, GDPR, and HIPAA compliant** ([home][home]).
+- **The pivot is the story:** Antimetal launched in 2022 as **AWS cost optimization** — promising to *"save customers up to 75%"* and auto-reselling reserved instances ([TechCrunch][tc]). The current product is a different company — autonomous production engineering on a world model — and the cost-optimizer was the wedge that mapped the harder problem.
+</details>
 
 ## The heavy lifting
 
@@ -58,7 +54,31 @@ A TypeScript product core, a Go + eBPF agent in the customer's cluster, and a Py
 The `system-agent` is **Go with eBPF** kernel programs for *"performance collectors"* and *"hardware discovery"*, shipped as a Helm chart into the customer's Kubernetes cluster ([system-agent repo][gh-agent]). First-party kernel-level telemetry — not only scraping Datadog/CloudWatch — is what feeds the world model the raw signal those dashboards never expose.
 :::
 
-The production reasoning LLM, the temporal/graph store, and the vector index aren't named — reconstructed in [Likely stack & infra choices](#likely-stack--infra-choices).
+## Hard problems
+
+The parts an engineer would lose sleep over. **Public signal** is cited (verified); **likely approach** is labeled speculation — best-practice fill-in, hedged.
+
+| Problem | Why it's hard | Public signal | Likely approach (speculative) |
+| --- | --- | --- | --- |
+| **Evaluating agents that change production** | An agent that fixes prod can't be regression-tested like a service; a bad change has blast radius, and eval is the only safety rail. | Research builds *"live and offline evaluation pipelines, benchmarks, and synthetic data generation"* jointly *"with platform"* ([jd-research][jd-research]); plus *"sandboxed shadow traffic environments to run our product against live customer events"* ([anvil][anvil]) | Likely a shadow/replay harness over recorded incidents + reasoning traces as offline benchmarks, with live online eval scored on acceptance and override rates before any action ships |
+| **Autonomy gating without bad automated changes** | Crossing from suggest to act is irreversible per change; over-trust ships a wrong fix, under-trust kills the product's value. | *"Initially, these systems should assist … As confidence grows through repeated acceptance, low override rates, or explicit approval, it begins automating"* ([vision][vision]); default *"changes still route through your existing approval flow"* ([home][home]) | Likely a per-action-class trust score gated on measured acceptance/override history, defaulting to PR/Slack approval and graduating specific low-risk action types to autonomous |
+| **Keeping the world model current at scale** | A stale model gives wrong root causes; staying live means ingesting *"trillions of data points per day"* across *"thousands of services"* without falling behind. | Temporal layer needs *"a streaming architecture"* plus time travel — *"rewind to any point in the past … and diff against the current state"* — over *"thousands of services emitting trillions of data points per day"* ([worldmodel][worldmodel]) | Likely a streaming bus (Kafka/Kinesis) into incremental graph updates, with an event-sourced/append-only store so any past state is reconstructable for the diff |
+| **Observability of non-deterministic multi-agent investigations** | Many agents reasoning in parallel over a shared model are hard to debug, attribute, or reproduce when an investigation goes wrong. | *"multiple agents can investigate different regions of the system in parallel, each using the full model"* ([worldmodel][worldmodel]); platform owns *"investigation traces, agent trajectories"* as first-class data ([jd-platform][jd-platform]) | Likely full trajectory capture (every tool call, model step, and decision) persisted per investigation, feeding both replay-based debugging and the offline eval set above |
+
+## Likely internals
+
+The infrastructure Antimetal doesn't name publicly, inferred from the stack it does:
+
+| Component | Likely choice | Basis |
+| --- | --- | --- |
+| Reasoning LLM | a frontier model behind a provider abstraction (Anthropic/OpenAI), swappable | agentic workflows + heavy internal Claude Code use ([Platform JD][jd-platform]); no production model named |
+| Production models | prompted frontier models today; fine-tuning / RL as a research direction | Research JD mentions fine-tuning + RL ([Research JD][jd-research]); in-house vs. prompted is unconfirmed |
+| Temporal / structural store | a graph database (or event-sourced log) for the runtime + code graphs with time travel | the model needs streaming updates and *"rewind to any point in the past"* ([world-model post][worldmodel]); Postgres alone doesn't fit graph + time travel |
+| Semantic retrieval | embeddings + a vector index (pgvector or a managed vector DB) | *"semantic search"* is confirmed ([Agents JD][jd-agents]); pgvector reuses the existing Postgres |
+| Agent orchestration | an in-house orchestrator over a graph/state machine, with eval in the loop | *"orchestration, context management, memory"* + RL ([Research JD][jd-research]); no named framework |
+| Stream ingest | a streaming bus (Kafka/Kinesis) into the normalization layer | *"trillions of data points per day"* ([world-model post][worldmodel]) needs durable high-throughput ingest |
+| Own-platform cloud | AWS (EKS) | AWS-first product heritage + terraform-aws module ([GitHub][gh]); Kubernetes confirmed ([Platform JD][jd-platform]) |
+| Auth | managed IdP / enterprise SSO | SOC 2 / HIPAA enterprise buyers ([home][home]); no vendor named |
 
 ## Architecture
 
@@ -165,67 +185,20 @@ Rather than confine itself to a dashboard, Antimetal ships *"a single MCP for th
 Aggregating 50+ tools behind one normalized interface, then meeting engineers *inside* Claude Code/Cursor where they already work, is a land-and-expand motion: read-only context first, gated `/fix` second. The same world model powers both the standalone app and the MCP ([MCP post][mcp]).
 :::
 
-## Team
+## Team & process
 
-Small, senior, in-person NYC. The job board shows **9 open roles, all on-site in NYC**, four of them engineering: **Platform**, **Product**, **Product (Agents)**, and **Research** ([Ashby][ashby]). Engineering comp is **$200–250K (Senior)** / **$250–300K (Staff)** plus equity ([Platform JD][jd-platform]). Third-party trackers put headcount in the 11–50 band (~20).
+Small, senior, in-person NYC — **9 open roles, four in engineering** (Platform, Product, Product/Agents, Research), comp **$200–300K + equity**; third-party trackers put headcount in the 11–50 band (~20) ([Ashby][ashby], [Platform JD][jd-platform]).
 
-| Role | People | Source |
+| Role | Person | Source |
 | --- | --- | --- |
 | Co-founder / CEO | Matthew Parkhurst | [press release][pr] |
 | Co-founder / CTO | Shreyas Iyer | [press release][pr], [world-model post][worldmodel] |
 
-The engineering shape, from the roles ([Ashby][ashby]): a **Platform** track owning *"the MCP gateway … OAuth and credential management … self-hosted MCP servers,"* CI/CD, and the data substrate (*"investigation traces, agent trajectories, the resource graph, customer telemetry"*); **Product** engineers shipping *"from backend data models to React interfaces"*; a **Product (Agents)** track building *"agentic workflows for production incidents: orchestration, prompting, tool use, and evaluation"*; and **Research** working *"infrastructure intelligence, autonomous agents, evaluation,"* explicitly including *"multi-step reasoning, orchestration, context management, memory, and reinforcement learning."*
-
-:::note[Inference — research and platform are joined at the eval — confidence: high]
-The Research JD asks for *"live and offline evaluation pipelines, benchmarks, and synthetic data generation"* built *"with platform"* ([Research JD][jd-research]). For an agent that changes production, eval is the safety rail, not an afterthought — it's owned jointly by research and platform, not a separate QA org.
-:::
-
-## Process
-
-**Automate your own ops before you hire for them.** Antimetal built **Anvil**, an internal tool that automates customer onboarding: *"Most startups scale onboarding by hiring forward-deployed engineers. We built Anvil to do most of it in software, before reaching for people"* ([Anvil post][anvil]). Anvil has *"direct, authenticated access to our production systems and third-party integrations"* and runs a five-stage pipeline — **Scope → Configure → Secure → Verify → Launch** — looping in humans only for *"verification and judgment steps."*
-
-**Test against reality, cheaply.** To power Anvil's Configure and Verify stages, the team built *"sandboxed shadow traffic environments to run our product against live customer events,"* so *"any new prototype is tested against real, bounded conditions well before it reaches a design partner"* ([Anvil post][anvil]). The measurable result: on the hardest onboardings, Anvil *"has cut the hands-on work by around 80%."*
-
-**Assist, then automate — earn the autonomy.** The stated philosophy is gradual trust: *"Initially, these systems should assist … As confidence grows through repeated acceptance, low override rates, or explicit approval, it begins automating certain actions"* ([vision post][vision]). The product reflects it: by default *"changes still route through your existing approval flow, whether that is a pull request, deployment pipeline, or Slack approval"* ([home][home]).
-
-:::note[Inference — agent-native engineering culture — confidence: high]
-*"We're all heavy users of Claude Code, and regularly add new AI tooling,"* and the platform team maintains *"the Claude-Code-native skills our engineers use every day to ship"* ([Platform JD][jd-platform]). A company automating production with agents builds its own org the same way — internal tooling consumed *"by both humans and agents."*
-:::
-
-## Notable bets
-
-1. **The representation is the moat.** *"The hardest problems in infrastructure have never been about missing data. They've been about missing understanding"* ([world-model post][worldmodel]). Antimetal bets on a unified world model, not a bigger context window or a better prompt.
-2. **Own the collection layer.** A Go + eBPF agent in the customer's cluster yields first-party, kernel-level telemetry rather than only reselling vendor dashboards ([system-agent repo][gh-agent]).
-3. **Sit above observability, don't replace it.** Aggregate the existing ecosystem — *"50+ integrations"* — and add the understanding layer on top ([home][home], [MCP post][mcp]).
-4. **Distribute through the coding agent.** Ship an MCP that drops production context into Claude Code and Cursor, not just a web app ([MCP post][mcp]).
-5. **Dogfood automation over headcount.** Anvil automates ~80% of onboarding before reaching for forward-deployed engineers ([Anvil post][anvil]).
-6. **Autonomy is earned, gated by default.** Assist first, automate as override rates fall; every change runs through the customer's existing approval flow ([vision post][vision], [home][home]).
-
-## Hard problems
-
-The parts an engineer would lose sleep over. **Public signal** is cited (verified); **likely approach** is labeled speculation — best-practice fill-in, hedged.
-
-| Problem | Why it's hard | Public signal | Likely approach (speculative) |
-| --- | --- | --- | --- |
-| **Evaluating agents that change production** | An agent that fixes prod can't be regression-tested like a service; a bad change has blast radius, and eval is the only safety rail. | Research builds *"live and offline evaluation pipelines, benchmarks, and synthetic data generation"* jointly *"with platform"* ([jd-research][jd-research]); plus *"sandboxed shadow traffic environments to run our product against live customer events"* ([anvil][anvil]) | Likely a shadow/replay harness over recorded incidents + reasoning traces as offline benchmarks, with live online eval scored on acceptance and override rates before any action ships |
-| **Autonomy gating without bad automated changes** | Crossing from suggest to act is irreversible per change; over-trust ships a wrong fix, under-trust kills the product's value. | *"Initially, these systems should assist … As confidence grows through repeated acceptance, low override rates, or explicit approval, it begins automating"* ([vision][vision]); default *"changes still route through your existing approval flow"* ([home][home]) | Likely a per-action-class trust score gated on measured acceptance/override history, defaulting to PR/Slack approval and graduating specific low-risk action types to autonomous |
-| **Keeping the world model current at scale** | A stale model gives wrong root causes; staying live means ingesting *"trillions of data points per day"* across *"thousands of services"* without falling behind. | Temporal layer needs *"a streaming architecture"* plus time travel — *"rewind to any point in the past … and diff against the current state"* — over *"thousands of services emitting trillions of data points per day"* ([worldmodel][worldmodel]) | Likely a streaming bus (Kafka/Kinesis) into incremental graph updates, with an event-sourced/append-only store so any past state is reconstructable for the diff |
-| **Observability of non-deterministic multi-agent investigations** | Many agents reasoning in parallel over a shared model are hard to debug, attribute, or reproduce when an investigation goes wrong. | *"multiple agents can investigate different regions of the system in parallel, each using the full model"* ([worldmodel][worldmodel]); platform owns *"investigation traces, agent trajectories"* as first-class data ([jd-platform][jd-platform]) | Likely full trajectory capture (every tool call, model step, and decision) persisted per investigation, feeding both replay-based debugging and the offline eval set above |
-
-
-Open questions where even a best-practice guess would be a stretch (conventional infra guesses live in [Likely stack & infra choices](#likely-stack--infra-choices)):
-
-- **Reasoning LLM provider** — Claude Code is the *internal* coding tool ([Platform JD][jd-platform]); the model powering the production agents isn't named.
-- **Temporal store** — the temporal layer needs *"a streaming architecture"* with time travel ([world-model post][worldmodel]); Postgres is confirmed for the product, but the graph/event store behind the world model isn't public.
-- **Semantic retrieval index** — semantic search is confirmed ([Agents JD][jd-agents]); the vector store/engine isn't named.
-- **Agent orchestration framework** — multi-step reasoning, memory, and RL are described ([Research JD][jd-research]); the coordinating framework isn't stated.
-- **In-house vs. prompted models** — the Research JD mentions fine-tuning and RL ([Research JD][jd-research]); whether production models are trained/distilled in-house or prompted frontier models is unconfirmed.
-- **Own-platform cloud, headcount, ARR, customer count, valuation** — AWS-first heritage; exact figures are third-party or unstated.
-:::
+The eng shape: a **Platform** track owning *"the MCP gateway … OAuth and credential management … self-hosted MCP servers"* and the data substrate (*"investigation traces, agent trajectories, the resource graph, customer telemetry"*); **Product** and **Product (Agents)** building agentic incident workflows; and **Research** on *"infrastructure intelligence, autonomous agents, evaluation … multi-step reasoning, orchestration, context management, memory, and reinforcement learning"* — with **eval owned jointly by research and platform**, not a separate QA org ([Ashby][ashby], [Research JD][jd-research]). The culture is agent-native (*"we're all heavy users of Claude Code"* ([Platform JD][jd-platform])), and the operating philosophy is **automate-before-you-hire**: **Anvil**, an internal tool with authenticated production access, runs a five-stage onboarding pipeline that *"cut the hands-on work by around 80%,"* tested against *"sandboxed shadow traffic environments to run our product against live customer events,"* looping humans in only for judgment ([Anvil post][anvil]). Autonomy is earned: *"initially, these systems should assist … As confidence grows … it begins automating,"* and by default *"changes still route through your existing approval flow"* ([vision post][vision], [home][home]).
 
 ## Sources
 
-Reconstructed from public sources only — no insider information. Crawled 2026-06-07. Claim tiers used above: **verified** (stated on a public page, linked) · **inferred** (reasoned from a cited signal, confidence flagged) · **speculative** (best-practice fill-in, labeled). Links are live; pages change, so the supporting quote for each claim is kept in this repo's evidence map (`evidence/antimetal-evidence-map.md`).
+Reconstructed from public sources only — no insider information. Crawled 2026-06-07. Claim tiers: **verified** (stated on a public page, linked) · **inferred** (reasoned from a cited signal, confidence flagged) · **speculative** (best-practice fill-in, labeled). Links are live; pages change, so the supporting quote for each claim is kept in this repo's evidence map (`evidence/antimetal-evidence-map.md`).
 
 | # | Source | Link |
 | --- | --- | --- |
@@ -246,80 +219,6 @@ Reconstructed from public sources only — no insider information. Crawled 2026-
 | S15 | Connect / MCP docs | <https://docs.antimetal.com/connect> |
 | S16 | TechCrunch (third-party — 2023 seed + origin) | <https://techcrunch.com/2023/05/08/antimetal-is-putting-ai-to-work-to-root-out-cloud-cost-inefficiencies/> |
 | S17 | Series A press release (PR Newswire) | <https://www.prnewswire.com/news-releases/antimetal-raises-20m-to-automate-infrastructure-management-302480516.html> |
-
-## Speculative reconstruction
-
-:::tip[Best-practice reconstruction, not fact]
-Nothing in this section is stated on a public page. It is what a team with *this* stack — a TypeScript/NestJS/React/Postgres product, a Go + eBPF agent on Kubernetes, OTEL + Datadog, an MCP gateway, and a four-layer world model over thousands of services — would *typically* reach for. In the diagram, solid boxes are verified anchors carried up from the sections above; everything dashed is assumed. Read every dashed box as "likely," not confirmed.
-:::
-
-### Likely stack & infra choices
-
-| Component | Likely choice | Why |
-| --- | --- | --- |
-| Reasoning LLM | a frontier model behind a provider abstraction (Anthropic/OpenAI), swappable | agentic workflows + heavy internal Claude Code use ([Platform JD][jd-platform]); no production model named |
-| Temporal / structural store | a graph database (or event-sourced log) for the runtime + code graphs with time travel | the model needs streaming updates and *"rewind to any point in the past"* ([world-model post][worldmodel]); Postgres alone doesn't fit graph + time travel |
-| Semantic retrieval | embeddings + a vector index (pgvector or a managed vector DB) | *"semantic search"* is confirmed ([Agents JD][jd-agents]); pgvector reuses the existing Postgres |
-| Agent orchestration | an in-house orchestrator over a graph/state machine, with eval in the loop | *"orchestration, context management, memory"* + RL ([Research JD][jd-research]); no named framework |
-| Stream ingest | a streaming bus (Kafka/Kinesis) into the normalization layer | *"trillions of data points per day"* ([world-model post][worldmodel]) needs durable high-throughput ingest |
-| Own-platform cloud | AWS (EKS) | AWS-first product heritage + terraform-aws module ([GitHub][gh]); Kubernetes confirmed ([Platform JD][jd-platform]) |
-| Auth | managed IdP / enterprise SSO | SOC 2 / HIPAA enterprise buyers ([home][home]); no vendor named |
-
-### Full system architecture
-
-The verified spine is real: a Go + eBPF `system-agent` on Kubernetes, 50+ observability integrations, OTEL normalization through a shared ontology, the four-layer world model, the Patrol/Triage/Agent Builder agents, an MCP gateway with self-hosted MCP servers and OAuth, and a React/NestJS/Postgres product. Reconstructed here are the **reasoning LLM**, the **temporal/graph store**, the **vector index**, the **orchestration framework**, and the **own-platform cloud**.
-
-![Full-system architecture for Antimetal: verified anchors (Go/eBPF system-agent, Terraform onboarding, 50+ integrations, OTEL normalization with shared ontology, the four-layer world model, Patrol/Triage/Agent Builder agents, the React/NestJS/Postgres app, and the MCP gateway with self-hosted MCP servers and OAuth) shown as solid boxes; assumed parts (temporal/graph store, vector store, agent orchestration/RL framework, reasoning LLM provider, and own-platform AWS cloud) shown dashed.](/diagrams/antimetal/speculative-architecture.svg)
-
-<details>
-<summary>Mermaid source</summary>
-
-```mermaid
-flowchart TB
-  classDef verified fill:#e8f1fd,stroke:#2563eb,stroke-width:2px,color:#0f172a;
-  classDef spec fill:#ffffff,stroke:#b4bdca,stroke-width:1.3px,stroke-dasharray:6 4,color:#475569;
-
-  subgraph Cust["Customer environment"]
-    direction TB
-    SA("system-agent · Go + eBPF<br/>Helm/K8s · collectors"):::verified
-    TF("Terraform onboarding<br/>provider + AWS module"):::verified
-    Integ("50+ observability integrations<br/>Datadog · CloudWatch · Grafana · PagerDuty"):::verified
-  end
-
-  Norm("Ingest + normalize · shared ontology · OTEL"):::verified
-
-  subgraph WM["Live world model · 4 layers"]
-    direction TB
-    Layers("structural · temporal · causal · semantic"):::verified
-    TStore[("Temporal/graph store · streaming + time travel · likely")]:::spec
-    Vec[("Vector store for semantic retrieval · likely")]:::spec
-  end
-
-  subgraph AI["Agent layer"]
-    direction TB
-    Agents("Patrol · Triage · Agent Builder"):::verified
-    Orch("Agent orchestration / RL framework · likely"):::spec
-    LLM("Reasoning LLM provider · likely"):::spec
-  end
-
-  subgraph Surf["Product + surfaces"]
-    direction TB
-    App("App · React · NestJS · Postgres"):::verified
-    MCP("MCP gateway · self-hosted MCP servers<br/>OAuth/credential mgmt · 6 tools"):::verified
-  end
-
-  Cloud("Own platform cloud · AWS-first heritage · likely"):::spec
-
-  Cust --> Norm --> WM
-  WM --> AI --> Surf
-  Agents -.coordinates on.-> Orch
-  Agents -.reasons via.-> LLM
-  Layers -.persisted in.-> TStore
-  Layers -.indexed in.-> Vec
-  Surf -.runs on.-> Cloud
-```
-
-</details>
 
 [home]: https://antimetal.com/
 [blog]: https://antimetal.com/blog
