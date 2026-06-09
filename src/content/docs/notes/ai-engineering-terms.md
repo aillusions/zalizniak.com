@@ -81,6 +81,26 @@ The base terms the patterns above are built from — models and inference, retri
 
 **Fine-tuning** — further-training a base model on your own examples to specialize it for a narrower task or style. It trades flexibility for sharper, cheaper performance on the specific job, but needs data and re-training when the task shifts.
 
+**Prompt / prompt engineering** — the input instructions you give a model; prompt engineering is the craft of shaping them (wording, examples, structure) for reliable output. In production prompts are version-controlled and tested like code, not hand-tweaked.
+
+**System prompt** — the persistent instruction that sets a model's role, rules, and tone for a whole session, separate from the user's turn-by-turn messages. It's where persona and guardrails live.
+
+**Few-shot / in-context learning** — giving the model a handful of worked examples inside the prompt so it infers the pattern, with no training. The cheapest way to steer behavior before reaching for fine-tuning.
+
+**Temperature** — the sampling knob for randomness: near 0 makes output focused and repeatable, higher makes it varied. Production agents usually run low for consistency.
+
+**Structured output** — forcing the model to return a fixed schema (JSON, a function signature) instead of free text, so downstream code can consume it reliably. The backbone of tool calling and extraction pipelines.
+
+**Multimodal** — a model that handles more than text — images, audio, documents — in one context. Lets a single model read a scanned invoice or hear a call instead of bolting on separate OCR/ASR.
+
+**Frontier vs. small model** — frontier models are the largest and most capable (and costly/slow); small models are cheaper and faster but weaker. Most systems mix them, routing each step to the smallest model that suffices.
+
+**Distillation** — training a small model to mimic a larger one, capturing much of its quality at a fraction of the cost and latency. A common way to make inference affordable at scale.
+
+**Quantization** — shrinking a model's weights to lower precision (e.g. 16-bit → 4-bit) so it runs faster and cheaper, trading a little accuracy. Key to self-hosting large models economically.
+
+**Prompt caching** — reusing the model's computation for an unchanged prompt prefix (e.g. a long system prompt) across calls, cutting cost and latency on repeated context.
+
 ### Retrieval & memory
 
 **RAG (retrieval-augmented generation)** — fetch documents relevant to the query and feed them into the prompt so the model answers from your data instead of its training. The standard way to ground an LLM in private, current, or domain-specific knowledge without fine-tuning.
@@ -94,6 +114,14 @@ The base terms the patterns above are built from — models and inference, retri
 **Chunking** — splitting documents into smaller pieces before embedding them, so retrieval returns focused, relevant passages instead of whole files. Chunk size is a real tuning knob: too big wastes context, too small loses meaning.
 
 **Grounding** — tying model output to specific cited source data rather than letting it free-associate from training. It's the main defense against hallucination and what lets a system show its receipts.
+
+**Hybrid search** — combining keyword (lexical) and semantic (vector) search so you catch both exact-term and meaning matches. Usually beats either alone on retrieval recall.
+
+**Reranker** — a second-pass model that reorders an initial set of retrieved results by true relevance to the query. Cheap retrieval casts a wide net; the reranker tightens precision before the LLM sees the results.
+
+**Knowledge graph** — a store of entities and the typed relationships between them, queryable by multi-hop connections rather than just text similarity. Carries structure — and often permissions and provenance — a flat vector store can't.
+
+**Memory (long-term)** — facts or past interactions an agent persists and recalls across sessions, beyond the context window. Often stored as retrievable "memories" so behavior personalizes over time.
 
 ### Agents & orchestration
 
@@ -113,6 +141,22 @@ The base terms the patterns above are built from — models and inference, retri
 
 **Guardrails** — constraints that block unsafe, off-policy, or malformed model behavior — input/output filters, validation, allowed-action limits. They bound what an agent can do so a bad generation doesn't become a bad action.
 
+**MCP (Model Context Protocol)** — an open standard for connecting models to tools and data through a uniform interface, so one integration works across many systems instead of bespoke glue per tool. Increasingly the connector layer for agents.
+
+**ReAct** — an agent pattern that interleaves reasoning ("think") and acting ("call a tool"): the model reasons about what to do, acts, observes the result, and reasons again. The common loop behind tool-using agents.
+
+**Planner** — the component or model step that breaks a goal into an ordered set of steps before execution, rather than reacting one move at a time. Separating planning from acting improves complex multi-step tasks.
+
+**Supervisor / sub-agent** — an orchestration pattern where a supervisor decomposes a task, delegates pieces to specialized sub-agents, and integrates their results. Keeps each agent's job — and context — narrow.
+
+**Computer use / browser agent** — an agent that operates software the way a person does, reading the screen and clicking/typing in a real browser or desktop, to reach systems with no API. The adaptive fallback when integration isn't available.
+
+**RPA (robotic process automation)** — older automation that replays a fixed sequence of UI clicks and keystrokes. Reliable on stable screens but brittle when layouts change — the thing LLM "read-and-reason" agents are displacing.
+
+**Playbook** — a predefined, hardcoded sequence of steps for handling a situation (e.g. a SOAR security-response script). Reliable but brittle: it can't adapt when inputs or upstream systems shift, which is why agentic systems increasingly replace static playbooks with reasoning that builds the plan per case.
+
+**Handoff** — passing control and the relevant context from one agent or phase to another, or from the agent to a human. Clean handoffs are how multi-agent systems and HITL escalation avoid losing state.
+
 ### Reliability & evaluation
 
 **Eval (evaluation)** — systematic measurement of model or agent output quality against expected results, the AI analog of a test suite. Because output is non-deterministic, evals are how teams catch regressions and decide whether a prompt or model change actually helped.
@@ -128,3 +172,31 @@ The base terms the patterns above are built from — models and inference, retri
 **Streaming** — emitting tokens to the user as they're generated rather than waiting for the full response. It makes a slow model *feel* fast and is the default for chat-style interfaces.
 
 **Hallucination** — when a model produces confident, fluent output that is simply false. It's the failure mode grounding, RAG, citations, and evals are all built to contain.
+
+**LLM-as-judge** — using an LLM to score another model's output against criteria, instead of exact-match assertions. The workhorse of agent eval, since correct answers are often open-ended.
+
+**Golden set** — a curated set of inputs with known-good outputs, used as the benchmark an eval scores against. The fixed yardstick that tells you whether a change improved or regressed quality.
+
+**Prompt injection** — an attack where malicious text in the input (or in retrieved content) hijacks the model into ignoring its instructions. The defining security problem of LLM apps, especially agents that can act.
+
+**Jailbreak** — input crafted to bypass a model's safety guardrails and make it produce disallowed output. Related to prompt injection, but aimed at the model's policy rather than the app's instructions.
+
+**Confidence scoring** — attaching a calibrated certainty to an output so the system can auto-act when confident and escalate when not. The signal most autonomy-gating and HITL routing depends on.
+
+**Drift** — the gradual decay of output quality as inputs, data, or an upstream model change underneath a system tuned for the old conditions. Why evals run continuously, not once.
+
+**Red-teaming** — deliberately attacking your own system (prompt injection, jailbreaks, edge cases) to find failure modes before users or adversaries do.
+
+## Voice & multimodal I/O
+
+For the voice-native and document-heavy products in the teardowns, the I/O layer is its own hard problem.
+
+**ASR (automatic speech recognition)** — speech-to-text: turning spoken audio into a transcript. The hard part in the field is noise, accents, and crosstalk that wreck off-the-shelf models, which is why some teams fine-tune their own.
+
+**TTS (text-to-speech)** — generating spoken audio from text, the output side of a voice agent. Quality and latency here decide whether a spoken agent feels human.
+
+**Turn-taking** — detecting when the user has stopped speaking and the agent should respond (and handling interruptions), so a voice conversation flows instead of talking over the person.
+
+**Diarization** — separating an audio stream into who-spoke-when across multiple speakers. Needed to attribute lines in a multi-party call or sales conversation.
+
+**OCR (optical character recognition)** — extracting text from images or scanned documents. The entry point for processing invoices, forms, and faxes that arrive as pixels, not data.
