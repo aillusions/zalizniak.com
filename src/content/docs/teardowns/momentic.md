@@ -9,22 +9,18 @@ sidebar:
   label: Momentic · Test automation
 ---
 
-## What they do
+[Momentic][home] is AI-native end-to-end testing: you *"describe test behavior in natural language,"* and *"an AI agent turns your prompts into reliable steps, runs them against your app, and auto-heals brittle locators"* ([Docs][docs]). Tests live in your repo as **YAML** and run against web, iOS, and Android — pitched as the *"modern alternative to Selenium, Cypress, and Playwright"* ([YC][yc]). The interesting part isn't the natural-language front door — it's the **intent-based step cache** underneath that lets Momentic call an LLM on ~1 step in 20 and replay the other 19 deterministically (95%+ hit, ~300ms vs >5s uncached). The product is a cache wrapped in an agent ([intent blog][blog-intent]).
 
-[Momentic][home] is AI-native end-to-end testing: you *"describe test behavior in natural language,"* and *"an AI agent turns your prompts into reliable steps, runs them against your app, and auto-heals brittle locators"* ([Docs][docs]). Tests live in your repo as **YAML**, run locally or in CI against web, iOS, and Android. The pitch is the *"modern alternative to Selenium, Cypress, and Playwright"* — *"reliable end-to-end tests that write themselves"* ([YC][yc]).
+**Vitals:** founded 2023 · YC W24 · $15M Series A (Standard Capital) + $3.7M seed · ~12 people · SF (on-site).
 
-Founded **2023**, **YC Winter 2024**, San Francisco, by **Wei-Wei Wu** (CEO — ex-Assembled, founding engineer at Nashi, staff engineer at Density) and **Jeff An** (ex-Splunk/Google, led testing at Robinhood and enterprise quality at Retool) ([YC][yc]). Two engineers who *"dreaded testing so much we founded a company to do it for us."*
+<details>
+<summary>Business context — founders, funding, customers</summary>
 
-The interesting part is not the natural-language front door — every competitor has one. It's the **caching substrate** underneath. Momentic's whole cost, speed, and reliability story rests on an *intent-based* step cache that lets it call an LLM on roughly 1 step in 20 and replay the other 19 deterministically. That engine is the most documented part of the public record, so it's where this teardown spends its weight.
-
-- **Series A: $15M led by Standard Capital**, with Dropbox Ventures and existing investors (Y Combinator, FCVC, Transpose Platform, Karman Ventures), on top of a **$3.7M seed** in March 2025 (Nov 24 2025, [TechCrunch][tc]).
+- Founders **Wei-Wei Wu** (CEO — ex-Assembled, founding engineer at Nashi → acq. Density 2021, staff engineer at Density) and **Jeff An** (ex-Splunk/Google; led testing at Robinhood and enterprise quality at Retool; U. Waterloo) ([YC][yc]) — *"two engineers who dreaded testing so much we founded a company to do it for us."*
+- **Series A: $15M led by Standard Capital**, with Dropbox Ventures and existing investors (Y Combinator, FCVC, Transpose Platform, Karman Ventures), on top of a **$3.7M seed** in March 2025 ([TechCrunch][tc]).
 - **2,600 users** across *"1000+ engineer organizations"* — Notion, Xero, Bilt, Webflow, Retool, Quora, plus Pocus, Nuvo, Mutiny, CoverGo, Coframe, GPTZero ([TechCrunch][tc], [intent blog][blog-intent], [home][home]).
 - Wu estimates Momentic *"automated more than 200 million test steps"* in the last month ([TechCrunch][tc]).
-- **~12 people** at the Series A ([YC][yc]) — a very small team running a very large cache plane.
-
-:::note[Key finding — the product is a cache, wrapped in an agent]
-Momentic *"runs an AI agent that controls a real browser or emulator,"* but the cache is what makes it viable: a *"95%+ cache hit rate … execute steps in 300ms on average, while a completely uncached step takes over 5s due to LLM latency"* ([intent blog][blog-intent]). AI is the fallback, not the hot path.
-:::
+</details>
 
 ## The heavy lifting
 
@@ -55,6 +51,31 @@ The in-product agents run on *"latest 2025 models"* but Momentic never names the
 :::note[Key finding — five specialized agents, each versioned independently]
 Momentic doesn't run one generalist agent. It runs **locator**, **assertion**, **visual-assertion**, **text-extraction**, and **failure-recovery** agents, each pinned to a prompt+model version (`v1`/`v2`/`v3`) you can bump one at a time ([AI config][cfg-ai]). Decomposing by task is what lets them tune (and cache) each independently.
 :::
+
+## Hard problems
+
+The parts an engineer at this company loses sleep over. **Public signal** is cited (verified); **likely approach** is labeled speculation — best-practice fill-in, hedged.
+
+| Problem | Why it's hard | Public signal | Likely approach (speculative) |
+| --- | --- | --- | --- |
+| **Flaky tests / cache correctness** | NL intent is ambiguous; a cache too strict busts on cosmetic change, too loose grabs the wrong element; branches and CLI versions pollute a shared cache | Four documented failure modes; *"1M potential flakes across 200M resolutions"* (Feb 2026); 95%+ hit rate ([intent blog][blog-intent]) | Intent conditions (attributes + related elements) from the locator agent; per-branch/version isolation with merge-base seeding — already shipped, now tuning SVG/icon and relativity checks |
+| **Inference cost + latency** | An LLM per step is ~5s and expensive across 2M+ resolves/day | *"300ms cached vs over 5s uncached"*; LLM fires only on cache miss ([intent blog][blog-intent], [how it works][how]) | Aggressive caching as the default path; small specialized agents per task; cap agentic plan depth — only the heal path pays for inference |
+| **Cache storage at scale** | ~20B entry-touches/day, high concurrent read+write, query cost must not grow with data | Postgres lock contention at ~1B entries → ClickHouse; ~250ms avg ([ClickHouse blog][blog-ch]) | ClickHouse `ReplacingMergeTree` + sparse PK + materialized-view of commit timestamps; insert-only TTL; async dedupe |
+| **Testing non-deterministic apps** | Gen-AI products don't return the same output twice, so string-match assertions fail | Poe/Quora case: validate *"AI chatbot responses, even when they weren't deterministic"* ([home][home]); `assert`/`assertVisually` are agent-scored ([Playwright cmp][cmp-pw]) | Assertion + visual-assertion agents reason over *intent* (*"chart is visible and not cut off"*) rather than literal text; never-cache AI-evaluated steps |
+
+## Likely internals
+
+The infrastructure Momentic doesn't name publicly, inferred from the stack it does:
+
+| Component | Likely choice | Basis |
+| --- | --- | --- |
+| LLM providers | OpenAI + Anthropic + Google, routed | *"cross-provider failover"* ([Playwright cmp][cmp-pw]); Anthropic confirmed for the skill ([GitHub skills][gh-skills]); failover implies ≥2 frontier vendors |
+| App-graph embeddings | a hosted embedding API (OpenAI/Cohere-class) over minhashed DOM summaries | states are *"embedded"* and clustered ([app graph][graph]); no in-house model signal on a ~12-person team |
+| Mobile runner hosting | a managed device cloud or self-run emulators on a cloud | emulators are *"remote-hosted"* and regioned ([config][cfg]); provider not named |
+| Run-artifact store | S3-class object storage for videos/traces | dashboard serves *"run videos, traces, network"* ([Playwright cmp][cmp-pw]); object storage is the default for this |
+| Control-plane DB | Postgres (retained for app/org/auth data after the cache moved to ClickHouse) | they *"eliminate[d] the Redis layer"* but only moved *cache* off Postgres ([ClickHouse blog][blog-ch]); relational data likely stays |
+| Hosting | a major cloud (AWS or GCP) with managed ClickHouse | multi-region runner + ClickHouse at this scale ([Playwright cmp][cmp-pw], [ClickHouse blog][blog-ch]); managed ClickHouse Cloud is the low-ops path for ~12 people |
+| Auth | enterprise SSO (SAML/OIDC), API keys | *"custom SSO"* offered ([YC][yc]); `MOMENTIC_API_KEY` for CLI auth ([config][cfg]) |
 
 ## Architecture
 
@@ -165,57 +186,17 @@ The locator agent compiles a natural-language description into a portable, multi
 
 Two healing tiers: **in-run** auto-heal re-resolves locators and waits for stability, persisting fixes only as cache entries when the run is eligible to save cache ([auto-heal][heal]). The **post-run triage agent** (`momentic ai triage` / `heal`) *"permanently rewrites the failing tests, and opens a pull request (or emits a patch)"* — respecting the repo's `PULL_REQUEST_TEMPLATE.md`. A separate **app graph** models coverage from run traces: each UI state is *"fingerprinted (canonical URL plus a normalized, minhashed view of the DOM),"* a semantic summary is *"embedded,"* and states cluster into *"product areas, features, journeys, variants"* to show which flows are Covered / Partial / Missing ([app graph][graph]).
 
-## Team
+## Team & process
 
-Two founders, **~12 people** at the Series A ([YC][yc]). San Francisco, on-site.
+Two founders, **~12 people** at the Series A; San Francisco, on-site ([YC][yc]).
 
 | Role | Person | Source |
 | --- | --- | --- |
 | Co-founder / CEO | Wei-Wei Wu (ex-Assembled; founding eng at Nashi → acq. Density 2021; staff eng at Density) | [YC][yc] |
-| Co-founder | Jeff An (ex-Splunk, Google; led testing at Robinhood, enterprise quality at Retool; U. Waterloo) | [YC][yc] |
+| Co-founder | Jeff An (ex-Splunk, Google; led testing at Robinhood, enterprise quality at Retool) | [YC][yc] |
 | Engineering | Henry Haefliger (author of the caching engineering posts) | [ClickHouse blog][blog-ch], [intent blog][blog-intent] |
 
-The founder DNA is **testing and reliability at scale** — Jeff An *"led testing at Robinhood and enterprise quality at Retool"*; Wei-Wei Wu led *"product reliability"* at Density ([YC][yc]). Open roles at the time of writing are GTM (founding AE/SDR, San Francisco, on-site) plus a *"Founding Engineer (Frontend)"* ([Ashby][ashby], [YC][yc]) — a sales-led growth phase on a still-tiny eng team.
-
-## Process
-
-**Tests are code, owned by engineers.** Momentic is *"CLI-first. Authoring and running tests in the cloud is deprecated"*; `app.momentic.ai` survives only as a dashboard for *"results, settings, API keys, and integrations"* ([Docs][docs]). Tests are YAML in the repo, *"run locally or in CI,"* and the company actively markets *"a migration guide to go from outsourced QA to engineering-owned tests"* ([blog][blog]). Cache eligibility is **git-aware**: CI runs always save cache; local runs save only off `main`/protected branches, so shared branches don't get polluted ([step cache][cache]).
-
-The stated engineering philosophy is *"truth-driven development"* — *"you cannot verify what you cannot reason"* — pairing fast AI-coding velocity with behavioral tests that *"keep quality high at Cursor speed"* ([blog][blog]). Healing is wired into the SCM workflow: a successful heal can open a PR, a draft PR, commit directly, emit a patch, or leave changes on disk, configured per org ([auto-heal][heal]).
-
-## Notable bets
-
-1. **Cache-first, LLM-on-miss.** Invert the cost model: replay deterministically ~95% of the time at ~300ms; pay for an LLM completion (~5s) only on a miss ([intent blog][blog-intent]). This is the core economic bet — AI quality without AI cost on the hot path.
-2. **Cache *intent*, not selectors.** Store the attributes and related elements the locator agent actually reasoned over, and validate *"does this still match what the user meant?"* — the answer to flaky `nth-child` selectors and randomized classnames ([intent blog][blog-intent]).
-3. **ClickHouse as an OLTP cache plane.** Use an OLAP engine's sparse index + `ReplacingMergeTree` for a high-write key-value lookup, eliminating Postgres lock contention *and* the Redis layer ([ClickHouse blog][blog-ch]).
-4. **Specialized, independently-versioned agents.** Five task-specific agents (locator/assertion/visual/extraction/recovery), each pinned to a prompt+model version ([AI config][cfg-ai]) — tune and cache each in isolation.
-5. **Tests-as-YAML-in-repo; deprecate the cloud authoring UI.** Bet that buyers (1000+ engineering orgs) want tests in version control, not a SaaS recorder ([Docs][docs]).
-6. **Provider-neutral model layer.** *"Cross-provider failover handled by the platform"* ([Playwright cmp][cmp-pw]) insulates Momentic from any single model's price or outage.
-7. **Meet coding agents where they are.** A Claude Agent SDK skill and an MCP loop let Cursor/Claude author and heal Momentic tests ([GitHub skills][gh-skills], [Docs][docs]).
-
-## Hard problems
-
-The parts an engineer at this company loses sleep over. **Public signal** is cited (verified); **likely approach** is labeled speculation — best-practice fill-in, hedged.
-
-| Problem | Why it's hard | Public signal | Likely approach (speculative) |
-| --- | --- | --- | --- |
-| **Flaky tests / cache correctness** | NL intent is ambiguous; a cache too strict busts on cosmetic change, too loose grabs the wrong element; branches and CLI versions pollute a shared cache | Four documented failure modes; *"1M potential flakes across 200M resolutions"* (Feb 2026); 95%+ hit rate ([intent blog][blog-intent]) | Intent conditions (attributes + related elements) from the locator agent; per-branch/version isolation with merge-base seeding — already shipped, now tuning SVG/icon and relativity checks |
-| **Inference cost + latency** | An LLM per step is ~5s and expensive across 2M+ resolves/day | *"300ms cached vs over 5s uncached"*; LLM fires only on cache miss ([intent blog][blog-intent], [how it works][how]) | Aggressive caching as the default path; small specialized agents per task; cap agentic plan depth — only the heal path pays for inference |
-| **Cache storage at scale** | ~20B entry-touches/day, high concurrent read+write, query cost must not grow with data | Postgres lock contention at ~1B entries → ClickHouse; ~250ms avg ([ClickHouse blog][blog-ch]) | ClickHouse `ReplacingMergeTree` + sparse PK + materialized-view of commit timestamps; insert-only TTL; async dedupe |
-| **Testing non-deterministic apps** | Gen-AI products don't return the same output twice, so string-match assertions fail | Poe/Quora case: validate *"AI chatbot responses, even when they weren't deterministic"* ([home][home]); `assert`/`assertVisually` are agent-scored ([Playwright cmp][cmp-pw]) | Assertion + visual-assertion agents reason over *intent* (*"chart is visible and not cut off"*) rather than literal text; never-cache AI-evaluated steps |
-
-## Unknowns
-
-:::caution[What the public record can't confirm]
-Genuinely open questions; best-practice guesses for the infra live in [Likely internals](#likely-internals).
-
-- **LLM providers / models** — agents run *"latest 2025 models"* with *"cross-provider failover,"* but no provider is named ([AI config][cfg-ai], [Playwright cmp][cmp-pw]). Anthropic is confirmed only for the coding-agent *skill* ([GitHub skills][gh-skills]).
-- **App-graph embedding model** — semantic state summaries are *"embedded"* ([app graph][graph]); the embedding model/store isn't stated.
-- **Current headcount** — YC lists *"12"* at the Series A ([YC][yc]); growth since the $15M round is unconfirmed.
-- **Mobile runner hosting** — emulators are *"remote-hosted"* and regioned ([config][cfg]); the underlying device/cloud infra isn't public.
-- **Run-artifact storage** — videos, traces, and network logs surface in the dashboard ([Playwright cmp][cmp-pw]); the object store isn't named.
-- **Cloud / hosting** — no first-party statement of AWS vs GCP for the control plane or ClickHouse deployment.
-:::
+The founder DNA is **testing and reliability at scale** — Jeff An *"led testing at Robinhood and enterprise quality at Retool"*; Wu led *"product reliability"* at Density ([YC][yc]). The product philosophy is **tests-as-code, engineer-owned**: Momentic is *"CLI-first … authoring and running tests in the cloud is deprecated"* ([Docs][docs]), tests are YAML in the repo, and the company markets *"a migration … from outsourced QA to engineering-owned tests"* ([blog][blog]). Cache eligibility is **git-aware** (CI always saves; local saves only off `main`/protected branches), and healing is wired into the SCM workflow — a successful heal can open a PR, draft PR, direct commit, patch, or leave changes on disk ([step cache][cache], [auto-heal][heal]). The stated creed: *"truth-driven development … you cannot verify what you cannot reason,"* keeping behavioral tests green *"at Cursor speed"* ([blog][blog]). Open roles are GTM (founding AE/SDR) plus a *"Founding Engineer (Frontend)"* — a sales-led growth phase on a still-tiny eng team ([Ashby][ashby], [YC][yc]).
 
 ## Sources
 
@@ -243,23 +224,6 @@ Reconstructed from public sources only — no insider information. Crawled 2026-
 | S18 | Ashby job board | <https://jobs.ashbyhq.com/momentic> |
 | S19 | Y Combinator profile | <https://www.ycombinator.com/companies/momentic> |
 | S20 | TechCrunch — $15M Series A | <https://techcrunch.com/2025/11/24/momentic-raises-15m-to-automate-software-testing/> |
-
-## Speculative reconstruction
-
-:::tip[Best-practice reconstruction, not fact]
-Nothing here is stated on a public page. It's what a team with *this* stack — a TypeScript CLI, a ClickHouse cache plane, multi-provider model routing, and a coding-agent integration — would *typically* reach for. Read each row as "likely," not confirmed.
-:::
-
-### Likely internals
-
-| Component | Likely choice | Why |
-| --- | --- | --- |
-| LLM providers | OpenAI + Anthropic + Google, routed | *"cross-provider failover"* ([Playwright cmp][cmp-pw]); Anthropic confirmed for the skill ([GitHub skills][gh-skills]); failover implies ≥2 frontier vendors |
-| App-graph embeddings | a hosted embedding API (OpenAI/Cohere-class) over minhashed DOM summaries | states are *"embedded"* and clustered ([app graph][graph]); no in-house model signal on a ~12-person team |
-| Run-artifact store | S3-class object storage for videos/traces | dashboard serves *"run videos, traces, network"* ([Playwright cmp][cmp-pw]); object storage is the default for this |
-| Control-plane DB | Postgres (retained for app/org/auth data after the cache moved to ClickHouse) | they *"eliminate[d] the Redis layer"* but only moved *cache* off Postgres ([ClickHouse blog][blog-ch]); relational data likely stays |
-| Hosting | a major cloud (AWS or GCP) with managed ClickHouse | multi-region runner + ClickHouse at this scale ([Playwright cmp][cmp-pw], [ClickHouse blog][blog-ch]); managed ClickHouse Cloud is the low-ops path for ~12 people |
-| Auth | enterprise SSO (SAML/OIDC), API keys | *"custom SSO"* offered ([YC][yc]); `MOMENTIC_API_KEY` for CLI auth ([config][cfg]) |
 
 [home]: https://momentic.ai/
 [docs]: https://momentic.ai/docs
