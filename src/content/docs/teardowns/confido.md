@@ -9,21 +9,20 @@ sidebar:
   label: Confido · CPG fintech
 ---
 
-## What they do
+[Confido][home] is *"the AI infrastructure powering CPG brands from deduction to production plan"* — one platform unifying *"cash application, deductions, disputes, trade promotion management, forecasting, demand planning, and analytics"* as *"the single source of truth"* for a consumer-packaged-goods brand's finance, accounting, sales, and ops teams ([Ashby][ashby], [home][home]). The engineering problem isn't a chat box: it's LLM extraction over genuinely messy retailer/distributor paperwork, agentic retrieval across legacy systems with no clean API, and a correctness bar set by the fact that every number is money owed.
 
-[Confido][home] is *"the AI infrastructure powering CPG brands from deduction to production plan"* — one platform that unifies *"cash application, deductions, disputes, trade promotion management, forecasting, demand planning, and analytics"* and serves as *"the single source of truth for accounting, finance, sales, and operations teams"* ([Ashby][ashby], [home][home]). The wedge is the back office: a consumer-packaged-goods brand sells through retailers and distributors who pay short, deduct for promotions and chargebacks, and report performance in a thicket of incompatible formats — and Confido turns that mess into clean, actioned data.
+**Vitals:** founded 2020 · YC S21 · $15M Series A (Footwork) + seed (Watchfire) · ~28 people · NYC, on-site ([YC][yc], [Series A note][blog-a]).
 
-Founded **2020**, **YC Summer 2021**, New York, by **Justin Hunter** (ex-Capital One corporate strategy; Harvard) and **Kara Holinski** (engineering at MIT; ex-APM at Schmidt Futures — the technical founder) ([YC][yc]). The founding insight, in their words: finance teams managing *"high-growth environments, without often increasing headcount,"* where *"deductions, trade, and planning were all mission critical, but horribly disconnected and manual"* ([Series A note][blog-a]).
+<details>
+<summary>Business context — founders, funding, customers, moat</summary>
 
-This is a **vertical-AI system-of-record** play. The interesting engineering isn't a chat box — it's LLM document extraction over genuinely messy inputs, agentic retrieval across legacy retailer systems with no clean API, and a correctness bar set by the fact that every number is money owed.
-
-- **$15M Series A led by Footwork**, plus a *"previously unannounced seed round led by Watchfire Ventures"* ([Series A note][blog-a]) — the combined raise was reported in trade press as ~$20M. Board member Mike Smith (public-retailer + brand board experience).
-- *"Trusted by 200+ brands managing $20B+ in revenue, including OLIPOP, Simple Mills, Dr. Squatch, Tropicana"* ([Ashby][ashby]) — also Dr. Squatch, DUDE Wipes, Serenity Kids, Cappello's, Rebel Creamery ([Series A note][blog-a], [home][home]).
-- **~28 people** ([YC][yc]), hiring hard: **8 engineering + 4 product** roles open, all NYC on-site ([Ashby][ashby]).
-
-:::note[Key finding — the moat is the data model, fed by document AI]
-Confido's durable asset is a unified financial data model stitched from *"50+ critical data sources, including leading retailers, distributors, ERP platforms, and accounting systems"* ([Integrations][integ]). The AI that makes it possible is LLM extraction of structured line items from *"messy"* documents — the bottleneck every back-office competitor stalls on.
-:::
+- **Founders:** Justin Hunter (CEO — ex-Capital One corporate strategy; Harvard) and Kara Holinski (technical founder — engineering at MIT; ex-APM Schmidt Futures) ([YC][yc]). Head of AI **Matan Friedmann** joined May 2026 (ex Co-Founder/CTO Clearly Labs; ex Nexar; ex Q.ai, acq. Apple; AutoPrompt, 3K★) ([AI hire][blog-ai]).
+- **Funding:** $15M Series A led by Footwork, plus a *"previously unannounced seed round led by Watchfire Ventures"* ([Series A note][blog-a]); the combined raise was reported in trade press as ~$20M. Board member Mike Smith (public-retailer + brand board experience).
+- **Traction:** *"trusted by 200+ brands managing $20B+ in revenue, including OLIPOP, Simple Mills, Dr. Squatch, Tropicana"* ([Ashby][ashby]) — also DUDE Wipes, Serenity Kids, Cappello's, Rebel Creamery ([Series A note][blog-a], [home][home]).
+- **Founding insight:** finance teams managing *"high-growth environments, without often increasing headcount,"* where *"deductions, trade, and planning were all mission critical, but horribly disconnected and manual"* ([Series A note][blog-a]).
+- **Moat (inferred):** the per-customer data — learned SOPs, validated extractions, mapped legacy connectors — compounds with tenure and doesn't transfer to a rival; 50+ hard-won retailer/distributor/ERP/accounting integrations raise switching cost.
+- **Hiring:** 8 engineering + 4 product roles open at the time of writing, all NYC on-site ([Ashby][ashby]).
+</details>
 
 ## The heavy lifting
 
@@ -48,14 +47,42 @@ The JDs describe *what the systems do* (AI document ingestion, financial data pi
 | **Workplace tooling** | MacBooks; 401(k) via **Vestwell**; fully on-site NYC | [SWE JD][jd-swe] |
 
 :::note[Key finding — the AI roadmap is "proprietary models + agentic architectures for CPG"]
-The May 2026 hire of **Head of AI Matan Friedmann** (ex Co-Founder/CTO of Clearly Labs; ex Nexar; ex Q.ai, acq. Apple; co-author of the open-source **AutoPrompt**, 3K★) is chartered to *"aggressively expand our Applied AI/ML team, focusing on developing proprietary models and agentic architectures specifically tuned for the unique complexities of the CPG space"* ([AI hire][blog-ai]).
+The May 2026 hire of Head of AI **Matan Friedmann** is chartered to *"aggressively expand our Applied AI/ML team, focusing on developing proprietary models and agentic architectures specifically tuned for the unique complexities of the CPG space"* ([AI hire][blog-ai]) — a bet on bespoke models over relying solely on general ones.
 :::
+
+## Hard problems
+
+The parts an engineer at this company loses sleep over. **Public signal** is cited (verified); **likely approach** is labeled speculation — best-practice fill-in, hedged.
+
+| Problem | Why it's hard | Public signal | Likely approach (speculative) |
+| --- | --- | --- | --- |
+| **Messy-document extraction** | Every retailer/distributor formats invoices, deductions, and backup differently; layouts shift; scans are noisy | *"extract structured data from complex financial documents"*; *"format-agnostic pipeline"* for *"messy"* docs ([ML JD][jd-ml], [AI hire][blog-ai]) | Multimodal LLM + OCR with per-source templates; confidence scoring; route low-confidence to humans whose corrections fine-tune the extractor |
+| **Fragmented / legacy integration** | 50+ sources, many behind retailer portals or EDI with no clean API; data is incomplete and inconsistent | 50+ connectors ([Integrations][integ]); agents that *"retrieve data from legacy systems"* ([ML JD][jd-ml]) | Connector framework + agentic browsing/scraping for portals; FDEs to onboard each brand's source mix; normalize into the unified model |
+| **Financial correctness / trust** | Outputs are money owed; a wrong deduction classification or dispute is a real loss and erodes trust | *"automated and human-in-the-loop validation to ensure 100% reliability"*; *"full traceability"* ([AI hire][blog-ai]) | HITL gates on low-confidence/high-dollar items; immutable audit trail per record; reconciliation against the ledger |
+| **Forecasting on sparse retail data** | POS and syndicated data are laggy, partial, and noisy across hundreds of SKUs and retailers | forecasting from *"statistical models and live sales data"* ([home][home]); *"anomaly detection,"* *"promotion optimization models"* ([ML JD][jd-ml]) | Hierarchical statistical + ML forecasts blending IRI/Circana + POS; anomaly flags feed planners; promo-lift models for TPM ROI |
+
+## Likely internals
+
+The infrastructure Confido doesn't name publicly, inferred from the stack it does:
+
+| Component | Likely choice | Basis |
+| --- | --- | --- |
+| Backend / API | TypeScript/Node + Python services | *"backend services and APIs"* ([SWE JD][jd-swe]); ML-heavy product implies Python beside a TS web tier |
+| Frontend | React / TypeScript | Senior Frontend + Design-Engineer roles ([Ashby][ashby]) |
+| Cloud | AWS | default for a NYC YC B2B SaaS at this stage |
+| Primary DB | Postgres | relational financial / ledger data |
+| Document AI | multimodal LLM + OCR, per-source templates | *"format-agnostic"* extraction of *"messy"* docs ([AI hire][blog-ai]) |
+| LLM providers | OpenAI (GPT) + open-weight Llama fine-tunes | fine-tuning *"(Llama, GPT, etc.)"* named ([ML JD][jd-ml]) |
+| Retrieval | managed vector DB for agentic RAG | *"retrieval systems,"* *"agentic workflows"* ([ML JD][jd-ml]) |
+| Retailer-portal access | EDI + agentic browsing where no API exists | *"retrieve data from legacy systems"* ([ML JD][jd-ml]); exact mechanism unconfirmed |
+| Proprietary models | mostly fine-tuned / prompted today; bespoke is the stated direction | named as a goal, not a shipped fact ([AI hire][blog-ai]) |
+| Auth | enterprise SSO (SAML/OIDC) | finance buyers at 200+ brands |
 
 ## Architecture
 
 ### Fragmented sources → document AI → one source of truth
 
-Confido's spine is an ingestion-and-extraction pipeline that collapses incompatible inputs into a single financial data model. Connectors pull from *"50+ critical data sources"* ([Integrations][integ]); an LLM layer reads the *"messy"* documents that those sources emit — *"invoices, deductions, and retailer reports"* — and *"extract[s] structured data from complex financial documents"* ([ML JD][jd-ml], [Staff SWE JD][jd-staff]). The Head of AI's prior work names the pattern exactly: an *"end-to-end, format-agnostic pipeline that transformed unstructured, real-world documents into clean, system-ready insights,"* paired with *"automated and human-in-the-loop validation to ensure 100% reliability"* ([AI hire][blog-ai]). The cleaned data becomes the *"single source of truth"* every product surface reads from.
+Confido's spine is an ingestion-and-extraction pipeline that collapses incompatible inputs into a single financial data model. Connectors pull from *"50+ critical data sources"* ([Integrations][integ]); an LLM layer reads the *"messy"* documents those sources emit — *"invoices, deductions, and retailer reports"* — and *"extract[s] structured data from complex financial documents"* ([ML JD][jd-ml], [Staff SWE JD][jd-staff]). The Head of AI's prior work names the pattern exactly: an *"end-to-end, format-agnostic pipeline that transformed unstructured, real-world documents into clean, system-ready insights,"* paired with *"automated and human-in-the-loop validation to ensure 100% reliability"* ([AI hire][blog-ai]). The cleaned data becomes the *"single source of truth"* every product surface reads from.
 
 ![Confido data architecture: fragmented sources — retailers (Costco, Albertsons, Aldi, BJ's, Ahold) with POS and deduction backup, distributors (C&S, Core-Mark, AWG), ERP and accounting systems, and syndicated IRI/Circana data — flow through 50+ connectors (portals, EDI, files) into an AI extraction layer where LLM document understanding turns messy invoices, deductions, and reports into line-item structured data, then passes through automated plus human-in-the-loop validation with full traceability; the result populates a unified financial data model that is the single source of truth across finance, accounting, sales, and operations, which in turn powers the product surfaces: Cash Application, Deduction Management and Auto-Disputes, Trade Promotion Management, Sales Forecasting and Demand Planning, and Sales Analytics.](/diagrams/confido/data-architecture.svg)
 
@@ -147,60 +174,17 @@ flowchart LR
 
 On top of the data model sit the analytical products: **Trade Promotion Management** (*"plan, track, and analyze trade promotions … with clear visibility into spend and ROI"*), **Sales Forecasting / Demand Planning** (*"statistical models and live sales data"*), and **Sales Analytics** over syndicated + POS feeds ([home][home]). The ML team also builds *"anomaly detection across retailer performance data"* and *"promotion optimization models"* ([ML JD][jd-ml]).
 
-## Team
+## Team & process
 
-Two complementary founders, a senior AI leader, and a ~28-person team ([YC][yc]) hiring aggressively in NYC.
+A technical-founder-led, ~28-person team ([YC][yc]) hiring hard in NYC.
 
 | Role | Person | Source |
 | --- | --- | --- |
-| Co-founder (CEO) | Justin Hunter — ex-Capital One corporate strategy; Harvard | [YC][yc] |
+| Co-founder (CEO) | Justin Hunter — ex-Capital One strategy; Harvard | [YC][yc] |
 | Co-founder (technical) | Kara Holinski — engineering at MIT; ex-APM Schmidt Futures | [YC][yc] |
-| Head of AI | Matan Friedmann — ex Co-Founder/CTO Clearly Labs; ex Nexar; ex Q.ai (acq. Apple); AutoPrompt (3K★) | [AI hire][blog-ai] |
+| Head of AI | Matan Friedmann — ex Clearly Labs CTO; ex Nexar; ex Q.ai (acq. Apple) | [AI hire][blog-ai] |
 
-The company describes itself as *"built by experienced CPG operators"* ([About][about]) — domain depth paired with a technical founder and a heavyweight applied-AI hire. The engineering ladder spans **New Grad SWE → Staff SWE** and **Senior → Staff ML/AI**, plus a **Forward Deployed Engineer** ([Ashby][ashby]). Posted comp is aggressive: SWE **$170–200K**, Staff SWE **$280–330K**, Staff ML/AI **$300–350K + up to 40% bonus** ([SWE JD][jd-swe], [Staff SWE JD][jd-staff], [ML JD][jd-ml]). The Staff ML/AI role works *"directly with the CEO and CTO"* — confirming a CTO-level technical lead (Holinski).
-
-:::note[Inference — intense, in-person, design-partner culture — confidence: high]
-Every one of 26 roles is NYC on-site, with *"Nightly Team Dinners for those staying past 6:30pm"* and relocation support ([SWE JD][jd-swe]). Combined with *"hundreds of hours with our brand partners every week"* ([Series A note][blog-a]), this is a high-intensity, forward-deployed shop, not a remote-async one.
-:::
-
-## Process
-
-**Design-partner-driven, forward-deployed.** Confido was built *"in partnership with a few special brands … nights and weekends together with our brand partners iterating, taking feedback, and quickly shipping,"* and *"continue[s] to spend hundreds of hours with our brand partners every week"* ([Series A note][blog-a]). A dedicated **Forward Deployed Engineer** role ([Ashby][ashby]) institutionalizes that closeness — embedding with customers to wire up their specific retailer/distributor data.
-
-**Reliability via human-in-the-loop.** Because outputs are money, the validation philosophy the Head of AI brings is *"automated and human-in-the-loop validation to ensure 100% reliability"* with *"comprehensive databases for full traceability"* ([AI hire][blog-ai]) — the trust layer that lets a finance team act on AI-extracted numbers.
-
-## Notable bets
-
-1. **Own the CPG back-office system of record.** Span *"deduction to production plan"* across finance, accounting, sales, and ops on one platform ([Ashby][ashby]) — depth a horizontal tool can't match.
-2. **Document AI as the wedge.** LLM extraction of structured data from *"messy"* retailer/distributor paperwork ([ML JD][jd-ml], [AI hire][blog-ai]) is the bottleneck that gates everything downstream.
-3. **Agentic retrieval over legacy systems.** *"Agent workflows that retrieve data from legacy systems"* ([ML JD][jd-ml]) — meet brittle retailer portals where they are, no clean API required.
-4. **Integration breadth as moat.** 50+ retailer/distributor/ERP/accounting connectors ([Integrations][integ]) — each one is hard-won and compounds switching cost.
-5. **Proprietary, CPG-tuned models + agents.** Hire a Head of AI to build *"proprietary models and agentic architectures specifically tuned for … CPG"* ([AI hire][blog-ai]) rather than rely solely on general models.
-6. **Trust before autonomy.** Human-in-the-loop validation and full traceability ([AI hire][blog-ai]) — earn the right to automate in a domain where errors cost cash.
-
-## Hard problems
-
-The parts an engineer at this company loses sleep over. **Public signal** is cited (verified); **likely approach** is labeled speculation — best-practice fill-in, hedged.
-
-| Problem | Why it's hard | Public signal | Likely approach (speculative) |
-| --- | --- | --- | --- |
-| **Messy-document extraction** | Every retailer/distributor formats invoices, deductions, and backup differently; layouts shift; scans are noisy | *"extract structured data from complex financial documents"*; *"format-agnostic pipeline"* for *"messy"* docs ([ML JD][jd-ml], [AI hire][blog-ai]) | Multimodal LLM + OCR with per-source templates; confidence scoring; route low-confidence to humans whose corrections fine-tune the extractor |
-| **Fragmented / legacy integration** | 50+ sources, many behind retailer portals or EDI with no clean API; data is incomplete and inconsistent | 50+ connectors ([Integrations][integ]); agents that *"retrieve data from legacy systems"* ([ML JD][jd-ml]) | Connector framework + agentic browsing/scraping for portals; FDEs to onboard each brand's source mix; normalize into the unified model |
-| **Financial correctness / trust** | Outputs are money owed; a wrong deduction classification or dispute is a real loss and erodes trust | *"automated and human-in-the-loop validation to ensure 100% reliability"*; *"full traceability"* ([AI hire][blog-ai]) | HITL gates on low-confidence/high-dollar items; immutable audit trail per record; reconciliation against the ledger |
-| **Forecasting on sparse retail data** | POS and syndicated data are laggy, partial, and noisy across hundreds of SKUs and retailers | forecasting from *"statistical models and live sales data"* ([home][home]); *"anomaly detection,"* *"promotion optimization models"* ([ML JD][jd-ml]) | Hierarchical statistical + ML forecasts blending IRI/Circana + POS; anomaly flags feed planners; promo-lift models for TPM ROI |
-
-## Unknowns
-
-:::caution[What the public record can't confirm]
-Genuinely open questions; best-practice guesses for the infra live in [Likely internals](#likely-internals).
-
-- **Languages / frameworks** — JDs say *"across the stack,"* *"backend services and APIs,"* but name no language or framework ([SWE JD][jd-swe], [Staff SWE JD][jd-staff]).
-- **LLM providers** — LLMs/NLP are confirmed and fine-tuning *"(Llama, GPT, etc.)"* is a hire signal ([ML JD][jd-ml]); which providers run in production isn't stated.
-- **"Proprietary models"** — stated as a *direction* for the new AI team ([AI hire][blog-ai]); how much is bespoke vs. fine-tuned/prompted today is unconfirmed.
-- **Retailer-portal access** — whether legacy-system retrieval is EDI, official APIs, or agentic scraping (or a mix) isn't public.
-- **Cloud / data store / vector DB** — no first-party statement of cloud, database, or retrieval store.
-- **Engineering vs. total headcount** — only a total (~28) is available ([YC][yc]); the eng/AI split isn't broken out.
-:::
+The build is **design-partner-driven and forward-deployed**: Confido shipped *"nights and weekends … with our brand partners"* and still spends *"hundreds of hours with our brand partners every week"* ([Series A note][blog-a]), with a dedicated **Forward Deployed Engineer** embedding to wire up each customer's retailer/distributor data ([Ashby][ashby]). The org runs intense and fully in-person — all NYC on-site, *"Nightly Team Dinners for those staying past 6:30pm"* ([SWE JD][jd-swe]); comp spans SWE $170–200K to Staff ML/AI $300–350K + bonus.
 
 ## Sources
 
@@ -219,25 +203,6 @@ Reconstructed from public sources only — no insider information. Crawled 2026-
 | S9 | Staff ML / AI Engineer (JD) | <https://jobs.ashbyhq.com/confido/c133c8b1-12a9-450d-8fa5-715ae123ee69> |
 | S10 | Software Engineer (JD) | <https://jobs.ashbyhq.com/confido/d5520ce5-bc5f-4947-8912-292615b0c5ac> |
 | S11 | Y Combinator profile (third-party) | <https://www.ycombinator.com/companies/confido> |
-
-## Speculative reconstruction
-
-:::tip[Best-practice reconstruction, not fact]
-Nothing here is stated on a public page. It's what a NYC, YC-backed, ~28-person vertical-AI fintech with this product surface would *typically* reach for. Read each row as "likely," not confirmed.
-:::
-
-### Likely internals
-
-| Component | Likely choice | Why |
-| --- | --- | --- |
-| Backend / API | TypeScript/Node or Python services | *"backend services and APIs"* ([SWE JD][jd-swe]); ML-heavy product implies Python alongside a TS web tier |
-| Frontend | React/TypeScript | dedicated Senior Frontend + Design-Engineer roles ([Ashby][ashby]); standard for this stack |
-| Cloud | AWS | default for a NYC YC B2B SaaS at this stage; no first-party signal |
-| Primary DB | Postgres | relational financial/ledger data; the conventional choice |
-| Document AI | multimodal LLM + OCR, per-source templates | *"format-agnostic"* extraction of *"messy"* docs ([AI hire][blog-ai]) |
-| LLM providers | OpenAI (GPT) + open-weight Llama fine-tunes | fine-tuning *"(Llama, GPT, etc.)"* named ([ML JD][jd-ml]) |
-| Retrieval / vector store | a managed vector DB for agentic retrieval/RAG | *"retrieval systems,"* *"agentic workflows"* ([ML JD][jd-ml]); not named |
-| Auth | enterprise SSO (SAML/OIDC) | selling to finance teams at 200+ brands; table stakes |
 
 [home]: https://www.confidotech.com/
 [about]: https://www.confidotech.com/about

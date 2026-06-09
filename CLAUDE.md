@@ -34,7 +34,7 @@ Every claim sits in one of three tiers, and the tier is **always visually distin
 | **INFERRED** | Reasoned from a cited public signal | `:::note` / `:::caution` aside — flag the confidence level and name the signal |
 | **SPECULATIVE** | No direct signal — assume best practices / what a team of this stage & domain would typically do | Its own labeled aside (`:::tip[Speculation]`) **and** in-text hedges ("likely," "probably," "a team this size would typically") |
 
-- **Speculation is welcome and encouraged** to complete the picture — but it must always wear the SPECULATIVE label and hedge language so a reader never mistakes it for fact. The **unknowns** section is the natural home for longer speculative reconstructions of missing pieces.
+- **Speculation is welcome and encouraged** to complete the picture — but it must always wear the SPECULATIVE label and hedge language so a reader never mistakes it for fact. The **Likely internals** table is the home for best-practice fill-ins; genuinely-open questions fold into it as rows rather than a separate block.
 - **Never present a lower tier as a higher one.** Don't assert inference or speculation as fact, and never fabricate a source. "The JD implies a Temporal-style durable-execution layer" (inferred), not "they use Temporal" (verified).
 - **No process leakage; no apology blocks.** The reader never hears about "the source draft," "the dossier," or what we "dropped/removed" — they don't know those exist. Factual sections carry only verified/inferred claims. A plausible-but-unconfirmed detail (the likely auth vendor, LLM router, memory store) goes to the **speculative section** as labeled best-practice fill-in — often a table — *not* a caution block in the factual section listing what you couldn't verify. Genuinely-open questions go to **unknowns**. Speculation completes the picture; treat it as a feature, not a confession.
 - **Cite live source URLs.** Link the live page directly. (Decided 2026-06-07: web.archive.org Save-Page-Now crawls each URL synchronously at ~80s/page — too slow to be worth it. Dropped.) Durability comes from the per-claim evidence map (above): pages change, so the recorded quote is what lets a reader re-verify.
@@ -54,20 +54,32 @@ Match format to content type:
 
 - Ruthlessly cut filler: no "in this section," "it's worth noting," connective throat-clearing.
 - Dense **and** legible — every table/diagram gets just enough connective prose to carry the reader; no inert data dumps.
-- **Link the company on first mention.** The first time the company name appears in the body (the "what they do" opener), link it to the company's homepage so a reader instantly knows who it is — `[Acme][home]`, with `[home]: https://www.acme.com/` defined among the source links. Inline only; no banner, no logo header.
-- **Value first.** Open on substance — what they do, the sharpest finding — never on a methodology banner. The "reconstructed from public sources / how to read the confidence tiers" note is compact (a sentence or two) and lives at the **bottom**, near Sources. No top-of-page disclaimer.
+- **Link the company on first mention.** The first time the company name appears in the body (the overview opener), link it to the company's homepage so a reader instantly knows who it is — `[Acme][home]`, with `[home]: https://www.acme.com/` defined among the source links. Inline only; no banner, no logo header.
+- **Value first.** Open on substance — what the product is, the sharpest finding — never on a methodology banner. The "reconstructed from public sources / how to read the confidence tiers" note is compact (a sentence or two) and lives at the **bottom**, near Sources. No top-of-page disclaimer.
 - **Don't over-disclaim.** One tier label per claim is enough; the reader is an engineer, not a child. No repeated hedges, no re-explaining the methodology every few sentences. State it once, move on.
 - **Asides are tight.** `:::note` / `:::caution` / `:::tip` blocks — including "Key finding" notes — are ≤2 sentences: the insight and the so-what, nothing else. No restating surrounding prose, no "this is reasoned from…" meta. If it needs a paragraph, it belongs in body prose, not an aside.
 
 ## Teardown template (consistent across all entries)
 
-Section order, so entries compose into a comparative map:
+A teardown is a **technical "how they built it" reconstruction, not a business profile.** Lead with engineering; keep business context present but compressed. Section order (8), so entries compose into a comparative map:
 
-`what they do → the heavy lifting → stack → architecture → team → process → notable bets → hard problems → unknowns`
+`overview → the heavy lifting → stack → hard problems → likely internals → architecture → team & process → sources`
 
-**The heavy lifting** sits right after `what they do`: **2–4 bullets, no intro prose**, each one a concrete *technical mechanism + the specific constraint it beats* — the company's differentiated engineering know-how, where the hard work concentrates. It is a **synthesis** of the page's sharpest technical findings, tier-cited like everything else — not a restatement of `notable bets`. Hard rule: every bullet must say something an engineer couldn't get off the homepage; ban promo register (verbs like "cracks/owns/unlocks", nouns like "moat/seamless", scope inflation like "the entire X"). If a bullet can't be phrased as mechanism + constraint, cut it — better empty than fluffy.
+**Overview** has **no `## Overview` heading** — the lead content sits directly under the page title, which Starlight auto-labels "Overview" in the on-this-page nav (an explicit heading duplicates it). It is: 2–4 sentences (what the product is + the sharpest *technical* hook), then a one-line **Vitals** strip (`founded · stage/raise · ~headcount · HQ`), then **all remaining business context — founders, full funding, investors, customers, traction, moat — folded into a collapsed `<details><summary>Business context …</summary>`** (same pattern as Mermaid sources). Business is preserved, never deleted, just one click away so it doesn't bury the engineering.
 
-**Hard problems** is a compact **table** (not prose), placed after `notable bets`, before `unknowns`. Each row is a challenge that's genuinely hard *for this kind of company* — agent eval/testing, inference cost, observability of non-deterministic agents, and the like. Columns: **Problem | Why it's hard | Public signal | Likely approach (speculative)**. The *public signal* cell is verified+cited; the *likely approach* cell is labeled speculation (the column header carries the SPECULATIVE label) with hedge language. Keep it tight — pick the 2–4 problems that are real and specific to the company; drop generic ones (e.g. "latency" with no company-specific signal). Designed to tabularize across companies into a later comparative map.
+**The heavy lifting** sits right after the overview: **2–4 bullets, no intro prose**, each a concrete *technical mechanism + the specific constraint it beats* — the company's differentiated engineering know-how. A **synthesis** of the page's sharpest technical findings, tier-cited. Hard rule: every bullet must say something an engineer couldn't get off the homepage; ban promo register (verbs like "cracks/owns/unlocks", nouns like "moat/seamless", scope inflation like "the entire X"). If a bullet can't be phrased as mechanism + constraint, cut it — better empty than fluffy.
+
+**Stack** is a `component | choice | evidence` table — only what's public, each row cited; conventional infra you're guessing goes in Likely internals.
+
+**Hard problems** is a compact **table** (not prose). Each row is a challenge genuinely hard *for this kind of company* — agent eval/testing, inference cost, observability of non-deterministic agents, and the like. Columns: **Problem | Why it's hard | Public signal | Likely approach (speculative)**. The *public signal* cell is verified+cited; the *likely approach* cell is labeled speculation with hedge language. Keep it tight — 2–4 problems real and specific to the company; drop generic ones (e.g. "latency" with no company-specific signal). Tabularizes across companies into a later comparative map.
+
+**Likely internals** merges what used to be `unknowns` + `speculative reconstruction` into **one table** (`Component | Likely choice | Basis`): the infra the company doesn't name publicly, inferred from the stack it does. Fold genuinely-open questions in as rows (note the uncertainty in *Basis*), not a separate "couldn't confirm" block. **No double hedging asides** — the methodology/confidence-tier explanation lives once on the About page; one short framing line is enough (see "Don't over-disclaim").
+
+**Architecture** sits *below* Likely internals: a reconstruction (verified + inferred) of how the system fits together, with at least one themed Mermaid diagram. It ranks lower than the scannable lead sections but stays its own section — it's evidenced, not speculation, so it does **not** belong inside Likely internals.
+
+**Team & process** is **merged and compact**: a small roles table + one short paragraph (org shape + how they build). No separate Process section, no restating points made above.
+
+**Notable bets is removed** — its technical content belongs in The heavy lifting; its business/moat content belongs in the Overview's Business-context collapsible.
 
 Frontmatter (complete on every entry): `title`, `company`, `author`, `description`.
 
@@ -79,8 +91,10 @@ Frontmatter (complete on every entry): `title`, `company`, `author`, `descriptio
 - Every claim is tier-labeled: inferred claims flagged as inference with a confidence level; **speculative claims explicitly carry the SPECULATIVE label + hedge language** (never presented as fact).
 - Stack is a table; architecture is at least one diagram; comparison data is tabular; **hard problems is a table** (2–4 company-specific rows, speculative column labeled).
 - **The heavy lifting** is present: 2–4 mechanism+constraint bullets, no promo language, nothing a reader could get off the homepage.
+- **Overview** opens with ≤4 sentences + a one-line Vitals strip; all other business context (founders, funding, investors, customers, moat) is in a collapsed `<details>`, not prose — and there is **no explicit `## Overview` heading**.
+- **Likely internals** is a single table (open questions folded in as rows); no separate `unknowns`/`speculative reconstruction` sections, no double-hedge asides. **Team & process** is one merged, compact section. No `notable bets` section.
 - No filler prose; reads dense but legible.
-- Follows the template section order.
+- Follows the 8-section template order: overview → the heavy lifting → stack → hard problems → likely internals → architecture → team & process → sources.
 - Frontmatter complete (`title`, `company`, `author`, `description`).
 - **Page shows a last-updated date** (Starlight git-based `lastUpdated`).
 - Build succeeds; diagrams render.
