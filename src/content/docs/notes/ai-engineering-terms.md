@@ -91,7 +91,7 @@ The base terms the patterns above are built from — models and inference, retri
 
 **Structured output** — forcing the model to return a fixed schema (JSON, a function signature) instead of free text, so downstream code can consume it reliably. The backbone of tool calling and extraction pipelines.
 
-**Multimodal** — a model that handles more than text — images, audio, documents — in one context. Lets a single model read a scanned invoice or hear a call instead of bolting on separate OCR/ASR.
+**Multimodal (multi-modal)** — a model that handles more than text — images, audio, documents — in one context. Lets a single model read a scanned invoice or hear a call instead of bolting on separate OCR/ASR.
 
 **Frontier vs. small model** — frontier models are the largest and most capable (and costly/slow); small models are cheaper and faster but weaker. Most systems mix them, routing each step to the smallest model that suffices.
 
