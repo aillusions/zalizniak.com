@@ -4,7 +4,7 @@ company: Harvey
 author: Oleksandr Zalizniak
 description: Applied AI Teardown of Harvey — coming soon.
 sidebar:
-  order: 20
+  order: 21
   label: Harvey · Legal
   badge:
     text: Soon

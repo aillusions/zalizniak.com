@@ -1,0 +1,29 @@
+flowchart LR
+  classDef io fill:#fdf4e8,stroke:#d97706,stroke-width:1.5px,color:#0f172a;
+  classDef agent fill:#eafbf1,stroke:#16a34a,stroke-width:1.5px,color:#0f172a;
+  classDef cache fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef data fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+
+  Step(["NL step<br/>'Click the Sign in button'"]):::io
+
+  subgraph Resolve["Resolve a step"]
+    direction TB
+    Hit{"Step cache hit?<br/>signals match live page?"}:::cache
+    Replay("Replay from cache<br/>~300ms · no LLM call"):::cache
+    Heal("Auto-heal: locator agent<br/>re-resolves NL vs DOM + a11y + screenshot<br/>~5s · 1 LLM completion"):::agent
+  end
+
+  subgraph Act["Act + verify"]
+    direction TB
+    Do("Issue action<br/>click · type · scroll · check"):::agent
+    Settle("Stability check<br/>wait for network + DOM to settle"):::data
+  end
+
+  Save[("Write resolved locator<br/>+ intent conditions to step cache")]:::cache
+  Done(["Step done"]):::io
+
+  Step --> Hit
+  Hit -->|hit ~95%| Replay --> Do
+  Hit -->|miss| Heal --> Do
+  Do --> Settle --> Save --> Done
+  Save -. "next run" .-> Hit

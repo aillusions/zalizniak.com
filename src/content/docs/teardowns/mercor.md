@@ -4,7 +4,7 @@ company: Mercor
 author: Oleksandr Zalizniak
 description: Applied AI Teardown of Mercor — coming soon.
 sidebar:
-  order: 21
+  order: 22
   label: Mercor · Recruiting
   badge:
     text: Soon

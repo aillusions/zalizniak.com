@@ -4,7 +4,7 @@ company: SightlineOS
 author: Oleksandr Zalizniak
 description: Applied AI Teardown of SightlineOS — supply-chain planning AI for restaurant chains. Work in progress.
 sidebar:
-  order: 12
+  order: 13
   label: SightlineOS · Supply chain
   badge:
     text: WIP

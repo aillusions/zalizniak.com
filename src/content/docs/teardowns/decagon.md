@@ -4,7 +4,7 @@ company: Decagon
 author: Oleksandr Zalizniak
 description: Applied AI Teardown of Decagon — coming soon.
 sidebar:
-  order: 19
+  order: 20
   label: Decagon · Customer support
   badge:
     text: Soon

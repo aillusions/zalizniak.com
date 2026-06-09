@@ -1,0 +1,34 @@
+flowchart LR
+  classDef io fill:#fdf4e8,stroke:#d97706,stroke-width:1.5px,color:#0f172a;
+  classDef agent fill:#eafbf1,stroke:#16a34a,stroke-width:1.5px,color:#0f172a;
+  classDef cache fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef data fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+  classDef old fill:#fdecec,stroke:#e0564f,stroke-width:1.5px,color:#0f172a;
+
+  CLI(["CLI run · local or CI"]):::io
+
+  subgraph Key["Cache key (composite)"]
+    direction TB
+    K("test ID · step ID<br/>CLI version · git branch<br/>commit timestamp"):::data
+  end
+
+  subgraph Intent["Intent conditions (locator agent emits)"]
+    direction TB
+    Attr("Attributes<br/>text · color · role · arbitrary HTML"):::agent
+    Rel("Related elements<br/>'login above sign-up'"):::agent
+  end
+
+  subgraph CH["ClickHouse · cache plane"]
+    direction TB
+    RMT[("ReplacingMergeTree<br/>sparse primary index · insert-only TTL")]:::cache
+    MV[("Materialized view<br/>available commit timestamps per test")]:::cache
+    RMT --- MV
+  end
+
+  Old["was: single Postgres table + Redis<br/>lock contention at ~1B entries"]:::old
+
+  CLI -->|"resolve query"| Key
+  Key --> CH
+  Intent --> RMT
+  CH -->|"~250ms avg · 95%+ hit"| CLI
+  Old -. "migrated: double-write -> double-read check -> cutover" .-> CH

@@ -4,7 +4,7 @@ company: Prophet Security
 author: Oleksandr Zalizniak
 description: Applied AI Teardown of Prophet Security — coming soon.
 sidebar:
-  order: 10
+  order: 11
   label: Prophet · Agentic SOC
   badge:
     text: Soon

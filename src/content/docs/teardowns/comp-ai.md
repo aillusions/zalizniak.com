@@ -4,7 +4,7 @@ company: Comp AI
 author: Oleksandr Zalizniak
 description: Applied AI Teardown of Comp AI — coming soon.
 sidebar:
-  order: 14
+  order: 15
   label: Comp AI · Compliance
   badge:
     text: Soon
