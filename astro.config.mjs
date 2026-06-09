@@ -53,6 +53,10 @@ export default defineConfig({
 					label: 'Teardowns',
 					items: [{ autogenerate: { directory: 'teardowns' } }],
 				},
+				{
+					label: 'Notes',
+					items: [{ autogenerate: { directory: 'notes' } }],
+				},
 			],
 		}),
 	],
