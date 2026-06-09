@@ -1,0 +1,80 @@
+---
+// Override of Starlight's SiteTitle.
+// On desktop the masthead shows the site name ("Oleksandr Zalizniak").
+// On mobile that name is just noise — the sticky header has no other page
+// context — so we swap in the current page title (e.g. the startup name)
+// instead. Home stays reachable via the sidebar's "Home" entry.
+import { logos } from 'virtual:starlight/user-images';
+import config from 'virtual:starlight/user-config';
+const { siteTitle, siteTitleHref, entry } = Astro.locals.starlightRoute;
+const pageTitle = entry.data.title;
+---
+
+<a href={siteTitleHref} class="site-title sl-flex">
+	{
+		config.logo && logos.dark && (
+			<>
+				<img
+					class:list={{ 'light:sl-hidden print:hidden': !('src' in config.logo) }}
+					alt={config.logo.alt}
+					src={logos.dark.src}
+					width={logos.dark.width}
+					height={logos.dark.height}
+				/>
+				{!('src' in config.logo) && (
+					<img
+						class="dark:sl-hidden print:block"
+						alt={config.logo.alt}
+						src={logos.light?.src}
+						width={logos.light?.width}
+						height={logos.light?.height}
+					/>
+				)}
+			</>
+		)
+	}
+	<span class:list={{ 'sr-only': config.logo?.replacesTitle }} translate="no">
+		{/* Desktop: site name. Mobile: current page title (the startup). */}
+		<span class="site-name">{siteTitle}</span>
+		<span class="page-name">{pageTitle}</span>
+	</span>
+</a>
+
+<style>
+	@layer starlight.core {
+		.site-title {
+			align-items: center;
+			gap: var(--sl-nav-gap);
+			font-size: var(--sl-text-h4);
+			font-weight: 600;
+			color: var(--sl-color-text-accent);
+			text-decoration: none;
+			white-space: nowrap;
+			min-width: 0;
+		}
+		span {
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+		img {
+			height: calc(var(--sl-nav-height) - 2 * var(--sl-nav-pad-y));
+			width: auto;
+			max-width: 100%;
+			object-fit: contain;
+			object-position: 0 50%;
+		}
+
+		/* Swap site name ↔ page title at Starlight's mobile breakpoint (50rem). */
+		.page-name {
+			display: none;
+		}
+		@media (max-width: 49.9375rem) {
+			.site-name {
+				display: none;
+			}
+			.page-name {
+				display: inline;
+			}
+		}
+	}
+</style>

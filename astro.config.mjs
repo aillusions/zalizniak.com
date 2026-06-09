@@ -18,6 +18,9 @@ export default defineConfig({
 			components: {
 				// Make header social icons open in a new tab.
 				SocialIcons: './src/components/SocialIcons.astro',
+				// On mobile, show the current page title in the sticky header
+				// instead of the site name (which is just noise there).
+				SiteTitle: './src/components/SiteTitle.astro',
 				// Add click-to-enlarge (lightbox) for diagram images.
 				Head: './src/components/Head.astro',
 			},
