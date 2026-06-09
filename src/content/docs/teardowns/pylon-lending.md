@@ -153,6 +153,17 @@ A separate **Platform** department staffs remote **"Technical Oversight"** roles
 5. **Own the risk to earn the margin.** Rep & warrant every loan into the capital markets — the liability that justifies removing the middlemen ([fintechs][fintechs]).
 6. **Crypto as a wedge product.** *"The only provider with a crypto-asset depletion underwriting model"* — staking income and crypto-backed mortgages for HNW users ([fintechs][fintechs]).
 
+## Hard problems
+
+The parts an engineer would lose sleep over. **Public signal** is cited (verified); **likely approach** is labeled speculation — best-practice fill-in, hedged.
+
+| Problem | Why it's hard | Public signal | Likely approach (speculative) |
+| --- | --- | --- | --- |
+| **DSL rule correctness** | A single mis-encoded guideline is Pylon's own loss, not the borrower's | *"An incorrectly modeled rule can cost the company tens of thousands of dollars on a single loan"*; Pylon *"reps & warrants every loan"* ([jd-uw][jd-uw], [fintechs][fintechs]) | Likely a golden-file/snapshot test suite over historical loans plus property-style tests, gating every DSL change in CI |
+| **AI-compiled guidelines** | An LLM translating dense regulatory English into executable logic can be subtly, expensively wrong | *"translate dense regulatory guidelines into executable logic … including AI … compiling English into a system that makes six-figure decisions,"* built *"side-by-side with mortgage experts"* ([jd-uw][jd-uw]) | Probably human-in-the-loop review of generated rules with the DSL as the audited artifact, AI as draft-generator not decider |
+| **Durable multi-day workflows** | A mortgage is a multi-day, multi-party flow where a dropped step or bad replay loses real money | Temporal in *every* eng JD; Foundation keeps *"highly available systems"* that *"process millions of dollars in mortgage transactions"* ([jd-infra][jd-infra], [jd-api][jd-api]) | Likely deterministic Temporal workflows with idempotent activities and saga-style compensation for external order-outs |
+| **Per-file compliance + auditability** | Every automated decision must be explainable and TRID-compliant on demand for regulators and capital-markets buyers | Pylon *"encodes compliance into every file"*; settlement enforces TRID timing and a zero-variance fee ledger ([fintechs][fintechs], [home][home]) | Probably an immutable per-loan decision/event log tying each outcome to the exact DSL rule version that produced it |
+
 ## Unknowns
 
 :::caution[What the public record can't confirm]

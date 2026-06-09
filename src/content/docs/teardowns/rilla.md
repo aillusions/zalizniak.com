@@ -169,6 +169,17 @@ The JDs include a *"Don't Work Here"* section gating on *"Working ~60 hrs/week i
 5. **Forward-deployed GTM.** CTO-style FDEs embed with non-tech customers (50% travel) to wire integrations and expand into new verticals ([FDE JD][jd-fde]).
 6. **Lean, intense, agent-augmented.** Generalists, 60-hour in-person weeks, unlimited token budgets, managed infra — output per head over headcount ([SWE JD][jd-swe]).
 
+## Hard problems
+
+The parts an engineer would lose sleep over. **Public signal** is cited (verified); **likely approach** is labeled speculation — best-practice fill-in, hedged.
+
+| Problem | Why it's hard | Public signal | Likely approach (speculative) |
+| --- | --- | --- | --- |
+| **ASR on field audio** | Doorstep/showroom/job-site speech has wind, machinery, crosstalk and accents that wreck off-the-shelf ASR. | Pipeline is built for *"the messy, noisy, wildly unstructured conversations that happen in the real world, not in an online meeting"* ([key][jd-ai]) | Likely a fine-tuned Whisper-class model on Baseten, retrained on Rilla's own field corpus to beat noise/accents. |
+| **Evaluating analysis quality** | Scorecards and objection-spotting are probabilistic; a wrong coaching call erodes manager trust with no ground truth. | Role requires *"eval frameworks, agent tooling, and prompt engineering"* for *"AI/LLM systems in production"* ([key][jd-ai]) | Likely golden-set regression evals plus LLM-as-judge over labeled calls, gating prompt/model changes in CI. |
+| **Search over the voice corpus** | Making millions of long, noisy transcripts queryable by meaning — not keywords — at acceptable recall and cost is unsolved tooling. | A *"search engine that uncovers business-critical insights from voice data that's never been searchable"* over *"over 1000 customers"* ([key][home]) | Likely transcript chunking + embeddings in a vector store (pgvector or managed), with metadata filters over the existing Postgres. |
+| **Real-time voice latency** | A spoken agent must hear, transcribe, reason and reply fast enough to feel conversational, end-to-end. | Voice-first interface spanning *"data acquisition to real-time inference"* on LiveKit ([key][jd-ai]) | Likely streaming ASR + a fast LLM tier via LiteLLM, with LiveKit handling low-latency transport and turn-taking. |
+
 ## Unknowns
 
 :::caution[What the public record can't confirm]

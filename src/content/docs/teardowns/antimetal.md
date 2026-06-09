@@ -195,9 +195,18 @@ The Research JD asks for *"live and offline evaluation pipelines, benchmarks, an
 5. **Dogfood automation over headcount.** Anvil automates ~80% of onboarding before reaching for forward-deployed engineers ([Anvil post][anvil]).
 6. **Autonomy is earned, gated by default.** Assist first, automate as override rates fall; every change runs through the customer's existing approval flow ([vision post][vision], [home][home]).
 
-## Unknowns
+## Hard problems
 
-:::caution[What the public record can't confirm]
+The parts an engineer would lose sleep over. **Public signal** is cited (verified); **likely approach** is labeled speculation — best-practice fill-in, hedged.
+
+| Problem | Why it's hard | Public signal | Likely approach (speculative) |
+| --- | --- | --- | --- |
+| **Evaluating agents that change production** | An agent that fixes prod can't be regression-tested like a service; a bad change has blast radius, and eval is the only safety rail. | Research builds *"live and offline evaluation pipelines, benchmarks, and synthetic data generation"* jointly *"with platform"* ([jd-research][jd-research]); plus *"sandboxed shadow traffic environments to run our product against live customer events"* ([anvil][anvil]) | Likely a shadow/replay harness over recorded incidents + reasoning traces as offline benchmarks, with live online eval scored on acceptance and override rates before any action ships |
+| **Autonomy gating without bad automated changes** | Crossing from suggest to act is irreversible per change; over-trust ships a wrong fix, under-trust kills the product's value. | *"Initially, these systems should assist … As confidence grows through repeated acceptance, low override rates, or explicit approval, it begins automating"* ([vision][vision]); default *"changes still route through your existing approval flow"* ([home][home]) | Likely a per-action-class trust score gated on measured acceptance/override history, defaulting to PR/Slack approval and graduating specific low-risk action types to autonomous |
+| **Keeping the world model current at scale** | A stale model gives wrong root causes; staying live means ingesting *"trillions of data points per day"* across *"thousands of services"* without falling behind. | Temporal layer needs *"a streaming architecture"* plus time travel — *"rewind to any point in the past … and diff against the current state"* — over *"thousands of services emitting trillions of data points per day"* ([worldmodel][worldmodel]) | Likely a streaming bus (Kafka/Kinesis) into incremental graph updates, with an event-sourced/append-only store so any past state is reconstructable for the diff |
+| **Observability of non-deterministic multi-agent investigations** | Many agents reasoning in parallel over a shared model are hard to debug, attribute, or reproduce when an investigation goes wrong. | *"multiple agents can investigate different regions of the system in parallel, each using the full model"* ([worldmodel][worldmodel]); platform owns *"investigation traces, agent trajectories"* as first-class data ([jd-platform][jd-platform]) | Likely full trajectory capture (every tool call, model step, and decision) persisted per investigation, feeding both replay-based debugging and the offline eval set above |
+
+
 Open questions where even a best-practice guess would be a stretch (conventional infra guesses live in [Likely stack & infra choices](#likely-stack--infra-choices)):
 
 - **Reasoning LLM provider** — Claude Code is the *internal* coding tool ([Platform JD][jd-platform]); the model powering the production agents isn't named.

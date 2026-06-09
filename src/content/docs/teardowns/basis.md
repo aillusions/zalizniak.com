@@ -191,6 +191,17 @@ Basis names its own frontier: *"An agent runs for five hours across thousands of
 5. **Buy reasoning, own orchestration.** OpenAI models for the product; Claude Agent SDK / Codex / Cursor / Cowork as internal harnesses — Basis owns routing, context, tools, and eval, not the models ([OpenAI case study][openai], [Satellite][satellite], [Clueso][clueso]).
 6. **Org as a wager.** MTS titles, quarterly-reforming pods, single-RP ownership, unlimited token budgets, and 5-day in-person — an explicit claim that the company structure, not just the tech, is the edge ([Ashby MTS][mts], [building-for-AGI][agi]).
 
+## Hard problems
+
+The parts an engineer would lose sleep over. **Public signal** is cited (verified); **likely approach** is labeled speculation — best-practice fill-in, hedged.
+
+| Problem | Why it's hard | Public signal | Likely approach (speculative) |
+| --- | --- | --- | --- |
+| **Trajectory-level eval & credit assignment** | An agent runs hours across thousands of decisions; attributing a bad outcome to one reasoning step, and tuning judges over subjective accounting calls, doesn't reduce to pass/fail | Basis names it as an open frontier — *"An agent runs for five hours across thousands of decisions. How do we attribute outcomes back to specific reasoning steps? How do we tune eval judges when the judgement includes subjectivity?"* ([mts][mts]) | Likely a dedicated Agent Platform eval-systems team building step-level trace replay + LLM-judge harnesses graded against accountant corrections |
+| **Audit-grade explainability** | In accounting, a wrong-but-confident journal entry is an audit/compliance liability; the output must justify itself well enough for a CPA to sign off | Each output carries *"what data was used, why it was mapped that way, and how confident the system is"*, and models are benchmarked on *"how clearly the model can explain its reasoning"* to gate go-live ([openai][openai]) | Likely explanation + confidence treated as first-class eval metrics, with new workflows probably gated behind an explainability threshold, not just an accuracy one |
+| **Per-firm data isolation** | Agents act autonomously over multiple firms' client financials; one cross-tenant leak via a tool call is catastrophic and a compliance breach | Agents touch client financials and a GRC role is open, but tenancy controls are undescribed ([ashby][ashby]) | Likely schema-per-tenant or row-level isolation plus scoped, per-firm agent tool access enforced at the Satellite-style gateway |
+| **Model-version churn** | The product is built on bought OpenAI models that change under it; each release can shift behavior on long-horizon accounting tasks | Basis re-benchmarks every release — GPT-5 hit *"a perfect 100% success rate"* on its tool-calling benchmark before promotion to supervisor ([openai][openai]) | Likely an automated benchmark gate in CI that re-scores candidate models per workflow and only promotes one that clears accuracy + explainability bars |
+
 ## Unknowns
 
 :::caution[What the public record can't confirm]

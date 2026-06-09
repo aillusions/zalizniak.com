@@ -206,6 +206,16 @@ Both the DB migration (per-collection read/write flags, bake-in periods) and Sco
 5. **Buy the voice layer, own the orchestration.** Lean on ElevenLabs for the hard real-time audio pipeline; keep the multi-agent design, dedup, rubric, and eval in-house ([Scout post][scout]).
 6. **Eval as a first-class, versioned artifact.** Langfuse datasets + a custom test harness make prompt changes measurable — quality engineering aimed at a probabilistic system, replacing a traditional QA org ([Scout post][scout]).
 
+## Hard problems
+
+The parts an engineer would lose sleep over. **Public signal** is cited (verified); **likely approach** is labeled speculation — best-practice fill-in, hedged.
+
+| Problem | Why it's hard | Public signal | Likely approach (speculative) |
+| --- | --- | --- | --- |
+| **Thousands of parallel real-time voice interviews** | Sub-second voice latency, telephony, and language switching at fan-out, with LLM context that *"begin[s] to degrade"* past a threshold | *"an AI recruiter that conducts thousands of real-time interviews in parallel"*; degradation forced a single agent into multi-agent transfer ([scout][scout]) | Likely lean on ElevenLabs' managed telephony/turn-taking for the audio path and cap per-agent context by splitting phases (intro/vetting/logistics/Q&A), as confirmed; concurrency probably scaled horizontally per call |
+| **Evaluating a probabilistic vetter** | A non-deterministic interviewer gates real shift assignments — regressions are invisible without ground truth, not a unit test | *"a single prompt template"* tested against continuously-updating human-annotated **Langfuse** datasets, turning prompt changes around *"in minutes rather than hours"* ([scout][scout]) | Likely a versioned dataset + concurrent test harness scoring accuracy and per-question-type breakdowns on every prompt change, gating rollout behind the measured 15% shift-completion lift |
+| **Zero-downtime live DB migration** | Cutting the relational system of record over from Firestore to Postgres with no freeze, while features kept shipping into a moving target | one year, zero downtime via trigger-based replication; race conditions met with reconciliation crons and *"custom retry logic, 15+ attempts"*; data-integrity bugs traced to connection-pool exhaustion ([pg][pg]) | Likely per-collection feature flags for incremental read/write cutover plus a prepared rollback script, with self-healing reconciliation as the durable safety net (largely confirmed) |
+
 ## Unknowns
 
 :::caution[What the public record can't confirm]

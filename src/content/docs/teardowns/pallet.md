@@ -185,6 +185,17 @@ Reasoned from the three verified mechanisms above plus the absence of any QA/SDE
 5. **FDE-led GTM, then automate the FDE.** Win messy enterprise deployments with humans on-site; race to replace that motion with Forge before it caps growth.
 6. **Quality via simulation, not QA headcount.** Bet that sims + memory backtesting + prod observability beat a traditional test org for probabilistic agents.
 
+## Hard problems
+
+The parts an engineer would lose sleep over. **Public signal** is cited (verified); **likely approach** is labeled speculation — best-practice fill-in, hedged.
+
+| Problem | Why it's hard | Public signal | Likely approach (speculative) |
+| --- | --- | --- | --- |
+| **Integrating fragmented, undocumented carrier/TMS systems** | Each customer runs frozen legacy stacks with no stable API surface; many have no API at all | *"any system with an API, including on-premise AS400-based databases"* and *"where APIs don't exist, Pallet builds them"* ([agent][agent], [forge][forge]) | Likely a Fabric MCP-connector library plus a Browserbase/Playwright browser-automation fallback tier, so undocumented web UIs are driven like a human would |
+| **Trusting non-deterministic agents in systems of record** | A wrong action (booking, invoice, load) costs real money or shipments, and the agent acts autonomously ~95% of the time | *"field-level confidence scoring and cross-model validation"*; high-confidence auto-processes, low-confidence flagged — operators handle ~5% ([parallel][parallel]) | Probably per-field confidence thresholds gating auto-execute vs. human review, tuned per action's blast radius |
+| **Testing probabilistic agents with no QA org** | The unit under test is a stochastic system acting against external systems Pallet doesn't control; classic test pyramids don't fit | *"Pallet runs thousands of simulations to validate agent performance before deployment"*; memories are *"backtested against historical scenarios"* before going active ([agent][agent], [contint][contint]) | Likely a synthetic + historical-replay simulation harness in Forge that scores agent and memory changes pre-deploy, gating promotion |
+| **Learning customer SOPs accurately from messy inboxes** | Tribal knowledge lives in unstructured email; mis-inferred rules silently corrupt every future decision | *"Everest Transportation Systems runs on more than 20,000 customer-specific memories, every one of them inferred from their inbox"* ([forge][forge]) | Probably an extract-then-backtest pipeline that mines plain-English memories from inbox/logs and validates each against history before committing |
+
 ## Unknowns
 
 :::caution[What the public record can't confirm]
