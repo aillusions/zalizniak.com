@@ -9,7 +9,7 @@ A working reference for applied-AI engineering, in two parts. First, **patterns 
 
 ## Patterns from the teardowns
 
-The reusable moves that recur once you read enough teardowns — how teams make non-deterministic agents safe, cheap, and trustworthy enough to put in production. Each links to the teardown(s) where the signal appears.
+The reusable moves that recur once you read enough teardowns — how teams make non-deterministic agents safe, cheap, and trustworthy enough to put in production. Each links to the teardown(s) where the signal appears, and those pages carry the per-claim **VERIFIED / INFERRED / SPECULATIVE** tiers. Where a pattern's specifics are a best-practice guess rather than something the company states, they're hedged in place ("likely," "typically").
 
 ### Autonomy, trust & safety
 
@@ -33,11 +33,11 @@ The reusable moves that recur once you read enough teardowns — how teams make 
 
 ### Cost & latency
 
-**Per-step model routing** — A supervisor routes each step to the cheapest model that can handle it, picked off an internal benchmark re-run every release; a small classifier often gates whether an expensive frontier call is needed at all. Most steps don't need the biggest model. — [Basis](/teardowns/basis/), [Glean](/teardowns/glean/)
+**Per-step model routing** — A supervisor routes each step to the cheapest model that can handle it, picked off an internal benchmark re-run every release (verified at Basis); a small classifier likely gates whether an expensive frontier call is needed at all. Most steps don't need the biggest model. — [Basis](/teardowns/basis/), [Glean](/teardowns/glean/)
 
 **Compiled / semantic caching** — Cache the *result* of an expensive resolution (a located element, a retrieved answer) so the LLM fires only on a cache miss — Momentic runs inference on ~1 step in 20, ~300ms cached vs >5s uncached. The key encodes intent, so cosmetic changes don't bust it. — [Momentic](/teardowns/momentic/), [Glean](/teardowns/glean/)
 
-**Cap plan depth / fan-out** — Explicitly bound how deep an agent can recurse and how many sub-calls it can spawn, so a multi-step plan can't multiply LLM calls without limit. Predictable cost beats unbounded autonomy. — [Glean](/teardowns/glean/), [Momentic](/teardowns/momentic/)
+**Cap plan depth / fan-out** *(speculative)* — A team facing multi-step plans that multiply LLM calls would typically bound how deep an agent can recurse and how many sub-calls it can spawn, so cost stays predictable. Drawn from the *likely-approach* columns, not a stated mechanism. — [Glean](/teardowns/glean/), [Momentic](/teardowns/momentic/)
 
 ### Integrating the messy real world
 
@@ -55,11 +55,11 @@ The reusable moves that recur once you read enough teardowns — how teams make 
 
 ### Architecture & orchestration
 
-**Durable execution, idempotent activities, saga compensation** — Run long, multi-party, multi-day workflows on a durable engine (Temporal) so they survive crashes and replays; make each activity idempotent and use saga-style compensation to unwind partial failures, with humans as exception handlers. — [Pylon](/teardowns/pylon-lending/)
+**Durable execution, idempotent activities, saga compensation** — Run long, multi-party, multi-day workflows on a durable engine (Temporal is named across Pylon's JDs) so they survive crashes and replays, with humans as exception handlers. The idempotent-activities + saga-compensation specifics are the likely engineering, not stated. — [Pylon](/teardowns/pylon-lending/)
 
 **Multi-agent phase-splitting to dodge context degradation** — When one agent's context grows long enough that quality degrades, split the job into specialized phase agents (intro / vetting / logistics / Q&A) that hand off, keeping each one's context small and sharp. — [Traba](/teardowns/traba/), [Antimetal](/teardowns/antimetal/)
 
-**Compile domain logic to a tested DSL** — Encode dense rules (regulatory guidelines, underwriting policy) into an executable DSL with a golden-file/snapshot test suite gating every change; AI drafts the rules, humans approve, and the DSL stays the audited artifact. — [Pylon](/teardowns/pylon-lending/)
+**Compile domain logic to a tested DSL** — Encode dense rules (regulatory guidelines, underwriting policy) into an executable DSL where AI drafts the rules, humans approve, and the DSL stays the audited artifact (verified at Pylon); a golden-file/snapshot test suite gating every change is the likely safeguard. — [Pylon](/teardowns/pylon-lending/)
 
 **Own the hard model, rent the reasoning** — Fine-tune and self-host the model that's genuinely hard for your domain (e.g. ASR on noisy field audio), but rent the frontier LLM for general reasoning behind a router — and keep both swappable. Spend your training budget only where off-the-shelf fails. — [Rilla](/teardowns/rilla/)
 
