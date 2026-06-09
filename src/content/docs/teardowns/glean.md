@@ -9,18 +9,18 @@ sidebar:
   label: Glean · Enterprise search
 ---
 
-## What they do
+[Glean][home] builds "Work AI" — one permissioned index over a company's apps that powers *"intelligent Search, an AI Assistant, and scalable AI agents"* across *"100+ enterprise SaaS connectors"* ([Backend JD][jd-backend]). Ask in natural language; Glean retrieves the right document, person, or action — filtered to what *you* are allowed to see — and increasingly *acts*, not just answers. This is a **mature, late-stage build**, and that's the interesting part: the engineering story is how a search engine *hardens* into enterprise infrastructure — a permissioned knowledge graph, hybrid retrieval, single-tenant isolation, multi-provider model routing, and an eval-gated agent runtime.
 
-[Glean][home] builds "Work AI" — one permissioned index over a company's apps that powers *"intelligent Search, an AI Assistant, and scalable AI agents"* across *"100+ enterprise SaaS connectors"* ([Backend JD][jd-backend]). Ask in natural language; Glean retrieves the right document, person, or action — filtered to what *you* are allowed to see — and increasingly *acts*, not just answers.
+**Vitals:** founded 2019 · Series F ($150M @ $7.2B; ~$768M raised) · ~1,600 people · global (HQ + India).
 
-Founded **2019** by **Arvind Jain** (a Distinguished Engineer on Google Search who went on to co-found Rubrik) with three other ex-Google engineers — Vishwanath T R, Tony Gentilcore, Piyush Prahladka ([Fortune][fortune]). The DNA is Google web search, retargeted at the messy, permission-bounded corpus inside a single company.
+<details>
+<summary>Business context — founders, funding, scale</summary>
 
-This is a **mature, late-stage build**, not an early-stage scramble — and that is the interesting part. The engineering story is how a search engine *hardens* into enterprise infrastructure: single-tenant isolation, ACL-faithful retrieval, multi-provider model routing, and an eval-gated agent runtime.
-
-- **Series F: $150M at a $7.2B valuation**, led by Wellington Management — *"Glean today announced it raised $150 million in Series F financing, bringing its valuation to $7.2 billion"* (June 10 2025, [press release][press-f]).
+- Founded **2019** by **Arvind Jain** (a Distinguished Engineer on Google Search who went on to co-found Rubrik) with three other ex-Google engineers — Vishwanath T R, Tony Gentilcore, Piyush Prahladka ([Fortune][fortune]). The DNA is Google web search, retargeted at the messy, permission-bounded corpus inside a single company.
+- **Series F: $150M at a $7.2B valuation**, led by Wellington Management (June 10 2025, [press release][press-f]); ~$768M raised total, headcount near ~1,600 ([Sacra][sacra]).
 - *"Glean rapidly surpassed $100 million in annual recurring revenue (ARR) in its last fiscal year"* ([press release][press-f]).
 - *"The platform is already powering more than 100 million agent actions annually,"* with a stated goal of *"one billion agent actions by the end of the year"* ([press release][press-f]).
-- ~$768M raised total; third-party trackers put headcount near ~1,600 ([Sacra][sacra]).
+</details>
 
 ## The heavy lifting
 
@@ -53,7 +53,29 @@ A Go-leaning backend, a Bazel monorepo, Kubernetes on a major cloud, and a delib
 The runtime targets *"leading LLM providers (e.g., OpenAI, Anthropic, Google Gemini)"* and builds *"model selection/routing"* as a first-class service ([Runtime JD][jd-runtime]). Glean bets on owning the *context and retrieval* layer, not a single model — the LLM is a swappable, zero-retention dependency.
 :::
 
-The retrieval index, embedding models, and knowledge-graph store aren't named — reconstructed in [Likely internals](#likely-internals).
+## Hard problems
+
+The parts an engineer would lose sleep over. **Public signal** is cited (verified); **likely approach** is labeled speculation — best-practice fill-in, hedged.
+
+| Problem | Why it's hard | Public signal | Likely approach (speculative) |
+| --- | --- | --- | --- |
+| **Testing agents** | Non-deterministic, no shared ground truth; per-tenant isolation means customer queries can't be pooled into one eval set | +24% relevance benchmark; runtime self-reflects on *"its own confidence"*; Runtime owns *"safety"* ([agentic][agentic-blog], [Runtime JD][jd-runtime]) | Offline golden-set + LLM-as-judge on synthetic corpora; online confidence-gating and per-tenant A/B |
+| **Inference cost** | Multi-step plans multiply LLM calls against a ~10× action ramp (100M→1B/yr) | *"model selection/routing"* + multi-provider; Redis cache; RAG *"minimizes LLM data exposure"* ([Runtime JD][jd-runtime], [Security][security], [press][press-f]) | Tiered routing (small classifier gates frontier calls); semantic caching of repeated queries; cap plan depth/fan-out |
+| **Observability** | Reproducing *why* spans a rewritten plan, sub-agents, and many tool calls; isolation limits what Glean can inspect | *"tracing (OpenTelemetry), metrics, dashboards, and production forensics"* ([Runtime JD][jd-runtime]) | One trace per run, a span per step/tool; retain reasoning traces + confidence per tenant; aggregates leave, raw data doesn't |
+
+## Likely internals
+
+The retrieval engine, models, and stores Glean describes but doesn't name — inferred from the public record (an ex-Google-Search team would build, not buy):
+
+| Component | Likely choice | Basis |
+| --- | --- | --- |
+| Index / retrieval engine | a proprietary inverted index + embedding store, not a named third-party vector DB | *"anchors and signals,"* *"self-learning language model"* ([hybrid search][hybrid-blog]); no vendor named; ex-Google-Search team would build |
+| Embedding models | fine-tuned in-house embeddings alongside provider embeddings | hybrid/self-learning search ([hybrid search][hybrid-blog]) + multi-provider posture ([Runtime JD][jd-runtime]) |
+| Knowledge-graph store | a graph materialized over the tenant index rather than a standalone graph DB | triplets + edge properties derived from indexed content ([knowledge graph][kg-blog]); no graph DB named |
+| Ranking model | learning-to-rank over the anchor/signal features | *"self-learning language model"* + the explicit signal list ([hybrid search][hybrid-blog]) |
+| Memory store | per-tenant store keyed to the knowledge graph | "memory" is a named runtime + platform primitive ([Runtime JD][jd-runtime], [Context JD][jd-context]); backing store unstated |
+| Permission enforcement | both index-time ACL filtering and request-time checks | ACLs are mapped and enforced ([Data flow][dataflow], [Security][security]); index-time vs. request-time timing isn't specified |
+| Auth | enterprise SSO (SAML / OIDC) | SSO is confirmed at the query boundary ([Data flow][dataflow]); IdP breadth not enumerated |
 
 ## Architecture
 
@@ -167,58 +189,18 @@ flowchart LR
 Connectors *"map and maintain access controls"* from each source ([Data flow][dataflow]) and Glean ships *"single-tenant connectors, enforced data permissions, and a RAG architecture that minimizes LLM data exposure"* ([Security][security]). For enterprise search the hard problem isn't recall — it's never surfacing a document the user can't open. The whole single-tenant design exists to make ACL-faithful retrieval auditable.
 :::
 
-## Team
+## Team & process
 
-Founder-led by ex-Google search engineers; ~1,600 people ([Sacra][sacra]). The engineering org, read off the job board, is organized by **horizontal platform layer** rather than product vertical.
+Founder-led by ex-Google search engineers; **~1,600 people** ([Sacra][sacra]), organized by **horizontal platform layer** rather than product vertical.
 
 | Role | Person | Source |
 | --- | --- | --- |
 | Co-founder / CEO | Arvind Jain (ex-Google Search; Rubrik co-founder) | [Fortune][fortune] |
 | Co-founders | Vishwanath T R, Tony Gentilcore, Piyush Prahladka (ex-Google) | [Fortune][fortune] |
 
-The team shape, from the JDs: **Agents Runtime** (orchestration, routing, memory, streaming, safety — [Runtime JD][jd-runtime]); **Context Platform** (SDKs, MCP, Code Search/Writer, Memory — [Context JD][jd-context]); **Backend/Infrastructure** (*"a highly performant, scalable, secure, permissions-aware system,"* *"6+ years … distributed systems"* — [Backend JD][jd-backend]); and a dedicated **Developer Productivity** org owning the Bazel monorepo and CI ([Dev Productivity JD][jd-devprod]). Engineering is global, with a *"Software Engineer, Product Backend (India)"* track ([Careers][careers]). Posted backend/dev-productivity comp runs roughly **$140K–$265K** base ([Dev Productivity JD][jd-devprod]).
+The team shape, from the JDs: **Agents Runtime** (orchestration, routing, memory, streaming, safety — [Runtime JD][jd-runtime]); **Context Platform** (SDKs, MCP, Code Search/Writer, Memory — [Context JD][jd-context]); **Backend/Infrastructure** (*"a highly performant, scalable, secure, permissions-aware system,"* *"6+ years … distributed systems"* — [Backend JD][jd-backend]); and a dedicated **Developer Productivity** org owning the **Bazel monorepo** and remote-execution CI ([Dev Productivity JD][jd-devprod]). Engineering is global, with a *"Software Engineer, Product Backend (India)"* track ([Careers][careers]); posted backend/dev-productivity comp runs roughly **$140K–$265K** base ([Dev Productivity JD][jd-devprod]).
 
-## Process
-
-**A monorepo run like Google's.** Developer Productivity *"develop[s] and maintain[s] our Bazel monorepo with support for multiple languages,"* chasing *"hermeticity, caching, reproducibility, and dependency management"* and cutting *"CI latency through remote execution, caching, and parallelization"* ([Dev Productivity JD][jd-devprod]). CI is *"GitHub Actions, Kubernetes, and cloud runners."* The Bazel-monorepo-plus-remote-execution choice is the founders' Google muscle memory applied at ~1,600 engineers.
-
-**AI-native engineering, assessed at the door.** The same team is chartered to *"enable engineers to integrate AI-powered coding assistants (e.g. Github Copilot, Cursor, Claude) into daily workflows"* ([Dev Productivity JD][jd-devprod]), and interviews include *"an AI-focused exercise or discussion"* ([Runtime JD][jd-runtime], [Backend JD][jd-backend]).
-
-:::note[Inference — they dogfood Work AI — confidence: medium]
-A company selling an enterprise assistant and agent platform, that also wires Copilot/Cursor/Claude into its own monorepo workflow, almost certainly runs Glean on its own corpus. The public JDs show the *coding-assistant* half explicitly; internal use of the product itself is the obvious, unstated other half.
-:::
-
-## Notable bets
-
-1. **Own the context layer, rent the model.** The knowledge graph and permissioned index are the durable asset; LLMs are multi-provider, routed, and zero-retention ([Runtime JD][jd-runtime], [Security][security]). Glean is structurally insulated from "which model won this quarter."
-2. **A knowledge graph, not just a vector store.** Triplets with ACL-bearing edges plus a personal graph give multi-hop reasoning and personalization that raw embeddings can't — *"the system of context"* ([knowledge graph][kg-blog]).
-3. **Single-tenant in the customer's cloud.** Heavy operational cost (Dataflow pipelines and a full deployment per tenant) traded for the enterprise's hardest requirement: *"your data never leaves your tenant's environment"* ([Data flow][dataflow]).
-4. **Permissions as the core invariant.** Source ACLs are mapped, maintained, and enforced so retrieval is faithful to what each user may see ([Data flow][dataflow], [Security][security]).
-5. **Open the platform via MCP.** Rather than a closed app, Glean exposes agents and tools through *"a single HTTP endpoint"* into *"20+ MCP hosts"* and every major agent framework ([Dev platform][dev]) — meet developers in Claude, Cursor, ChatGPT.
-6. **Google search discipline at startup speed.** Bazel monorepo, remote-execution CI, hybrid ranking with hand-built signals — the founders rebuilt web-search engineering for the enterprise corpus.
-
-## Hard problems
-
-The parts an engineer would lose sleep over. **Public signal** is cited (verified); **likely approach** is labeled speculation — best-practice fill-in, hedged.
-
-| Problem | Why it's hard | Public signal | Likely approach (speculative) |
-| --- | --- | --- | --- |
-| **Testing agents** | Non-deterministic, no shared ground truth; per-tenant isolation means customer queries can't be pooled into one eval set | +24% relevance benchmark; runtime self-reflects on *"its own confidence"*; Runtime owns *"safety"* ([agentic][agentic-blog], [Runtime JD][jd-runtime]) | Offline golden-set + LLM-as-judge on synthetic corpora; online confidence-gating and per-tenant A/B |
-| **Inference cost** | Multi-step plans multiply LLM calls against a ~10× action ramp (100M→1B/yr) | *"model selection/routing"* + multi-provider; Redis cache; RAG *"minimizes LLM data exposure"* ([Runtime JD][jd-runtime], [Security][security], [press][press-f]) | Tiered routing (small classifier gates frontier calls); semantic caching of repeated queries; cap plan depth/fan-out |
-| **Observability** | Reproducing *why* spans a rewritten plan, sub-agents, and many tool calls; isolation limits what Glean can inspect | *"tracing (OpenTelemetry), metrics, dashboards, and production forensics"* ([Runtime JD][jd-runtime]) | One trace per run, a span per step/tool; retain reasoning traces + confidence per tenant; aggregates leave, raw data doesn't |
-
-## Unknowns
-
-:::caution[What the public record can't confirm]
-Genuinely open questions; best-practice guesses for the infra live in [Likely internals](#likely-internals).
-
-- **Retrieval engine** — hybrid vector+lexical search is confirmed ([hybrid search][hybrid-blog]); the underlying index (custom vs. a named vector DB / Lucene-class engine) is not stated.
-- **Embedding & ranking models** — a *"self-learning language model"* and a signal stack are described ([hybrid search][hybrid-blog]); whether embeddings/rankers are in-house, provider, or both is unconfirmed.
-- **Knowledge-graph store** — triplets with edge properties are described ([knowledge graph][kg-blog]); whether it's a standalone graph DB or materialized over the index is unknown.
-- **Memory backing store** — "memory" is named as both a runtime and a platform primitive ([Runtime JD][jd-runtime], [Context JD][jd-context]); its persistence layer isn't public.
-- **Permission-enforcement timing** — index-time filtering vs. request-time ACL checks (or both) isn't specified.
-- **Engineering headcount / exact org size** — only a third-party total (~1,600) is available ([Sacra][sacra]).
-:::
+The dev loop is Google muscle-memory at startup speed — Bazel monorepo, remote-execution CI, GitHub Actions on Kubernetes — and **AI-native by mandate**: the same Dev Productivity org wires *"Github Copilot, Cursor, Claude"* into daily workflows, and interviews include *"an AI-focused exercise or discussion"* ([Dev Productivity JD][jd-devprod], [Runtime JD][jd-runtime]). A company selling an enterprise assistant and wiring coding assistants into its own monorepo almost certainly runs Glean on its own corpus — the coding-assistant half is explicit; internal product use is the obvious unstated other half (inferred, confidence: medium).
 
 ## Sources
 
@@ -242,23 +224,6 @@ Reconstructed from public sources only — no insider information. Crawled 2026-
 | S14 | Series F press release | <https://www.glean.com/press/glean-raises-150m-series-f-at-7-2b-valuation-to-accelerate-enterprise-ai-agent-innovation-globally> |
 | S15 | Sacra (third-party — revenue/headcount) | <https://sacra.com/c/glean/> |
 | S16 | Fortune (third-party — founder) | <https://fortune.com/2025/03/27/glean-ceo-arvind-jain-lessons-from-an-ai-unicorn/> |
-
-## Speculative reconstruction
-
-:::tip[Best-practice reconstruction, not fact]
-Nothing here is stated on a public page. It's what a team with *this* stack — ex-Google-Search founders, a Go/Bazel backend, a hybrid vector+lexical engine, a triplet knowledge graph, and a single-tenant Dataflow deployment — would *typically* reach for. Read every dashed box in the diagram as "likely," not confirmed.
-:::
-
-### Likely internals
-
-| Component | Likely choice | Why |
-| --- | --- | --- |
-| Index / retrieval engine | a proprietary inverted index + embedding store, not a named third-party vector DB | *"anchors and signals,"* *"self-learning language model"* ([hybrid search][hybrid-blog]); no vendor named; ex-Google-Search team would build, not buy |
-| Embedding models | fine-tuned in-house embeddings alongside provider embeddings | hybrid/self-learning search ([hybrid search][hybrid-blog]) + multi-provider posture ([Runtime JD][jd-runtime]) |
-| Knowledge-graph store | a graph materialized over the tenant index rather than a standalone graph DB | triplets + edge properties derived from indexed content ([knowledge graph][kg-blog]); no graph DB named |
-| Ranking model | learning-to-rank over the anchor/signal features | *"self-learning language model"* + the explicit signal list ([hybrid search][hybrid-blog]) |
-| Memory store | per-tenant store keyed to the knowledge graph | "memory" is a named runtime + platform primitive ([Runtime JD][jd-runtime], [Context JD][jd-context]); backing store unstated |
-| Auth | enterprise SSO (SAML / OIDC) | SSO is confirmed at the query boundary ([Data flow][dataflow]); IdP breadth not enumerated |
 
 [home]: https://www.glean.com/
 [security]: https://www.glean.com/security
