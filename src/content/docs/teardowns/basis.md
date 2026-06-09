@@ -9,22 +9,19 @@ sidebar:
   label: Basis · Accounting
 ---
 
-## What they do
+[Basis][home] builds **AI agents that do accounting work end-to-end** for accounting firms — *"agents that do real accounting work, end to end. These agents run autonomously, sometimes for hours, collaborating with accountants at key decision points"* ([about][about]). The visible workload is reconciliations, journal entries, financial summaries, technical accounting memos, and *"a partnership tax workbook end to end"* ([OpenAI case study][openai], [Series B][seriesb]). The technical story is two-sided: a multi-agent **product** (a GPT-5 supervisor routing to model-benchmarked sub-agents over a reviewable context layer) and an agent-native **company** built to ship it (Atlas, the Satellite MCP gateway, the Clueso incident agent).
 
-[Basis][home] builds **AI agents that do accounting work end-to-end** for accounting firms — *"agents that do real accounting work, end to end. These agents run autonomously, sometimes for hours, collaborating with accountants at key decision points"* ([about][about]). Founded in 2023, it sells to the firms themselves: *"agents that do real work in the real economy … performing end-to-end work for some of the largest accounting firms in the world"* ([Ashby][ashby]). The visible workload is reconciliations, journal entries, financial summaries, technical accounting memos, and — as of the Series B — *"a partnership tax workbook end to end"* ([OpenAI case study][openai], [Series B][seriesb]).
+**Vitals:** founded 2023 · Series B ($100M @ $1.15B) · ~80 people · NYC (in-person, Flatiron).
 
-The wedge is **reviewable autonomy**, not a copilot. Agents run independently but expose their work for sign-off: firms report *"up to 30% time savings"* and redirect the recovered capacity to advisory work ([OpenAI case study][openai]). Co-founders **Matt Harpe** (CEO) and **Mitchell Troyanovsky** ([Series B][seriesb], [OpenAI case study][openai]).
+<details>
+<summary>Business context — founders, funding, customers</summary>
 
-The numbers Basis states publicly:
-
+- Co-founders **Matt Harpe** (CEO) and **Mitchell Troyanovsky** ([Series B][seriesb], [OpenAI case study][openai]).
 - **$100M Series B at a $1.15B valuation** (Feb 24 2026), led by **Accel** (Miles Clements) and **GV** ([Series B][seriesb]); follows a **$34M Series A** led by **Khosla Ventures** and a **$3.6M** seed ([blog][blog]).
 - Backers include **Khosla (Keith Rabois & Vinod Khosla), Nat Friedman & Daniel Gross, Adam D'Angelo, Jeff Dean, Jack Altman, Noam Brown, Kyle Vogt, Amjad Masad, Clem Delangue** ([Ashby][ashby]).
-- *"Basis supports a significant share of large accounting firms across the U.S."* ([OpenAI case study][openai]); a named partnership with **Baker Tilly** ([blog][blog]).
+- The wedge is **reviewable autonomy**, not a copilot: firms report *"up to 30% time savings"* and redirect recovered capacity to advisory work ([OpenAI case study][openai]). *"Basis supports a significant share of large accounting firms across the U.S."* ([OpenAI case study][openai]); named partnership with **Baker Tilly** ([blog][blog]).
 - *"Racing to deploy the most advanced applied ML at production scale"* ([Ashby][ashby]).
-
-:::note[Two systems, one bet — confidence: high]
-Basis builds **a product** (the accounting agents, run on OpenAI models) *and* **an agent-native company** to build it — an internal team (Atlas) shipping internal agents, a unified tool gateway, and an agent-ergonomic monorepo ([building-for-AGI][agi], [Satellite][satellite]). The teardown covers both; they're deliberately the same playbook applied inward and outward.
-:::
+</details>
 
 ## The heavy lifting
 
@@ -56,7 +53,31 @@ TypeScript + Python across the board, with OpenAI frontier models as the product
 Basis picks the model per step from a scored internal suite, and re-runs it every release — GPT-5 hit *"a perfect 100% success rate"* on its parallel-tool-calling benchmark before being promoted to the supervisor role ([OpenAI case study][openai]). The product is built so a better model upgrades the whole system, not so one model is load-bearing.
 :::
 
-The product's hosting target, customer-data store, and any vector/retrieval store behind the context layer aren't stated — reconstructed in [Likely stack & infra choices](#likely-stack--infra-choices).
+## Hard problems
+
+The parts an engineer would lose sleep over. **Public signal** is cited (verified); **likely approach** is labeled speculation — best-practice fill-in, hedged.
+
+| Problem | Why it's hard | Public signal | Likely approach (speculative) |
+| --- | --- | --- | --- |
+| **Trajectory-level eval & credit assignment** | An agent runs hours across thousands of decisions; attributing a bad outcome to one reasoning step, and tuning judges over subjective accounting calls, doesn't reduce to pass/fail | Basis names it as an open frontier — *"An agent runs for five hours across thousands of decisions. How do we attribute outcomes back to specific reasoning steps? How do we tune eval judges when the judgement includes subjectivity?"* ([mts][mts]) | Likely a dedicated Agent Platform eval-systems team building step-level trace replay + LLM-judge harnesses graded against accountant corrections |
+| **Audit-grade explainability** | In accounting, a wrong-but-confident journal entry is an audit/compliance liability; the output must justify itself well enough for a CPA to sign off | Each output carries *"what data was used, why it was mapped that way, and how confident the system is"*, and models are benchmarked on *"how clearly the model can explain its reasoning"* to gate go-live ([openai][openai]) | Likely explanation + confidence treated as first-class eval metrics, with new workflows probably gated behind an explainability threshold, not just an accuracy one |
+| **Per-firm data isolation** | Agents act autonomously over multiple firms' client financials; one cross-tenant leak via a tool call is catastrophic and a compliance breach | Agents touch client financials and a GRC role is open, but tenancy controls are undescribed ([ashby][ashby]) | Likely schema-per-tenant or row-level isolation plus scoped, per-firm agent tool access enforced at the Satellite-style gateway |
+| **Model-version churn** | The product is built on bought OpenAI models that change under it; each release can shift behavior on long-horizon accounting tasks | Basis re-benchmarks every release — GPT-5 hit *"a perfect 100% success rate"* on its tool-calling benchmark before promotion to supervisor ([openai][openai]) | Likely an automated benchmark gate in CI that re-scores candidate models per workflow and only promotes one that clears accuracy + explainability bars |
+
+## Likely internals
+
+The infrastructure Basis doesn't name publicly, inferred from the stack it does — and from the fact that Modal/Neon/Google-SSO are confirmed only on the *internal* side:
+
+| Component | Likely choice | Basis |
+| --- | --- | --- |
+| Product front end | React / Next.js (TypeScript) | TypeScript confirmed in the monorepo ([monorepo][monorepo]); React the low-surprise default for a review-heavy web app |
+| Product backend compute | containerized Python services (Modal or a cloud container runtime) | Modal confirmed for internal Clueso ([Clueso][clueso]); the product's Python services plausibly reuse it, but it's unstated |
+| Customer accounting-data store | PostgreSQL | Neon Postgres confirmed for *dev* ([Satellite][satellite]); Postgres the conventional system of record for structured financial data |
+| Context-layer retrieval | embeddings + pgvector / a managed vector DB | a "central context layer" surfacing sources implies retrieval; the store isn't public |
+| LLM gateway | thin internal router over OpenAI (+ benchmark hooks) | benchmark-driven model selection ([OpenAI case study][openai]) implies a routing abstraction, though it isn't named |
+| Per-firm isolation | row-level / schema-per-tenant + scoped agent tool access | client financials demand tenancy isolation; an open GRC role ([Ashby][ashby]) signals controls exist |
+| Customer auth | a managed IdP (Auth0 / WorkOS / Stytch) | Google SSO confirmed *internally* ([Satellite][satellite]); firm-facing SSO/SAML usually via a managed IdP |
+| Secrets | a secrets manager behind Satellite | Satellite already does "secrets-manager indirection" for shared keys ([Satellite][satellite]) |
 
 ## Architecture
 
@@ -161,69 +182,20 @@ flowchart LR
 The same primitives appear on both sides: a supervisor delegating to specialized sub-agents (product) mirrors `.agents/roles/` with verifier/enforcer agents (monorepo); the product's "central context layer" mirrors "treat company context like a codebase" (Atlas). Building Clueso and Satellite is how Basis pressure-tests long-horizon agent patterns before — or alongside — shipping them to firms.
 :::
 
-## Team
+## Team & process
 
-Engineers are **"Members of Technical Staff,"** comp banded **$100K–$300K + equity**, **in-person in Flatiron, NYC, 5 days a week** ([Ashby MTS][mts]). Third-party trackers peg headcount near **~80**; the board lists **30 open roles**, heavily GTM and "Deployed Intelligence," with a compact technical core ([Ashby][ashby]).
+Engineers are **"Members of Technical Staff,"** comp banded **$100K–$300K + equity**, **in-person in Flatiron NYC, 5 days a week** ([Ashby MTS][mts]); third-party trackers peg headcount near **~80** ([Ashby][ashby]).
 
-| Role | People | Source |
+| Role | Person | Source |
 | --- | --- | --- |
 | Co-founder / CEO | Matt Harpe | [Series B][seriesb] |
 | Co-founder | Mitchell Troyanovsky | [OpenAI case study][openai] |
 
-The org is deliberately fluid: *"We don't have static functional teams. We have pods that … reform every quarter"* and engineers move *"core infra work one quarter and product agent work the next"* ([Ashby MTS][mts]). Technical work spans **Product Engineering, Agent Engineering** (context engineering, tool design), **Agent Platform** (harness engineering, eval systems), **Platform & Infrastructure, Agent Data**, and **Atlas** ([Ashby MTS][mts]). The named non-technical surface is **Deployed Intelligence** — an FDE-style function that *"parachute[s] into our customer's organizations … and give[s] them the tools to redesign their accounting workflows around intelligent agents"* ([Deployed Intelligence][deployed]).
-
-:::note[Inference — applied-ML org, no public research function — confidence: medium]
-Every technical role is *applied*: harnesses, eval systems, context/tool engineering over third-party frontier models ([Ashby MTS][mts]). The reasoning substrate is bought (OpenAI for product; Claude/Codex/Cursor harnesses internally), and there's no advertised pretraining or research org — consistent with *"the most advanced applied ML at production scale"* ([Ashby][ashby]) rather than model R&D.
-:::
-
-## Process
-
-**Engineering is being redefined as agent-direction.** Basis states *"approx 20% of product engineering at Basis is teaching agents to tackle non-deterministic workflows. We see that being 70% by end of year,"* and frames the job as *"Engineering > Coding … Anything that can be clearly defined and verified will be delegated to an agent"* ([Ashby MTS][mts]). Every engineer gets an **unlimited token budget**, and excitement about coding agents is a stated non-negotiable ([Ashby MTS][mts]).
-
-**Ownership is individualized.** *"Every project at Basis has a single Responsible Party (RP) who is accountable for whether it ships and whether it works"* ([Ashby MTS][mts]) — a named-owner model rather than committee sign-off, which fits a small org delegating execution to agents.
-
-**Conventions are audited, not inherited.** The *Chesterton's Wall* post argues engineering best practices are constraint-coping mechanisms that go vestigial as models improve — even noting a colleague asked to **stop splitting PRs** because small diffs *"confused the AI code assistant"* when scaffolding landed without its integrations ([Chesterton's Wall][chesterton]). Internal eval culture shows up as a recurring **"Prompt Olympics"** ([blog][blog]).
-
-:::note[Inference — the hard open problem is trajectory-level eval — confidence: high]
-Basis names its own frontier: *"An agent runs for five hours across thousands of decisions. How do we attribute outcomes back to specific reasoning steps? How do we tune eval judges when the judgement includes subjectivity?"* ([Ashby MTS][mts]). Long-horizon credit assignment and judge-tuning — not raw model capability — are where they're spending engineering.
-:::
-
-## Notable bets
-
-1. **Reviewable autonomy as the product.** Not a copilot — agents do the work end-to-end, but every output carries data lineage, mapping rationale, and a confidence signal so a CPA can sign off ([OpenAI case study][openai]).
-2. **Model-agnostic by benchmark.** Route each step to the best-scoring model and re-benchmark every release, so the system compounds with model progress instead of betting on one ([OpenAI case study][openai]).
-3. **Autonomy gated on explainability.** New workflows go live only when a model can both perform *and* explain — explainability is a release gate, not a nice-to-have ([OpenAI case study][openai]).
-4. **Agent-native company.** Treat company context like a codebase; build Atlas, Satellite (unified MCP over 36 providers), and Clueso so internal output is increasingly agent-produced ([building-for-AGI][agi], [Satellite][satellite], [Clueso][clueso]).
-5. **Buy reasoning, own orchestration.** OpenAI models for the product; Claude Agent SDK / Codex / Cursor / Cowork as internal harnesses — Basis owns routing, context, tools, and eval, not the models ([OpenAI case study][openai], [Satellite][satellite], [Clueso][clueso]).
-6. **Org as a wager.** MTS titles, quarterly-reforming pods, single-RP ownership, unlimited token budgets, and 5-day in-person — an explicit claim that the company structure, not just the tech, is the edge ([Ashby MTS][mts], [building-for-AGI][agi]).
-
-## Hard problems
-
-The parts an engineer would lose sleep over. **Public signal** is cited (verified); **likely approach** is labeled speculation — best-practice fill-in, hedged.
-
-| Problem | Why it's hard | Public signal | Likely approach (speculative) |
-| --- | --- | --- | --- |
-| **Trajectory-level eval & credit assignment** | An agent runs hours across thousands of decisions; attributing a bad outcome to one reasoning step, and tuning judges over subjective accounting calls, doesn't reduce to pass/fail | Basis names it as an open frontier — *"An agent runs for five hours across thousands of decisions. How do we attribute outcomes back to specific reasoning steps? How do we tune eval judges when the judgement includes subjectivity?"* ([mts][mts]) | Likely a dedicated Agent Platform eval-systems team building step-level trace replay + LLM-judge harnesses graded against accountant corrections |
-| **Audit-grade explainability** | In accounting, a wrong-but-confident journal entry is an audit/compliance liability; the output must justify itself well enough for a CPA to sign off | Each output carries *"what data was used, why it was mapped that way, and how confident the system is"*, and models are benchmarked on *"how clearly the model can explain its reasoning"* to gate go-live ([openai][openai]) | Likely explanation + confidence treated as first-class eval metrics, with new workflows probably gated behind an explainability threshold, not just an accuracy one |
-| **Per-firm data isolation** | Agents act autonomously over multiple firms' client financials; one cross-tenant leak via a tool call is catastrophic and a compliance breach | Agents touch client financials and a GRC role is open, but tenancy controls are undescribed ([ashby][ashby]) | Likely schema-per-tenant or row-level isolation plus scoped, per-firm agent tool access enforced at the Satellite-style gateway |
-| **Model-version churn** | The product is built on bought OpenAI models that change under it; each release can shift behavior on long-horizon accounting tasks | Basis re-benchmarks every release — GPT-5 hit *"a perfect 100% success rate"* on its tool-calling benchmark before promotion to supervisor ([openai][openai]) | Likely an automated benchmark gate in CI that re-scores candidate models per workflow and only promotes one that clears accuracy + explainability bars |
-
-## Unknowns
-
-:::caution[What the public record can't confirm]
-Open questions where even a best-practice guess would be a stretch (conventional infra guesses live in [Likely stack & infra choices](#likely-stack--infra-choices)):
-
-- **Product hosting/compute** — Modal is confirmed only for the *internal* Clueso agent ([Clueso][clueso]); the customer-facing product's compute target isn't stated.
-- **Customer accounting-data store** — Neon Postgres is named for *dev* branches ([Satellite][satellite]); whether the product's system of record is the same or separate is unstated.
-- **Context-layer storage** — the "central context layer" ([OpenAI case study][openai]) clearly implies retrieval, but the vector store / RAG design isn't public.
-- **Per-firm isolation & security** — agents touch client financials and a GRC role is open ([Ashby][ashby]), but tenancy isolation and controls aren't described.
-- **Trajectory eval mechanics** — Basis names long-horizon credit assignment and judge-tuning as open problems ([Ashby MTS][mts]); how they solve them isn't public.
-- **Exact headcount and eng split** — only inferable from open roles and trackers.
-:::
+The org is deliberately fluid — *"pods that … reform every quarter,"* each project owned by a single *"Responsible Party"* ([Ashby MTS][mts]) — and it's an **applied-ML shop, not a research lab**: harnesses, eval systems, and context/tool engineering over bought frontier models, with no advertised pretraining function ([Ashby MTS][mts]). Engineering is being redefined as agent-direction: *"approx 20% of product engineering … is teaching agents to tackle non-deterministic workflows. We see that being 70% by end of year,"* every engineer gets an **unlimited token budget**, and the named frontier is trajectory-level eval — *"an agent runs for five hours across thousands of decisions. How do we attribute outcomes back to specific reasoning steps?"* ([Ashby MTS][mts]).
 
 ## Sources
 
-Reconstructed from public sources only — no insider information. Crawled 2026-06-07. Claim tiers used above: **verified** (stated on a public page, linked) · **inferred** (reasoned from a cited signal, confidence flagged) · **speculative** (best-practice fill-in, labeled). Links are live; pages change, so the supporting quote for each claim is kept in this repo's evidence map (`evidence/basis-evidence-map.md`).
+Reconstructed from public sources only — no insider information. Crawled 2026-06-07. Claim tiers: **verified** (stated on a public page, linked) · **inferred** (reasoned from a cited signal, confidence flagged) · **speculative** (best-practice fill-in, labeled). Links are live; pages change, so the supporting quote for each claim is kept in this repo's evidence map (`evidence/basis-evidence-map.md`).
 
 | # | Source | Link |
 | --- | --- | --- |
@@ -240,74 +212,6 @@ Reconstructed from public sources only — no insider information. Crawled 2026-
 | S11 | Chesterton's Wall | <https://www.getbasis.ai/blogs/chestertons-wall> |
 | S12 | OpenAI case study (quotes Basis) | <https://openai.com/index/basis/> |
 | S13 | Job board (Ashby) — incl. Member of Technical Staff (All Levels) | <https://jobs.ashbyhq.com/basis-ai> |
-
-## Speculative reconstruction
-
-:::tip[Best-practice reconstruction, not fact]
-Nothing in this section is stated on a public page. It is what a team with *this* stack — a Python/TypeScript monorepo, OpenAI models for a multi-agent product, internal MCP + Neon Postgres + Modal, all in one NYC office — would *typically* build. It's here to complete the picture. In the diagram, solid boxes are verified anchors carried up from the sections above; everything dashed is assumed. Read every dashed box as "likely," not confirmed.
-:::
-
-### Likely stack & infra choices
-
-| Component | Likely choice | Why |
-| --- | --- | --- |
-| Product front end | React / Next.js (TypeScript) | TypeScript is confirmed in the monorepo ([monorepo][monorepo]); React is the low-surprise default for a review-heavy web app |
-| Product backend compute | containerized Python services (Modal or a cloud container runtime) | Modal is confirmed for internal Clueso ([Clueso][clueso]); the product's Python services would plausibly reuse the same muscle, but it's unstated |
-| Customer data store | PostgreSQL | Neon Postgres is confirmed for dev ([Satellite][satellite]); Postgres is the conventional system of record for structured financial data |
-| Context-layer retrieval | embeddings + pgvector / a managed vector DB | a "central context layer" surfacing sources implies retrieval; Postgres-adjacent pgvector is the low-friction choice |
-| Customer auth | a managed IdP (Auth0 / WorkOS / Stytch) | Google SSO is confirmed *internally* ([Satellite][satellite]); firm-facing SSO/SAML usually goes through a managed IdP |
-| Per-firm isolation | row-level / schema-per-tenant + scoped agent tool access | client financials demand tenancy isolation; an open GRC role ([Ashby][ashby]) signals controls exist |
-| LLM gateway | thin internal router over OpenAI (+ benchmark hooks) | the benchmark-driven model selection ([OpenAI case study][openai]) implies a routing abstraction, though it isn't named |
-| Secrets | a secrets manager behind Satellite | Satellite already does "secrets-manager indirection" for shared keys ([Satellite][satellite]) |
-
-### Full system architecture
-
-The verified spine is real: accountant users, a GPT-5 supervisor delegating to GPT-5/GPT-4.1 sub-agents chosen by an internal benchmark suite, a central context layer, Satellite for internal data/tools, and Better Stack + PostHog telemetry. Reconstructed here are the **product front end and Python backend**, the **customer data store + vector retrieval**, the **customer auth/IdP**, and **per-firm isolation**.
-
-![Full-system architecture for Basis: verified anchors (accountant users, GPT-5 supervisor and sub-agents, internal benchmark suite, central context layer, Satellite unified MCP, Better Stack/PostHog observability) shown as solid boxes; assumed parts (TypeScript web app, Python backend, customer Postgres, vector store, managed auth IdP, per-firm isolation) shown dashed.](/diagrams/basis/speculative-architecture.svg)
-
-<details>
-<summary>Mermaid source</summary>
-
-```mermaid
-flowchart TB
-  classDef verified fill:#e8f1fd,stroke:#2563eb,stroke-width:2px,color:#0f172a;
-  classDef spec fill:#ffffff,stroke:#b4bdca,stroke-width:1.3px,stroke-dasharray:6 4,color:#475569;
-
-  Acct("Accountants · accounting-firm users"):::verified
-  App("Product web app · likely<br/>TypeScript front end"):::spec
-  Compute("Product backend · likely<br/>Python services · containerized"):::spec
-
-  subgraph Agents["Multi-agent accounting engine"]
-    direction TB
-    Sup("Supervising agent · GPT-5"):::verified
-    Subm("Sub-agents · GPT-5 / GPT-4.1"):::verified
-    Bench("Internal benchmark suite<br/>model selection + go-live gating"):::verified
-    Sup --> Subm
-    Bench -. scores .-> Subm
-  end
-
-  Ctx[("Central context layer<br/>assumptions · sources · logic")]:::verified
-  Vec[("Vector / retrieval store<br/>for context layer · likely")]:::spec
-  PG[("Customer accounting data store<br/>Postgres · likely")]:::spec
-  Iso("Per-firm data isolation + GRC controls · likely"):::spec
-
-  Sat{{"Satellite unified MCP<br/>internal data + tools"}}:::verified
-  Obs("Observability<br/>Better Stack · PostHog"):::verified
-  Auth("Auth / IdP · Google SSO internal; customer authn likely managed IdP"):::spec
-
-  Acct --> App --> Compute
-  Compute --> Agents
-  Agents <--> Ctx
-  Ctx -. embeddings .-> Vec
-  Compute --> PG
-  PG -. enforced by .-> Iso
-  Compute --> Sat
-  Compute -. traces .-> Obs
-  Acct -. authn .-> Auth
-```
-
-</details>
 
 [home]: https://www.getbasis.ai/
 [about]: https://www.getbasis.ai/about
