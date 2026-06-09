@@ -9,22 +9,20 @@ sidebar:
   label: Pylon · Lending
 ---
 
-## What they do
+[Pylon][home] is *"the first AI-native infrastructure platform to deliver autonomous mortgages at scale,"* handling *"everything from application to capital markets settlement"* ([home][home]) — betting that *"mortgages are the last major financial product that are not programmable"* and turning origination into *"a single API"* ([about][about]). The engineering core: compile dense underwriting guidelines into executable DSLs, orchestrate the multi-day application-to-settlement pipeline on **Temporal**, and rep-and-warrant every loan into the capital markets.
 
-[Pylon][home] is *"the first AI-native infrastructure platform to deliver autonomous mortgages at scale,"* handling *"everything from application to capital markets settlement"* ([home][home]). The thesis is stated bluntly: *"Mortgages are the last major financial product that are not programmable"* — so Pylon *"started from zero and created the first vertically integrated mortgage platform that turns origination into a single API"* ([about][about]). The pitch is the whole strategy: *"Out with the mortgage factory. In with the mortgage rails."*
+**Vitals:** founded ~2022 · ~$45M raised (Seed→A) · ~40 people · Palo Alto (eng) + NYC (GTM).
 
-:::note[The build order is the bet — confidence: high]
-Pylon re-wired the stack *"from capital markets to initial application (in that order)"* ([introducing][intro]). Owning the takeout first — Pylon *"reps & warrants every loan into the capital markets"* ([fintechs][fintechs]) — is what lets it collapse the rest of the chain into an API instead of reselling someone else's pipeline.
-:::
+<details>
+<summary>Business context — team, funding, results, products</summary>
 
-What it's built on:
-
-- Founded ~2022; the team *"primarily comes from Stripe and Better"* ([introducing][intro]). HQ in **Palo Alto** (engineering), with **New York** (GTM/Product) ([careers][careers], [Ashby][ashby]); ~40 people ([Paraform tracker][paraform]).
-- **$45M raised** ([about][about]) — seed ~$8M led by **Conversion Capital** (Dec 2022, [FinTech Global][ftc]); institutional backers **Conversion Capital, Peter Thiel, QED, Citi, Allegis Capital, Fifth Wall** ([introducing][intro]), plus angels including the founders of **Ramp, Mercury, Blend, DoorDash, Wealthfront** and **Naval Ravikant** ([about][about]).
+- The team *"primarily comes from Stripe and Better"* ([introducing][intro]); HQ **Palo Alto** (engineering) + **New York** (GTM/Product) ([careers][careers], [Ashby][ashby]); ~40 people ([Paraform tracker][paraform]).
+- **$45M raised** ([about][about]) — seed ~$8M led by **Conversion Capital** (Dec 2022, [FinTech Global][ftc]); backers **Conversion Capital, Peter Thiel, QED, Citi, Allegis Capital, Fifth Wall** ([introducing][intro]), plus angels incl. founders of **Ramp, Mercury, Blend, DoorDash, Wealthfront** and **Naval Ravikant** ([about][about]).
 - **Citi** connected its *"mortgage trading desk to the Pylon platform alongside a strategic minority ownership investment"* ([introducing][intro]).
 - Claimed results: **74% lower cost to originate** vs. the Freddie Mac 2024 study, **75–200bps better pricing**, **~102bps more per loan**, **2× MoM revenue growth** ([home][home], [careers][careers]).
-
-The product is **five composable products** on the API — **Decisioning, Capital, Command Center, Elements, Compliance** ([introducing][intro]) — sold to **brokers, fintechs, lenders, and banks** ([home][home]).
+- **Five composable products** on the API — **Decisioning, Capital, Command Center, Elements, Compliance** ([introducing][intro]) — sold to **brokers, fintechs, lenders, and banks** ([home][home]).
+- **The build order is the bet:** Pylon re-wired the stack *"from capital markets to initial application (in that order)"* ([introducing][intro]). Owning the takeout first — it *"reps & warrants every loan into the capital markets"* ([fintechs][fintechs]) — is what lets it collapse the rest of the chain into an API instead of reselling someone else's pipeline.
+</details>
 
 ## The heavy lifting
 
@@ -59,7 +57,30 @@ A single-language TypeScript shop: TS everywhere, GraphQL as the contract, NestJ
 A mortgage is a multi-day, multi-party, failure-prone workflow — exactly Temporal's sweet spot, and it appears in *every* engineering JD. On top sits a GraphQL API the team *"treat[s] as a product … Multiple customers build directly on top of it"* ([API JD][jd-api]). The Stripe-style prefixed IDs in the sample (`borr_…`, deal `morwor_…`) are the ex-Stripe DNA showing through.
 :::
 
-The LLM provider, document-AI/OCR pipeline, and guideline retrieval index aren't named — reconstructed in [Likely stack & infra choices](#likely-stack--infra-choices).
+## Hard problems
+
+The parts an engineer would lose sleep over. **Public signal** is cited (verified); **likely approach** is labeled speculation — best-practice fill-in, hedged.
+
+| Problem | Why it's hard | Public signal | Likely approach (speculative) |
+| --- | --- | --- | --- |
+| **DSL rule correctness** | A single mis-encoded guideline is Pylon's own loss, not the borrower's | *"An incorrectly modeled rule can cost the company tens of thousands of dollars on a single loan"*; Pylon *"reps & warrants every loan"* ([jd-uw][jd-uw], [fintechs][fintechs]) | Likely a golden-file/snapshot test suite over historical loans plus property-style tests, gating every DSL change in CI |
+| **AI-compiled guidelines** | An LLM translating dense regulatory English into executable logic can be subtly, expensively wrong | *"translate dense regulatory guidelines into executable logic … including AI … compiling English into a system that makes six-figure decisions,"* built *"side-by-side with mortgage experts"* ([jd-uw][jd-uw]) | Probably human-in-the-loop review of generated rules with the DSL as the audited artifact, AI as draft-generator not decider |
+| **Durable multi-day workflows** | A mortgage is a multi-day, multi-party flow where a dropped step or bad replay loses real money | Temporal in *every* eng JD; Foundation keeps *"highly available systems"* that *"process millions of dollars in mortgage transactions"* ([jd-infra][jd-infra], [jd-api][jd-api]) | Likely deterministic Temporal workflows with idempotent activities and saga-style compensation for external order-outs |
+| **Per-file compliance + auditability** | Every automated decision must be explainable and TRID-compliant on demand for regulators and capital-markets buyers | Pylon *"encodes compliance into every file"*; settlement enforces TRID timing and a zero-variance fee ledger ([fintechs][fintechs], [home][home]) | Probably an immutable per-loan decision/event log tying each outcome to the exact DSL rule version that produced it |
+
+## Likely internals
+
+The infrastructure Pylon doesn't name publicly, inferred from the stack it does:
+
+| Component | Likely choice | Basis |
+| --- | --- | --- |
+| Reasoning LLM | a frontier model behind a provider abstraction, used for guideline compilation + doc understanding | *"including AI"* in the underwriting DSL ([Underwriting JD][jd-uw]); no model named |
+| Underwriting DSL form | a TypeScript-embedded DSL or a rules engine, not a standalone language | *"custom DSLs for rule encoding"* ([Underwriting JD][jd-uw]); standalone vs embedded unstated |
+| Document AI / OCR | a managed doc-extraction service or in-house ML for paystubs, bank statements, title | Intake *"verifies income and assets"* ([home][home]); extraction is implied, not named |
+| Guideline retrieval | embeddings + vector index over investor guidelines | *"mapping file to guidelines"* ([home][home]); retrieval over dense rulebooks is the natural fit |
+| Event backbone | AWS-native (SNS/SQS/EventBridge) or Kafka feeding the event-driven API | *"event-driven architecture"* on AWS ([API][jd-api], [Infra][jd-infra]) |
+| Container orchestration | ECS or EKS on AWS | AWS confirmed ([Infra JD][jd-infra]); orchestrator not stated |
+| Auth / identity | a managed IdP for platform + embedded borrower flows | enterprise/regulated buyers; white-label Elements; no vendor named |
 
 ## Architecture
 
@@ -126,9 +147,9 @@ flowchart LR
 
 **Integrations are the connective tissue.** A dedicated team plugs Pylon into *"credit bureaus, title companies, insurance providers, document services"* — *"mortgage touches everything"* — across *"REST, SOAP, file-based — the full spectrum"* ([Integrations JD][jd-int]). The pipeline's order-outs, disclosures, AUS, and fraud checks all ride these connectors, and **Settle** hands the finished loan to the **capital-markets takeout** (the Citi trading desk and direct Wall Street access).
 
-## Team
+## Team & process
 
-Small, senior, and pointedly from outside mortgage: *"We don't come from the mortgage industry. We came in from the outside, got obsessed with the problem"* ([careers][careers]). **30% are former founders** and *"many of us are former founders"*; the engineering bio reads *"Many ex-Stripes"* ([careers][careers], [API JD][jd-api]).
+Small, senior, and pointedly from outside mortgage: *"We don't come from the mortgage industry. We came in from the outside, got obsessed with the problem"* ([careers][careers]). **30% are former founders**; the engineering bio reads *"Many ex-Stripes"* ([careers][careers], [API JD][jd-api]). All Palo Alto / hybrid at **$130–220K + equity** ([Ashby][ashby]).
 
 | Role | Person | Background |
 | --- | --- | --- |
@@ -136,56 +157,11 @@ Small, senior, and pointedly from outside mortgage: *"We don't come from the mor
 | CTO & Head of Pylon Labs | **Josh Kuhn** | Stripe, Theorem ([about][about]) |
 | VP Engineering | **Yves Bourelle** | Stripe, Box ([about][about]) |
 
-Engineering is organized by mortgage subsystem, all Palo Alto / hybrid at **$130–220K + equity** ([Ashby][ashby]): **API** (the GraphQL product surface), **Integrations** (external rails), **Underwriting** (the DSL/AI decision engine), **Foundation** (infra — *"keep the platform stable and developers productive"*), **Customer Success** (fullstack), and **SRE**. Engineers *"own entire systems, not tickets,"* leveraging *"AI+ML and operations research"* ([careers][careers]).
-
-:::note[Inference — humans moved from the line to oversight — confidence: high]
-A separate **Platform** department staffs remote **"Technical Oversight"** roles for Processing, Underwriting, Closing & Funding, and Post-Closing ([Ashby][ashby]) — filled by veterans of Better, ICE Mortgage, Mr. Cooper, and loanDepot ([about][about]). Licensed mortgage pros don't manufacture loans here; they supervise the automation and handle exceptions.
-:::
-
-## Process
-
-**Operations research as a first-class tool.** Beyond *"AI+ML,"* Pylon explicitly leverages **operations research** to *"solve the messy, real-world challenges everyone else calls impossible"* ([careers][careers]) — fitting for pricing, loan structuring (*"surface the best option … lowest monthly payment, out-of-pocket cost, or best interest rate"* ([fintechs][fintechs])), and capital allocation.
-
-**A modern, AI-native dev loop.** The Foundation team runs **Graphite** (stacked PRs), **GitHub Codespaces** (dev environments), and **Honeycomb** (observability), with the explicit job of keeping *"highly available systems"* that *"process millions of dollars in mortgage transactions"* reliable ([Infra JD][jd-infra]). Every JD lists *"AI-driven development tooling and agentic infrastructure"* — agents are in the engineering loop, not just the product.
-
-**Values steer toward contrarian bets.** The stated values — *"outcomes over optics,"* *"contrarian and correct"* (*"bias toward questioning industry consensus"*), and *"craftsmanship in everything"* (*"every pixel and every line of code matters"*) — match a team that *"built something the industry said couldn't be built"* ([careers][careers]).
-
-## Notable bets
-
-1. **Vertically integrate the whole stack.** *"Billions have been poured into vertical SaaS, point solutions, and digital front ends. None of it touched the real problem"* ([careers][careers]) — Pylon owns Intake-to-Settle instead of integrating others.
-2. **Capital markets first, application last.** Build the takeout, then collapse origination into an API on top of it ([introducing][intro]).
-3. **The GraphQL API *is* the product.** Treat versioning, DX, and domain modeling as the core deliverable, not an afterthought ([API JD][jd-api]).
-4. **Compile underwriting, don't staff it.** Encode guidelines as tested DSLs + AI so a rule is executable and auditable, with humans as exception handlers ([Underwriting JD][jd-uw]).
-5. **Own the risk to earn the margin.** Rep & warrant every loan into the capital markets — the liability that justifies removing the middlemen ([fintechs][fintechs]).
-6. **Crypto as a wedge product.** *"The only provider with a crypto-asset depletion underwriting model"* — staking income and crypto-backed mortgages for HNW users ([fintechs][fintechs]).
-
-## Hard problems
-
-The parts an engineer would lose sleep over. **Public signal** is cited (verified); **likely approach** is labeled speculation — best-practice fill-in, hedged.
-
-| Problem | Why it's hard | Public signal | Likely approach (speculative) |
-| --- | --- | --- | --- |
-| **DSL rule correctness** | A single mis-encoded guideline is Pylon's own loss, not the borrower's | *"An incorrectly modeled rule can cost the company tens of thousands of dollars on a single loan"*; Pylon *"reps & warrants every loan"* ([jd-uw][jd-uw], [fintechs][fintechs]) | Likely a golden-file/snapshot test suite over historical loans plus property-style tests, gating every DSL change in CI |
-| **AI-compiled guidelines** | An LLM translating dense regulatory English into executable logic can be subtly, expensively wrong | *"translate dense regulatory guidelines into executable logic … including AI … compiling English into a system that makes six-figure decisions,"* built *"side-by-side with mortgage experts"* ([jd-uw][jd-uw]) | Probably human-in-the-loop review of generated rules with the DSL as the audited artifact, AI as draft-generator not decider |
-| **Durable multi-day workflows** | A mortgage is a multi-day, multi-party flow where a dropped step or bad replay loses real money | Temporal in *every* eng JD; Foundation keeps *"highly available systems"* that *"process millions of dollars in mortgage transactions"* ([jd-infra][jd-infra], [jd-api][jd-api]) | Likely deterministic Temporal workflows with idempotent activities and saga-style compensation for external order-outs |
-| **Per-file compliance + auditability** | Every automated decision must be explainable and TRID-compliant on demand for regulators and capital-markets buyers | Pylon *"encodes compliance into every file"*; settlement enforces TRID timing and a zero-variance fee ledger ([fintechs][fintechs], [home][home]) | Probably an immutable per-loan decision/event log tying each outcome to the exact DSL rule version that produced it |
-
-## Unknowns
-
-:::caution[What the public record can't confirm]
-Open questions where even a best-practice guess would be a stretch (conventional infra guesses live in [Likely stack & infra choices](#likely-stack--infra-choices)):
-
-- **LLM provider** — *"AI-driven … agentic infrastructure"* and AI-assisted guideline compilation are described ([Underwriting JD][jd-uw]); no model/vendor named.
-- **The DSL itself** — *"custom DSLs for rule encoding"* ([Underwriting JD][jd-uw]); whether it's a standalone language, an embedded TypeScript DSL, or a rules engine is unstated.
-- **Document AI / OCR** — *"verifies income and assets"* and reads title/insurance docs ([home][home]); the extraction pipeline isn't named.
-- **Pylon Labs** — Josh Kuhn's group is named but its scope (applied-AI research? new products?) isn't described ([about][about]).
-- **Container orchestration** — AWS is confirmed ([Infra JD][jd-infra]); ECS vs. EKS is not.
-- **Headcount, ARR, cumulative loan volume, valuation** — only *"tens of millions in live beta"* (Nov 2024) and *"2× MoM"* are first-party ([introducing][intro], [careers][careers]).
-:::
+Engineering is organized by mortgage subsystem — **API** (the GraphQL surface), **Integrations** (external rails), **Underwriting** (the DSL/AI engine), **Foundation** (infra), **Customer Success** (fullstack), **SRE** — and engineers *"own entire systems, not tickets,"* leveraging *"AI+ML and operations research"* ([careers][careers], [Ashby][ashby]). Licensed mortgage pros don't manufacture loans here: a separate **Platform** department staffs remote *"Technical Oversight"* roles (veterans of Better, ICE Mortgage, Mr. Cooper, loanDepot) that supervise the automation and handle exceptions ([Ashby][ashby], [about][about]). The dev loop is AI-native — **Graphite** stacked PRs, **Codespaces**, **Honeycomb**, and *"AI-driven development tooling and agentic infrastructure"* in every JD ([Infra JD][jd-infra]).
 
 ## Sources
 
-Reconstructed from public sources only — no insider information. Crawled 2026-06-07. Claim tiers used above: **verified** (stated on a public page, linked) · **inferred** (reasoned from a cited signal, confidence flagged) · **speculative** (best-practice fill-in, labeled). Links are live; pages change, so the supporting quote for each claim is kept in this repo's evidence map (`evidence/pylon-lending-evidence-map.md`). Note: this is **Pylon Lending** (pylonlending.com), not the unrelated "Pylon" customer-support SaaS.
+Reconstructed from public sources only — no insider information. Crawled 2026-06-07. Claim tiers: **verified** (stated on a public page, linked) · **inferred** (reasoned from a cited signal, confidence flagged) · **speculative** (best-practice fill-in, labeled). Links are live; pages change, so the supporting quote for each claim is kept in this repo's evidence map (`evidence/pylon-lending-evidence-map.md`). Note: this is **Pylon Lending** (pylonlending.com), not the unrelated "Pylon" customer-support SaaS.
 
 | # | Source | Link |
 | --- | --- | --- |
@@ -203,80 +179,6 @@ Reconstructed from public sources only — no insider information. Crawled 2026-
 | S12 | Fullstack Engineer, Customer Success (JD) | <https://jobs.ashbyhq.com/pylon/fd573bb0-d06c-401f-97b5-b73d030662d4> |
 | S13 | FinTech Global (third-party — Dec 2022 seed) | <https://fintech.global/2022/12/09/> |
 | S14 | Paraform (third-party tracker — headcount/founding) | <https://www.paraform.com/company/pylon-lending> |
-
-## Speculative reconstruction
-
-:::tip[Best-practice reconstruction, not fact]
-Nothing in this section is stated on a public page. It is what a team with *this* stack — TypeScript/NestJS/GraphQL/Postgres, Temporal on AWS, a custom underwriting DSL with AI, and direct capital-markets takeout — would *typically* reach for. In the diagram, solid boxes are verified anchors carried up from the sections above; everything dashed is assumed. Read every dashed box as "likely," not confirmed.
-:::
-
-### Likely stack & infra choices
-
-| Component | Likely choice | Why |
-| --- | --- | --- |
-| Reasoning LLM | a frontier model behind a provider abstraction, used for guideline compilation + doc understanding | *"including AI"* in the underwriting DSL ([Underwriting JD][jd-uw]); no model named |
-| Document AI / OCR | a managed doc-extraction service or in-house ML for paystubs, bank statements, title | Intake *"verifies income and assets"* ([home][home]); extraction is implied, not named |
-| Guideline retrieval | embeddings + vector index over investor guidelines | *"mapping file to guidelines"* ([home][home]); retrieval over dense rulebooks is the natural fit |
-| Event backbone | AWS-native (SNS/SQS/EventBridge) or Kafka feeding the event-driven API | *"event-driven architecture"* on AWS ([API][jd-api], [Infra][jd-infra]) |
-| Container orchestration | ECS or EKS on AWS | AWS confirmed ([Infra JD][jd-infra]); orchestrator not stated |
-| Auth / identity | a managed IdP for platform + embedded borrower flows | enterprise/regulated buyers; white-label Elements; no vendor named |
-
-### Full system architecture
-
-The verified spine is real: a React/Elements front end and an MCP-native GraphQL API (TypeScript, NestJS, event-driven) over a Temporal-orchestrated, Postgres-backed core on AWS; a custom DSL + AI underwriting engine; REST/SOAP/file integrations to credit, title, insurance, and document partners; capital-markets takeout via Citi; and a Honeycomb/Graphite/Codespaces dev platform. Reconstructed here are the **LLM provider**, **document AI/OCR**, **guideline vector index**, **event/streaming bus**, **container orchestration**, and **auth**.
-
-![Full-system architecture for Pylon: verified anchors (React/Elements UI, GraphQL API on TS/NestJS, MCP surface, Temporal.io, PostgreSQL, custom DSL + AI underwriting, credit/title/insurance/document integrations, Citi capital-markets takeout, and Honeycomb/Graphite/Codespaces) shown as solid boxes; assumed parts (LLM provider, document AI/OCR, guideline vector index, event/streaming bus, ECS-vs-EKS container orchestration, and auth/identity vendor) shown dashed.](/diagrams/pylon-lending/speculative-architecture.svg)
-
-<details>
-<summary>Mermaid source</summary>
-
-```mermaid
-flowchart TB
-  classDef verified fill:#e8f1fd,stroke:#2563eb,stroke-width:2px,color:#0f172a;
-  classDef spec fill:#ffffff,stroke:#b4bdca,stroke-width:1.3px,stroke-dasharray:6 4,color:#475569;
-
-  subgraph Edge["Surfaces"]
-    direction TB
-    FE("Borrower UI · React<br/>Elements · white-label"):::verified
-    GQL("GraphQL API · TS · NestJS<br/>event-driven"):::verified
-    MCP("MCP-native surface · agent access"):::verified
-  end
-
-  subgraph Core["Origination core · on AWS"]
-    direction TB
-    Temporal("Temporal.io · workflow orchestration"):::verified
-    PG[("PostgreSQL · loan state")]:::verified
-    Bus("Event bus / streaming<br/>likely SNS-SQS / Kafka"):::spec
-    Orch("Container orchestration<br/>ECS vs EKS · likely"):::spec
-  end
-
-  subgraph UW["Underwriting + decisioning"]
-    direction TB
-    DSL("Custom DSL + AI<br/>guideline → executable rules"):::verified
-    LLM("LLM provider · likely frontier model"):::spec
-    OCR("Document AI / OCR<br/>income · assets · title · likely"):::spec
-    Vec[("Guideline retrieval / vector index · likely")]:::spec
-  end
-
-  subgraph Integ["Integrations · REST / SOAP / file"]
-    direction TB
-    Part("Credit bureaus · title · insurance<br/>document services"):::verified
-    Cap("Capital-markets takeout · Citi"):::verified
-  end
-
-  Auth("Auth / identity vendor · likely"):::spec
-  Obs("Honeycomb · Graphite · Codespaces"):::verified
-
-  Edge --> Core
-  Core --> UW
-  Core --> Integ
-  DSL -.reasons via.-> LLM
-  DSL -.reads.-> Vec
-  UW -.parses docs via.-> OCR
-  Edge -.guarded by.-> Auth
-```
-
-</details>
 
 [home]: https://www.pylonlending.com/
 [about]: https://www.pylonlending.com/about/
