@@ -50,12 +50,12 @@ export default defineConfig({
 				// About (the teardowns methodology) first, then one entry per
 				// teardown, generated from the files in src/content/docs/teardowns/.
 				{
-					label: 'Teardowns',
-					items: [{ autogenerate: { directory: 'teardowns' } }],
-				},
-				{
 					label: 'Notes',
 					items: [{ autogenerate: { directory: 'notes' } }],
+				},
+				{
+					label: 'Teardowns',
+					items: [{ autogenerate: { directory: 'teardowns' } }],
 				},
 			],
 		}),
