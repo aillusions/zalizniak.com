@@ -1,0 +1,39 @@
+flowchart LR
+  classDef src fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef ai fill:#eafbf1,stroke:#16a34a,stroke-width:1.5px,color:#0f172a;
+  classDef data fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+  classDef prod fill:#fdf4e8,stroke:#d97706,stroke-width:1.5px,color:#0f172a;
+
+  subgraph Sources["Fragmented sources · 50+ connectors"]
+    direction TB
+    Ret("Retailers<br/>Costco · Albertsons · Aldi · BJ's · Ahold<br/>POS · deduction backup"):::src
+    Dist("Distributors<br/>C&amp;S · Core-Mark · AWG"):::src
+    ERP("ERP + accounting systems"):::src
+    Synd("Syndicated data<br/>IRI / Circana"):::src
+  end
+
+  subgraph Ingest["Ingestion + AI extraction"]
+    direction TB
+    Conn("Connectors<br/>portals · EDI · files"):::data
+    Doc("LLM document understanding<br/>messy invoices/deductions/reports<br/>-> line-item structured data"):::ai
+    HITL("Automated + human-in-the-loop<br/>validation · full traceability"):::ai
+    Conn --> Doc --> HITL
+  end
+
+  SoT[("Unified financial data model<br/>single source of truth<br/>finance · accounting · sales · ops")]:::data
+
+  subgraph Products["Product surfaces"]
+    direction TB
+    P1("Cash Application"):::prod
+    P2("Deduction Mgmt · Auto-Disputes"):::prod
+    P3("Trade Promotion Mgmt"):::prod
+    P4("Sales Forecasting · Demand Planning"):::prod
+    P5("Sales Analytics"):::prod
+  end
+
+  Ret --> Conn
+  Dist --> Conn
+  ERP --> Conn
+  Synd --> Conn
+  HITL --> SoT
+  SoT --> Products

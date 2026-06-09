@@ -1,0 +1,25 @@
+flowchart LR
+  classDef io fill:#fdf4e8,stroke:#d97706,stroke-width:1.5px,color:#0f172a;
+  classDef ai fill:#eafbf1,stroke:#16a34a,stroke-width:1.5px,color:#0f172a;
+  classDef data fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+  classDef human fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+
+  Pay(["Retailer pays short<br/>+ deduction backup docs"]):::io
+
+  subgraph Agent["Agentic deduction workflow"]
+    direction TB
+    Extract("Extract line items<br/>from messy backup (LLM)"):::ai
+    Retrieve("Agent retrieves context<br/>across fragmented/legacy systems<br/>(POS, contracts, promo plans)"):::ai
+    Classify("Classify + match deduction<br/>valid trade spend vs invalid?"):::ai
+  end
+
+  Review{"Confidence<br/>high?"}:::data
+  Human("Human-in-the-loop<br/>review / correction"):::human
+  Dispute("Auto-dispute invalid deductions<br/>file claim + evidence"):::ai
+  Ledger[("Cash application -> ledger<br/>single source of truth")]:::data
+
+  Pay --> Extract --> Retrieve --> Classify --> Review
+  Review -->|yes| Dispute
+  Review -->|low / high $| Human --> Dispute
+  Dispute --> Ledger
+  Human -. "labels feed back" .-> Classify
