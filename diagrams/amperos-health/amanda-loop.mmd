@@ -1,0 +1,31 @@
+flowchart LR
+  classDef io fill:#fdf4e8,stroke:#d97706,stroke-width:1.5px,color:#0f172a;
+  classDef ai fill:#eafbf1,stroke:#16a34a,stroke-width:1.5px,color:#0f172a;
+  classDef data fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+  classDef human fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+
+  Claim(["Denied / unpaid claim<br/>in PM workqueue"]):::io
+
+  subgraph Reason["Amanda · LLM agent"]
+    direction TB
+    Ctx("Ground: read PM/EMR +<br/>payer policy + biller playbook<br/>(memory & grounding)"):::ai
+    Plan("Plan: denial category +<br/>evidence required + next action"):::ai
+    Ctx --> Plan
+  end
+
+  subgraph Act["Act · multi-modal"]
+    direction TB
+    Portal("Payer portal<br/>browser agent / RPA"):::ai
+    Phone("Payer phone call<br/>voice AI"):::ai
+    Write("PM/EMR write<br/>API"):::ai
+  end
+
+  Audit{"AI auditor<br/>action complete & accurate?"}:::data
+  Human("Human RCM biller (India)<br/>AI-quality review"):::human
+  Out[("Write-back to PM/workqueue<br/>+ proof: recording · transcript · PDF")]:::data
+
+  Claim --> Reason --> Act --> Audit
+  Audit -->|pass| Out
+  Audit -->|low confidence| Human --> Out
+  Human -. "labels feed back" .-> Plan
+  Out -. "not resolved -> next touch" .-> Claim

@@ -1,0 +1,30 @@
+flowchart LR
+  classDef sys fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef ai fill:#eafbf1,stroke:#16a34a,stroke-width:1.5px,color:#0f172a;
+  classDef data fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+  classDef human fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+
+  subgraph Systems["Systems Amanda works across"]
+    direction TB
+    PM("PM / EMR<br/>API · RPA · agentic"):::sys
+    Portal("Payer portals<br/>browser agents"):::sys
+    Phone("Payer phone lines<br/>voice AI"):::sys
+  end
+
+  Amanda("Amanda<br/>multi-modal AI coworker<br/>orchestrates across systems"):::ai
+
+  subgraph Plane["Amperos platform · AWS · SOC 2 · HIPAA"]
+    direction TB
+    WB[("Structured write-back<br/>to PM / workqueue")]:::data
+    Proof[("Proof artifacts<br/>recordings · transcripts · PDFs")]:::data
+    Analytics("Analytics<br/>payer- & code-level patterns"):::data
+  end
+
+  Oversight("Human oversight<br/>RCM billers · AI-quality (India)"):::human
+
+  Systems <--> Amanda
+  Amanda --> WB
+  Amanda --> Proof
+  WB --> Analytics
+  Amanda -. "low-confidence escalations" .-> Oversight
+  Oversight -. "corrections / training signal" .-> Amanda
