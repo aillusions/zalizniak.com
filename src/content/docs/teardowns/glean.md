@@ -191,6 +191,16 @@ A company selling an enterprise assistant and agent platform, that also wires Co
 5. **Open the platform via MCP.** Rather than a closed app, Glean exposes agents and tools through *"a single HTTP endpoint"* into *"20+ MCP hosts"* and every major agent framework ([Dev platform][dev]) — meet developers in Claude, Cursor, ChatGPT.
 6. **Google search discipline at startup speed.** Bazel monorepo, remote-execution CI, hybrid ranking with hand-built signals — the founders rebuilt web-search engineering for the enterprise corpus.
 
+## Hard problems
+
+The parts an engineer would lose sleep over. **Public signal** is cited (verified); **likely approach** is labeled speculation — best-practice fill-in, hedged.
+
+| Problem | Why it's hard | Public signal | Likely approach (speculative) |
+| --- | --- | --- | --- |
+| **Testing agents** | Non-deterministic, no shared ground truth; per-tenant isolation means customer queries can't be pooled into one eval set | +24% relevance benchmark; runtime self-reflects on *"its own confidence"*; Runtime owns *"safety"* ([agentic][agentic-blog], [Runtime JD][jd-runtime]) | Offline golden-set + LLM-as-judge on synthetic corpora; online confidence-gating and per-tenant A/B |
+| **Inference cost** | Multi-step plans multiply LLM calls against a ~10× action ramp (100M→1B/yr) | *"model selection/routing"* + multi-provider; Redis cache; RAG *"minimizes LLM data exposure"* ([Runtime JD][jd-runtime], [Security][security], [press][press-f]) | Tiered routing (small classifier gates frontier calls); semantic caching of repeated queries; cap plan depth/fan-out |
+| **Observability** | Reproducing *why* spans a rewritten plan, sub-agents, and many tool calls; isolation limits what Glean can inspect | *"tracing (OpenTelemetry), metrics, dashboards, and production forensics"* ([Runtime JD][jd-runtime]) | One trace per run, a span per step/tool; retain reasoning traces + confidence per tenant; aggregates leave, raw data doesn't |
+
 ## Unknowns
 
 :::caution[What the public record can't confirm]
