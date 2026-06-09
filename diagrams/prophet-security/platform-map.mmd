@@ -1,0 +1,35 @@
+flowchart LR
+  classDef sys fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef ai fill:#eafbf1,stroke:#16a34a,stroke-width:1.5px,color:#0f172a;
+  classDef data fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+  classDef human fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+
+  subgraph Stack["Customer security stack · bi-directional connectors"]
+    direction TB
+    SIEM("SIEM / data lake<br/>Google SecOps · Splunk-class"):::sys
+    EDR("EDR · IAM · NDR (ExtraHop)"):::sys
+    Case2("SOAR · ITSM · case mgmt · Slack"):::sys
+  end
+
+  subgraph Engine["Prophet AI · reasoning engine"]
+    direction TB
+    LLM("LLM agents<br/>plan · investigate · respond<br/>reasoning, not playbooks"):::ai
+    RAG[("Org context + playbooks<br/>retrieval-augmented")]:::data
+    LLM --- RAG
+  end
+
+  subgraph Agents["Agent products"]
+    direction TB
+    Analyst("SOC Analyst<br/>triage + investigate + respond"):::ai
+    Hunter("Threat Hunter<br/>NL + scheduled hunts"):::ai
+    Advisor("Detection Advisor<br/>tune detections from telemetry"):::ai
+  end
+
+  Evidence[("Transparency record<br/>plan · queries · evidence")]:::data
+  Analystppl("Human analyst<br/>review + feedback"):::human
+
+  Stack <--> Engine
+  Engine --> Agents
+  Agents --> Evidence
+  Evidence --> Analystppl
+  Analystppl -. "feedback → adapt" .-> Engine

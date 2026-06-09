@@ -1,0 +1,23 @@
+flowchart LR
+  classDef io fill:#fdf4e8,stroke:#d97706,stroke-width:1.5px,color:#0f172a;
+  classDef ai fill:#eafbf1,stroke:#16a34a,stroke-width:1.5px,color:#0f172a;
+  classDef data fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+  classDef human fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+
+  Alert(["Alert<br/>SIEM · EDR · IAM · cloud · email"]):::io
+
+  Plan("Plan<br/>summarize · extract artifacts · classify<br/>build investigation plan (expert questions)"):::ai
+  Invest("Investigate<br/>execute plan: retrieve + correlate across<br/>SIEM · data lake · tools · object storage<br/>+ Dig Deeper"):::ai
+  Decide{"Respond<br/>true vs false positive<br/>+ severity · confidence"}:::data
+
+  Auto("Autonomous remediation<br/>high-confidence threats"):::ai
+  Human("Human-in-the-loop<br/>complex / high-blast-radius"):::human
+  Case[("Case mgmt + collaboration tools<br/>(bi-directional)")]:::data
+  Adapt("Adapt<br/>learn from analyst feedback<br/>refine reasoning to env"):::ai
+
+  Alert --> Plan --> Invest --> Decide
+  Decide -->|high confidence| Auto --> Case
+  Decide -->|complex| Human --> Case
+  Case --> Adapt
+  Adapt -. "tunes" .-> Plan
+  Invest -. "shows plan + queries + evidence" .-> Case
