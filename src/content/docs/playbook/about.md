@@ -17,7 +17,7 @@ Each row is a problem common to applied-AI products and the page that works it t
 | --- | --- | --- |
 | [Graduating an agent from assistant to actor](/playbook/agent-assistant-to-actor/) | Crossing from "suggest" to "act" without losing user trust | Antimetal, Prophet Security, Pallet, Basis, Confido, Amperos |
 | [Testing output that isn't reproducible](/playbook/evaluating-non-deterministic-agents/) | No fixed expected output, so a normal test suite can't gate changes | Glean, Rilla, Traba, Momentic, Basis |
-| [Keeping inference cheap & fast](/playbook/inference-cost-and-latency/) | Frontier-model calls on every step blow up cost and latency | Basis, Glean, Momentic |
+| [Keeping inference cheap & fast](/playbook/inference-cost-and-latency/) | Frontier-model calls on every step blow up cost and latency | Basis, Glean, Momentic, Traba |
 | [Reaching systems with no clean API](/playbook/integrating-systems-without-apis/) | The systems of record are legacy portals built for humans, not machines | Pallet, Amperos, Confido, Momentic |
 | [Retrieval at multi-tenant scale](/playbook/multi-tenant-retrieval/) | Grounding every tenant in its own knowledge without per-customer code | Pallet, Glean, Rilla |
 | [Surviving long, multi-day workflows](/playbook/durable-long-running-workflows/) | Multi-party flows must survive crashes, retries, and partial failure | Pylon |

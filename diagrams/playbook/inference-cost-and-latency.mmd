@@ -1,0 +1,23 @@
+flowchart LR
+  classDef io fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef ai fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef gate fill:#fef6e7,stroke:#d9a441,stroke-width:1.5px,color:#0f172a;
+
+  Step("Incoming step"):::io
+  Cache{"Cache hit?<br/>keyed on intent"}:::gate
+  Hit("Cached result<br/>~300ms · no LLM"):::io
+  Ctx("Build context<br/>retrieval + dedup<br/>→ trimmed prompt"):::ai
+  Route{"Route by difficulty<br/>+ benchmark"}:::gate
+  Cheap("Cheap / fast model<br/>routine steps"):::ai
+  Frontier("Frontier model<br/>hard reasoning"):::ai
+  Write[("Write result<br/>to cache")]:::io
+  Out("Response"):::io
+
+  Step --> Cache
+  Cache -->|hit| Hit --> Out
+  Cache -->|miss| Ctx --> Route
+  Route -->|easy| Cheap
+  Route -->|hard| Frontier
+  Cheap --> Write
+  Frontier --> Write
+  Write --> Out
