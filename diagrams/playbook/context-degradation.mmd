@@ -1,0 +1,25 @@
+flowchart LR
+  classDef io fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef ai fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef gate fill:#fef6e7,stroke:#d9a441,stroke-width:1.5px,color:#0f172a;
+
+  Task("Long task"):::io
+  Sup("Supervisor /<br/>orchestrator"):::ai
+  subgraph workers["Specialized sub-agents · bounded context"]
+    A1("Agent A<br/>one sub-task"):::ai
+    A2("Agent B<br/>one sub-task"):::ai
+    A3("Agent C<br/>one sub-task"):::ai
+  end
+  Ctx[("Shared context layer<br/>+ external memory / retrieval")]:::io
+  Repr[("World model<br/>structural · temporal · causal")]:::io
+  Out("Result"):::io
+
+  Task --> Sup
+  Sup -->|hand off at<br/>context threshold| A1
+  A1 -->|structured state| A2
+  A2 -->|structured state| A3
+  A1 <--> Ctx
+  A2 <--> Ctx
+  A3 <--> Ctx
+  Ctx --- Repr
+  A3 --> Out
