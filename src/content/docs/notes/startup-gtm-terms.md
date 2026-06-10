@@ -39,6 +39,8 @@ A working glossary of the strategy, unit-economics, go-to-market, and funnel voc
 
 **Gross margin** — revenue left after the direct cost of delivering the service (hosting, inference, support). High margin is what makes LTV work — *and why per-request inference cost matters so much for AI products.*
 
+**Underwriting** — assessing the risk of a deal and setting the price and terms to accept it: lending (credit, income, collateral → rate/limit), insurance (claim likelihood → premium), and securities (IPO/bond issuance → offering price). In fintech AI products it's the core decision being automated — the model *is* the underwriter, so its accuracy maps straight to loss rates and margin.
+
 **Churn** — the rate customers leave. **Logo churn** = accounts lost; **revenue churn** = dollars lost. Low churn is the foundation of high LTV.
 
 **NRR / NDR (net revenue retention)** — revenue from your *existing* customers a year later, including expansion and net of churn. **>100%** means you'd grow even with zero new logos — the strongest single SaaS health signal.

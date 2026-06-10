@@ -165,6 +165,8 @@ The base terms the patterns above are built from — models and inference, retri
 
 **Observability / tracing** — the ability to see inside a running non-deterministic system: logs, traces, and a record of what the agent actually did at each step. You can't debug or trust an agent you can't watch, so this is foundational for production AI.
 
+**Lineage (data / decision lineage)** — the auditable family tree of an outcome: which data sources, transformations, and specific rules produced it, traceable end to end. In regulated domains, making every decision carry the lineage that proves *which rule fired* is what turns a non-deterministic answer into a defensible one — see [Encoding domain rules](/playbook/encoding-domain-rules/).
+
 **Fallback** — the backup path taken when a model or tool fails, times out, or returns low-confidence output (e.g. retry, switch models, hand off to a human). It keeps the system graceful instead of broken when the primary path doesn't work.
 
 **Durable execution (Temporal)** — a workflow engine pattern where execution state is persisted so long-running jobs survive crashes, restarts, and retries without losing progress. It's increasingly the backbone for agent workflows that run for minutes or hours and must not silently die. *(Temporal is the most common such engine in the teardowns.)*

@@ -62,6 +62,13 @@ export default defineConfig({
 					label: 'Applied AI Playbook',
 					items: [{ autogenerate: { directory: 'playbook' } }],
 				},
+				// Forward-looking companion to the teardowns: industries and
+				// workflows where an AI agent could own high-value pain nobody
+				// has built for yet — each scored on profit, pain, and whitespace.
+				{
+					label: 'Opportunities',
+					items: [{ autogenerate: { directory: 'opportunities' } }],
+				},
 				{
 					label: 'Teardowns',
 					items: [{ autogenerate: { directory: 'teardowns' } }],
