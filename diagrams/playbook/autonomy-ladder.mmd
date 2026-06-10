@@ -1,0 +1,25 @@
+flowchart LR
+  classDef io fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef ai fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef human fill:#fdecec,stroke:#e0564f,stroke-width:1.5px,color:#0f172a;
+  classDef gate fill:#fef6e7,stroke:#d9a441,stroke-width:1.5px,color:#0f172a;
+
+  subgraph rung1["Rung 1 · Assistant"]
+    Suggest("Agent drafts / suggests<br/>human executes everything"):::ai
+  end
+  subgraph rung2["Rung 2 · Supervised actor"]
+    Route{"Confidence + blast-radius<br/>router"}:::gate
+    Auto("Auto-act on the<br/>confident majority"):::ai
+    HITL("Route low-confidence /<br/>high-dollar to a human"):::human
+  end
+  subgraph rung3["Rung 3 · Autonomous (per action class)"]
+    Act("Act unattended within<br/>a graduated action class"):::ai
+  end
+
+  Suggest -->|"acceptance & override<br/>rates clear bar"| Route
+  Route -->|high confidence| Auto
+  Route -->|low confidence / high $| HITL
+  Auto --> Audit("Self-audit: emit proof-of-work<br/>+ data lineage + confidence"):::io
+  HITL -->|corrections feed eval| Audit
+  Audit -->|"per-action-class metrics<br/>clear bar"| Act
+  Act -.->|new action class<br/>starts at Rung 1| Suggest

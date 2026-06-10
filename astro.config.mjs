@@ -56,6 +56,12 @@ export default defineConfig({
 					label: 'Notes',
 					items: [{ autogenerate: { directory: 'notes' } }],
 				},
+				// Cross-company synthesis: the recurring hard problems of applied
+				// AI and how teams across the teardowns solve them.
+				{
+					label: 'Applied AI Playbook',
+					items: [{ autogenerate: { directory: 'playbook' } }],
+				},
 				{
 					label: 'Teardowns',
 					items: [{ autogenerate: { directory: 'teardowns' } }],
