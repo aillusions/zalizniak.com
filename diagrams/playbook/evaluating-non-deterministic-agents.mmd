@@ -1,0 +1,24 @@
+flowchart LR
+  classDef io fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef ai fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef human fill:#fdecec,stroke:#e0564f,stroke-width:1.5px,color:#0f172a;
+  classDef gate fill:#fef6e7,stroke:#d9a441,stroke-width:1.5px,color:#0f172a;
+
+  Change("Candidate change<br/>new prompt / model"):::ai
+  Golden[("Golden set<br/>human-labeled inputs<br/>+ ideal outputs")]:::io
+  Run("Run candidate<br/>over the set"):::ai
+  Judge{"LLM-as-judge<br/>+ explainability score"}:::gate
+  Gate{"Beats<br/>baseline?"}:::gate
+  Ship("Ship behind A/B<br/>+ tracing / forensics"):::ai
+  Block("Block —<br/>silent regression"):::human
+  Prod[("Production")]:::io
+  Corr("Human corrections /<br/>operator overrides"):::human
+
+  Change --> Run
+  Golden --> Run
+  Run --> Judge --> Gate
+  Gate -->|yes| Ship
+  Gate -->|no| Block
+  Ship --> Prod
+  Prod --> Corr
+  Corr -.->|new ground truth| Golden

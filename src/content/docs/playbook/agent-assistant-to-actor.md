@@ -27,7 +27,7 @@ The output is non-deterministic, so you can't prove correctness up front the way
 | Decision | Common choice | Notes |
 | --- | --- | --- |
 | Where the gate lives | An explicit confidence + blast-radius router before any side-effecting action | The classifier that decides auto-act vs. escalate; the single most important control point. |
-| Capturing override signal | Annotation / feedback datasets (e.g. Langfuse), versioned alongside prompts | Every human correction becomes ground truth for the next eval run — see [Testing output that isn't reproducible](/playbook/about/). |
+| Capturing override signal | Annotation / feedback datasets (e.g. Langfuse), versioned alongside prompts | Every human correction becomes ground truth for the next eval run — see [Testing output that isn't reproducible](/playbook/evaluating-non-deterministic-agents/). |
 | Proof-of-work surface | The product's own audit log / activity feed — transcripts, exported docs, reasoning traces | Reviewers approve from the artifact, not by re-doing the work. |
 | Tracking the promotion bar | Per-action-class acceptance & override dashboards | Promotion is a metrics decision, not a calendar one; each action class graduates on its own curve. |
 

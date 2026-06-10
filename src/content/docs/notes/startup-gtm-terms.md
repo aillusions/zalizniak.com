@@ -17,6 +17,8 @@ A working glossary of the strategy, unit-economics, go-to-market, and funnel voc
 
 **Defensibility** — whether that advantage actually *holds* over time. A feature is a head start; defensibility is what stops it from being competed away.
 
+**Incumbent** — the established, dominant player already holding the market you're entering — the one with the distribution, brand, and customer base a startup has to displace or route around. Their weakness is usually structural (legacy tech, channel conflict, slow release cycles), which is what a wedge exploits; the *incumbent's advantage* is the moat you have to out-build.
+
 **PMF (product-market fit)** — the product solves a real problem well enough that the market pulls it from you (usage, retention, word-of-mouth) rather than you pushing it.
 
 **ICP (ideal customer profile)** — the precise customer type you're built for: industry, size, role, pain. Sharp ICP makes targeting, messaging, and CAC efficient; a fuzzy one leaks money.
