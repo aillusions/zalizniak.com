@@ -50,6 +50,13 @@ export default defineConfig({
 			lastUpdated: true,
 			sidebar: [
 				{ label: 'Home', link: '/' },
+				// Personal study notes for system design interview prep — a
+				// general (not AI-specific) reference: the prep method, the
+				// in-room delivery framework, and worked question breakdowns.
+				{
+					label: 'System Design',
+					items: [{ autogenerate: { directory: 'system-design' } }],
+				},
 				// About (the teardowns methodology) first, then one entry per
 				// teardown, generated from the files in src/content/docs/teardowns/.
 				{

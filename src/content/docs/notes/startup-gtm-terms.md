@@ -21,6 +21,8 @@ A working glossary of the strategy, unit-economics, go-to-market, and funnel voc
 
 **Nascent** — just beginning to exist or take shape — an idea, market, or category in its earliest, still-forming stage, but on a trajectory to grow larger and more established. In opportunity-hunting it cuts both ways: a *nascent market* means no entrenched incumbent and rules still unwritten (room to define the category), but also no proven demand, thin tooling, and buyers who don't yet know they have the problem — you're betting on the *trajectory*, not the current size.
 
+**Bespoke** — custom-built for one customer or case rather than standardized for everyone. In software it's usually a warning: bespoke per-customer work doesn't scale and erodes margin (every deal needs new code), so the goal is to turn bespoke demand into a *configurable* product. The flip side — bespoke integrations or workflows competitors won't bother replicating — can be a moat.
+
 **Incumbent** — the established, dominant player already holding the market you're entering — the one with the distribution, brand, and customer base a startup has to displace or route around. Their weakness is usually structural (legacy tech, channel conflict, slow release cycles), which is what a wedge exploits; the *incumbent's advantage* is the moat you have to out-build.
 
 **PMF (product-market fit)** — the product solves a real problem well enough that the market pulls it from you (usage, retention, word-of-mouth) rather than you pushing it.
