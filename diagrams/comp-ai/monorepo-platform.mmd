@@ -1,0 +1,49 @@
+flowchart LR
+  classDef app fill:#eafbf1,stroke:#16a34a,stroke-width:1.5px,color:#0f172a;
+  classDef data fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+  classDef ext fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef ai fill:#f3eefe,stroke:#7c3aed,stroke-width:1.5px,color:#0f172a;
+
+  subgraph Apps["Turborepo · Bun monorepo (apps)"]
+    direction TB
+    Web("app · Next.js + React 19<br/>UI · server actions"):::app
+    API("api · NestJS<br/>evidence/integration engine"):::app
+    FE("framework-editor<br/>control/policy templates"):::app
+    Portal("portal · employee/device + trust"):::app
+    MCP("mcp-server · @anthropic-ai/mcpb"):::app
+  end
+
+  Jobs("Trigger.dev v4<br/>onboarding · cloud-security · integration · scrape · device"):::app
+
+  subgraph AI["Vercel AI SDK + AI Gateway"]
+    direction TB
+    Gate{"AI Gateway<br/>route by cost/quality"}:::ai
+    Models("gemini-3-flash · claude-sonnet-4.6<br/>openai embeddings (3-large)"):::ai
+    Gate --> Models
+  end
+
+  subgraph Data["Data + infra"]
+    direction TB
+    PG[("Postgres + Prisma<br/>~120 models")]:::data
+    Vec[("Upstash Vector<br/>risk/vendor/task linkage")]:::data
+    Redis[("Upstash Redis<br/>cache · ratelimit")]:::data
+    S3[("AWS S3<br/>evidence artifacts")]:::data
+  end
+
+  subgraph Collect["Evidence collectors"]
+    direction TB
+    Cloud("~60 AWS SDK clients + Azure<br/>cloud config checks"):::ext
+    Browser("Browserbase + Playwright/Puppeteer<br/>browser-verified evidence"):::ext
+    Device("Electron device agent<br/>hourly endpoint checks"):::ext
+  end
+
+  Web --> Jobs
+  API --> Jobs
+  Jobs --> Gate
+  Web --> Gate
+  Apps --> PG
+  Jobs --> Vec
+  Web --> Redis
+  Collect --> API
+  API --> S3
+  API --> PG

@@ -1,0 +1,31 @@
+flowchart LR
+  classDef io fill:#fdf4e8,stroke:#d97706,stroke-width:1.5px,color:#0f172a;
+  classDef ai fill:#eafbf1,stroke:#16a34a,stroke-width:1.5px,color:#0f172a;
+  classDef data fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+  classDef human fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+
+  Pick(["Pick frameworks<br/>SOC 2 · ISO 27001 · HIPAA · GDPR · FedRAMP"]):::io
+  Onboard("Onboarding Q&A<br/>stack · processes · risk tolerance"):::data
+
+  Gen("AI generation (structured, gateway-routed)<br/>policies · risk + vendor mitigations · citations"):::ai
+  Map[("Controls mapped to frameworks<br/>shared library · RequirementMap")]:::data
+
+  subgraph Evidence["Continuous evidence collection"]
+    direction TB
+    CloudC("Cloud checks<br/>NestJS + ~60 AWS APIs · daily"):::ai
+    BrowserC("AI browser tests<br/>NL → Browserbase + screenshot"):::ai
+    DeviceC("Device agent<br/>4 checks / hour"):::ai
+  end
+
+  Find{"Findings<br/>flagged before audit"}:::data
+  Remediate("AI remediation<br/>preview → execute (batched)"):::ai
+  Human("In-house experts<br/>1:1 Slack < 3 min"):::human
+  Trust(["Live trust center<br/>only verified controls shown"]):::io
+
+  Pick --> Onboard --> Gen --> Map
+  Map --> Evidence
+  Evidence --> Find
+  Find -->|"high confidence"| Remediate --> Evidence
+  Find -->|"needs judgement"| Human
+  Map --> Trust
+  Evidence -. "verified controls" .-> Trust
