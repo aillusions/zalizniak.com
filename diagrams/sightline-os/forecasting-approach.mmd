@@ -1,0 +1,22 @@
+flowchart LR
+  classDef data fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+  classDef ai fill:#eafbf1,stroke:#16a34a,stroke-width:1.5px,color:#0f172a;
+  classDef spec fill:#f3eefe,stroke:#7c3aed,stroke-width:1.5px,color:#0f172a;
+  classDef io fill:#fdf4e8,stroke:#d97706,stroke-width:1.5px,color:#0f172a;
+
+  Hist[("Owned history<br/>SKU × location × day")]:::data
+  Cal("Calendar signals<br/>seasonality · holidays · LTOs · campaigns"):::data
+  New("New-opening / new-SKU<br/>(no history)"):::data
+
+  Global("Global / hierarchical model<br/>(inferred) — pools across SKUs & locations"):::spec
+  Cold("Cold-start<br/>(inferred) — analog priors + ramp curves"):::spec
+  Recon("Hierarchical reconciliation<br/>(inferred) — item → category → network"):::spec
+
+  Out(["Stable per-SKU forecast<br/>+14% accuracy at Din Tai Fung"]):::io
+
+  Hist --> Global
+  Cal --> Global
+  New --> Cold
+  Global --> Recon
+  Cold --> Recon
+  Recon --> Out

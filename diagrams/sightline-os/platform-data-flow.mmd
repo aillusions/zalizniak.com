@@ -1,0 +1,34 @@
+flowchart LR
+  classDef src fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef data fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+  classDef ai fill:#eafbf1,stroke:#16a34a,stroke-width:1.5px,color:#0f172a;
+  classDef io fill:#fdf4e8,stroke:#d97706,stroke-width:1.5px,color:#0f172a;
+
+  subgraph Sources["Data sources"]
+    direction TB
+    Sales("Sales / POS<br/>via SynergySuite (bi-directional)"):::src
+    Dist("Distributor data<br/>invoices · open POs · lead times"):::src
+    Hist("Customer's owned history<br/>per-SKU demand"):::src
+    Comm("Commodity markets<br/>700+ (corn · soy …)"):::src
+  end
+
+  Ingest("Ingestion + normalization<br/>entity resolution · SKU / UOM mapping"):::data
+  Model[("Unified supply-chain data model<br/>spend ↔ inventory ↔ forecast")]:::data
+  ML("ML forecasting engine<br/>item × location × day<br/>robust to sparse/volatile data · new-opening ramp"):::ai
+
+  subgraph Products["Product surfaces"]
+    direction TB
+    Fcast("Forecasting<br/>ingredient demand"):::ai
+    Invy("Inventory optimization<br/>item × distributor · 12-wk risk"):::ai
+    Cogs("COGS management<br/>commodity tracker · invoice reconciliation"):::ai
+  end
+
+  Team(["Supply-chain team<br/>dashboards · risk alerts · scorecards"]):::io
+
+  Sources --> Ingest --> Model
+  Model --> ML
+  ML --> Fcast
+  Model --> Invy
+  Model --> Cogs
+  Fcast --> Invy
+  Products --> Team
