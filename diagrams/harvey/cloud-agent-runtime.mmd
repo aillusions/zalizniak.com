@@ -1,0 +1,48 @@
+flowchart LR
+  classDef io fill:#fdf4e8,stroke:#d97706,stroke-width:1.5px,color:#0f172a;
+  classDef ctrl fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+  classDef sandbox fill:#eafbf1,stroke:#16a34a,stroke-width:1.5px,color:#0f172a;
+  classDef ai fill:#f3eefe,stroke:#7c3aed,stroke-width:1.5px,color:#0f172a;
+  classDef ext fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+
+  subgraph Surfaces["Entry surfaces"]
+    direction TB
+    Web(["Web app · Word / Outlook"]):::io
+    Auto(["Automations · cron schedule"]):::io
+  end
+
+  subgraph Plane["Control plane (durable)"]
+    direction TB
+    Run[("Durable run record<br/>ownership · history · artifacts<br/>provider session refs")]:::ctrl
+    Gov{"Conflict-aware governance<br/>which models a matter may touch"}:::ctrl
+  end
+
+  subgraph Box["Ephemeral worker · isolated sandbox (ZDR boundary)"]
+    direction TB
+    Harness("Harness / abstraction layer<br/>normalizes provider harness · sandbox · events"):::sandbox
+    Disk[("Transient working disk<br/>lifecycle-bound · purged on teardown")]:::sandbox
+    Harness --- Disk
+  end
+
+  Router{"Model router<br/>cheapest model meeting LAB quality bar"}:::ai
+
+  subgraph Models["Model providers (routed)"]
+    direction TB
+    Frontier("Frontier labs<br/>Anthropic · OpenAI"):::ai
+    Cloud("Cloud runtimes<br/>Azure Foundry · AWS · Google"):::ai
+    OSS("Self-hosted open-source<br/>3–5x cheaper for saturated tasks"):::ai
+  end
+
+  Tools("Scoped tools · MCP<br/>short-lived creds, injected at run start"):::ext
+  Artifacts(["Reviewable artifacts<br/>summaries · diffs · audit trail"]):::io
+
+  Surfaces --> Run
+  Run --> Gov
+  Gov --> Harness
+  Harness --> Router
+  Router --> Frontier
+  Router --> Cloud
+  Router --> OSS
+  Harness --> Tools
+  Harness -->|"state appended back"| Run
+  Run --> Artifacts

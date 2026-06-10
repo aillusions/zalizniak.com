@@ -1,0 +1,33 @@
+flowchart LR
+  classDef io fill:#fdf4e8,stroke:#d97706,stroke-width:1.5px,color:#0f172a;
+  classDef data fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+  classDef ai fill:#eafbf1,stroke:#16a34a,stroke-width:1.5px,color:#0f172a;
+  classDef ext fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+
+  Upload(["Upload<br/>Assistant · Vault · Knowledge"]):::io
+
+  Embed("Embedding<br/>treated as source-sensitive data"):::ai
+
+  subgraph VDB["Vector DB — per-workspace isolation"]
+    direction TB
+    NS[("Tenant namespaces<br/>separate collections + storage")]:::data
+    Cache[("Tenant-bound caches<br/>encrypted · short-lived keys")]:::data
+  end
+
+  Search{"Semantic + agentic search<br/>access enforced at DB layer<br/>(no post-filter)"}:::ai
+
+  subgraph Tools["Query-time tools"]
+    direction TB
+    Review("Review tables<br/>answer + reasoning<br/>sentence-level citations · 30k cells"):::ai
+    Vision("On-demand vision tool<br/>text-first gating · 500p → 2–3p<br/>dedicated rendering service"):::ai
+  end
+
+  Answer(["Cited answer<br/>provenance + reasoning, lawyer-verifiable"]):::io
+
+  Upload --> Embed --> NS
+  NS --- Cache
+  NS --> Search
+  Search --> Review
+  Search --> Vision
+  Review --> Answer
+  Vision --> Answer
