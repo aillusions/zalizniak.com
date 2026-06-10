@@ -22,7 +22,5 @@ Each row is a problem common to applied-AI products and the page that works it t
 | [Retrieval at multi-tenant scale](/playbook/multi-tenant-retrieval/) | Grounding every tenant in its own knowledge without per-customer code | Pallet, Glean, Rilla |
 | [Surviving long, multi-day workflows](/playbook/durable-long-running-workflows/) | Multi-party flows must survive crashes, retries, and partial failure | Pylon, Gradient Labs, Harvey |
 | [Beating context degradation](/playbook/context-degradation/) | One agent's context grows until quality quietly falls off | Traba, Antimetal, Basis |
-| [Encoding dense domain rules](/playbook/encoding-domain-rules/) | Regulatory and underwriting logic must be exact, testable, and auditable | Pylon, Basis |
-| [Own vs. rent the model](/playbook/own-vs-rent-the-model/) | Deciding where to spend a training budget vs. renting a frontier LLM | Rilla, Basis |
-
-*Pages marked **Soon** in the sidebar are in the research queue — they fill in with patterns, tools, architecture, and best practices as they land.*
+| [Encoding dense domain rules](/playbook/encoding-domain-rules/) | Regulatory and underwriting logic must be exact, testable, and auditable | Pylon, Basis, Comp AI |
+| [Own vs. rent the model](/playbook/own-vs-rent-the-model/) | Deciding where to spend a training budget vs. renting a frontier LLM | Rilla, Basis, Harvey, Pallet, Glean |

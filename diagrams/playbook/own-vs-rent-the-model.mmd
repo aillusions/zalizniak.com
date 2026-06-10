@@ -1,0 +1,28 @@
+flowchart LR
+  classDef io fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef ai fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef gate fill:#fef6e7,stroke:#d9a441,stroke-width:1.5px,color:#0f172a;
+
+  Cap("A capability to build"):::ai
+  Q1{"Unique data that<br/>beats the frontier?"}:::gate
+  Own("Own / fine-tune<br/>a vertical model"):::ai
+  Q2{"Compliance blocks<br/>managed platforms?"}:::gate
+  Runtime("Own the runtime<br/>ZDR, governance"):::io
+  Q3{"High-volume /<br/>saturated task?"}:::gate
+  OSS("Self-host open-source<br/>behind a quality bar"):::ai
+  Rent("Rent the frontier"):::ai
+  Router{"Provider-agnostic router"}:::gate
+  Bench[("Benchmark<br/>re-run each release")]:::io
+
+  Cap --> Q1
+  Q1 -->|yes| Own
+  Q1 -->|no| Q2
+  Q2 -->|yes| Runtime
+  Q2 -->|no| Q3
+  Q3 -->|yes| OSS
+  Q3 -->|no| Rent
+  Runtime --> Router
+  OSS --> Router
+  Rent --> Router
+  Own --> Router
+  Bench -->|sets model choice| Router

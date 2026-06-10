@@ -1,0 +1,26 @@
+flowchart LR
+  classDef io fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef ai fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef gate fill:#fef6e7,stroke:#d9a441,stroke-width:1.5px,color:#0f172a;
+  classDef human fill:#fdecec,stroke:#e0564f,stroke-width:1.5px,color:#0f172a;
+
+  subgraph authoring["Authoring plane"]
+    Reg[("Regulation / policy<br/>+ domain experts")]:::io
+    Encode("Encode as DSL / policy-as-code<br/>AI drafts → SME finalizes"):::ai
+    Tests{"Regression suite over<br/>historical cases"}:::gate
+    Rules[("Deterministic rule layer<br/>version-controlled")]:::io
+  end
+  subgraph runtime["Runtime plane"]
+    LLM("LLM proposes<br/>structured output"):::ai
+    Check{"Deterministic check<br/>+ lineage / citation / confidence"}:::gate
+    Act("Act + audit trail"):::io
+    Review("Expert review<br/>low-confidence / high-stakes"):::human
+  end
+
+  Reg --> Encode --> Tests
+  Tests -->|gate changes| Rules
+  Rules --> Check
+  LLM --> Check
+  Check -->|pass| Act
+  Check -->|fail / low confidence| Review
+  Review --> Act
