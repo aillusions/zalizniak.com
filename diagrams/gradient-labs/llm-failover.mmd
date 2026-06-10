@@ -1,0 +1,26 @@
+flowchart LR
+  classDef io fill:#fdf4e8,stroke:#d97706,stroke-width:1.5px,color:#0f172a;
+  classDef ai fill:#eafbf1,stroke:#16a34a,stroke-width:1.5px,color:#0f172a;
+  classDef data fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+  classDef sys fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+
+  Req(["Completion request<br/>per agent building block<br/>(one-line model choice)"]):::io
+  Pref("Ordered provider preferences<br/>global + per-company · proportional split"):::data
+
+  subgraph Primary["Primary model · provider failover"]
+    direction TB
+    P1("OpenAI GPT<br/>OpenAI → Azure"):::ai
+    P2("Anthropic Claude<br/>Anthropic → AWS → GCP"):::ai
+    P3("Google Gemini<br/>GCP regions"):::ai
+  end
+
+  Trig{"Fail over when:<br/>5XX · rate-limited · invalid output · p99+ latency"}:::data
+  Backup("Model failover<br/>backup prompt-model pair<br/>(whole provider group down)"):::ai
+  Out(["Validated completion"]):::io
+
+  Req --> Pref --> Primary
+  Primary --> Trig
+  Trig -->|"next provider"| Primary
+  Trig -->|"group unavailable"| Backup
+  Trig -->|ok| Out
+  Backup --> Out

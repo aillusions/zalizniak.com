@@ -1,0 +1,32 @@
+flowchart LR
+  classDef io fill:#fdf4e8,stroke:#d97706,stroke-width:1.5px,color:#0f172a;
+  classDef ai fill:#eafbf1,stroke:#16a34a,stroke-width:1.5px,color:#0f172a;
+  classDef data fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+  classDef human fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+
+  In(["Inbound<br/>email · text · voice<br/>(help desk / API)"]):::io
+
+  subgraph WF["Conversation = one durable Temporal workflow · state · timers · child workflows"]
+    direction TB
+    FSM("Conversation FSM<br/>triggers agent · dispatches actions · handles failures"):::data
+    Classify("Classify the query<br/>general info · personal info · procedural"):::ai
+    Route{"Pick the approach<br/>(meta-capability)"}:::ai
+    RAG("Answer<br/>retrieve over pgvector"):::ai
+    Proc("Run procedure<br/>plain-English SOP"):::ai
+    Tool("Take action<br/>tool calls to customer APIs"):::ai
+    Guard{"20+ guardrails per turn<br/>FCA Consumer Duty · CONC · Reg E/Z · PSD2 · EU AI Act"}:::data
+    FSM --> Classify --> Route
+    Route -->|info| RAG
+    Route -->|account| Tool
+    Route -->|"can you…?"| Proc
+    RAG --> Guard
+    Proc --> Guard
+    Tool --> Guard
+  end
+
+  Reply(["Reply to customer<br/>(observable · auditable)"]):::io
+  Human("Escalate / sign-off<br/>vulnerability · high-stakes"):::human
+
+  In --> FSM
+  Guard -->|pass| Reply
+  Guard -->|"vulnerable / out of policy"| Human --> Reply
