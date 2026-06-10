@@ -1,0 +1,30 @@
+flowchart LR
+  classDef io fill:#fdf4e8,stroke:#d97706,stroke-width:1.5px,color:#0f172a;
+  classDef ai fill:#eafbf1,stroke:#16a34a,stroke-width:1.5px,color:#0f172a;
+  classDef data fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+  classDef human fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+
+  Doc(["Insurance document<br/>loss run · 200+ pages · ~30 fields/claim"]):::io
+  Skill[("Non-prescriptive skill<br/>task + domain + what 'correct' looks like<br/>+ validation criteria")]:::data
+
+  Agent("LLM agent<br/>decides its own strategy<br/>(GPT-5.x; backend-agnostic)"):::ai
+
+  subgraph Tools["Agent tools"]
+    direction TB
+    Extract("extract_claims(page_range)<br/>commercial API or LLM"):::ai
+    Focus("focus_pages(pages)<br/>high-res visual inspect"):::ai
+    Valid("validate_totals(claims)<br/>financials + claim count"):::ai
+  end
+
+  Check{"Totals match<br/>the document?"}:::data
+  Out(["Validated extraction<br/>80% → 95% row accuracy"]):::io
+  Review("Human review<br/>citations · confidence cues · edits"):::human
+
+  Doc --> Agent
+  Skill --> Agent
+  Agent --> Extract --> Check
+  Agent --> Focus
+  Check -->|"mismatch → re-extract / inspect"| Agent
+  Check -->|pass| Valid --> Out
+  Out --> Review
+  Review -. "edits feed model + memory" .-> Skill

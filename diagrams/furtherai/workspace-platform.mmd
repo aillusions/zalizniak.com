@@ -1,0 +1,25 @@
+flowchart LR
+  classDef io fill:#fdf4e8,stroke:#d97706,stroke-width:1.5px,color:#0f172a;
+  classDef ai fill:#eafbf1,stroke:#16a34a,stroke-width:1.5px,color:#0f172a;
+  classDef data fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+  classDef human fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+
+  In(["Inbound<br/>email · PDFs · carrier / broker systems"]):::io
+
+  subgraph WS["Insurance AI workspace · agent harness (filesystem · tools · loop · verify)"]
+    direction TB
+    Flows("Agentic workflows<br/>submission intake · UW audit<br/>policy compare · claims · SOV mapping"):::ai
+    Mem[("Memory layer<br/>per-customer corrections<br/>→ generalizable knowledge")]:::data
+    Flows --- Mem
+  end
+
+  HITL("Human-in-the-loop<br/>AI first pass → review<br/>citations · confidence · corrections"):::human
+  Eval{"Eval Studio<br/>50–100 real submissions<br/>change · run · compare · ship"}:::data
+  Prod(["Production output<br/>underwriting · claims · compliance"]):::io
+
+  In --> Flows
+  Flows --> HITL
+  HITL -. "edits → memory + model" .-> Mem
+  Flows --> Eval
+  Eval -->|"regression-checked"| Prod
+  HITL --> Prod
