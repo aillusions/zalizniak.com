@@ -159,7 +159,7 @@ The seed thesis called this a near-empty blue ocean. The deep dive corrects that
 - **B2B fiduciary tooling** — [Estateably][eb] ("the first cloud-based platform for estate administrators," fiduciary accounting and "intelligent automation"), sold to the professionals rather than the family.
 
 :::caution[The gap is autonomy depth, not absence]
-Most incumbents are checklist/guidance software or human-led services with AI assist; the durable, *act-not-suggest* agent that runs the full institutional chase with the audit trail as the artifact is still nascent. The bet is now execution depth against Alix-class competition — no longer a land grab on empty space.
+Most incumbents are checklist/guidance software or human-led services with AI assist; the durable, *act-not-suggest* agent that runs the full institutional chase with the audit trail as the artifact is still [nascent](/notes/startup-gtm-terms/#strategy--positioning). The bet is now execution depth against Alix-class competition — no longer a land grab on empty space.
 :::
 
 ## Hard problems
