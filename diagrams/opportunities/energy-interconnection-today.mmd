@@ -1,0 +1,28 @@
+flowchart LR
+  classDef human fill:#fdecec,stroke:#e0564f,stroke-width:1.5px,color:#0f172a;
+  classDef pro fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef gov fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+  classDef ext fill:#fff7ed,stroke:#d97706,stroke-width:1.5px,color:#0f172a;
+
+  Dev("Renewable / storage developer<br/>files interconnection request"):::human
+
+  subgraph Queue["Utility / ISO cluster study (FERC Order 2023)"]
+    direction TB
+    Ready("Prove readiness:<br/>90%→100% site control,<br/>study + commercial deposits"):::pro
+    Cluster("150-day cluster study"):::gov
+    Fac("Facilities study"):::gov
+    Restudy("Restudy when a higher-queue<br/>project drops out"):::gov
+  end
+
+  AHJ("Local AHJ permits<br/>zoning · conditional-use · per jurisdiction"):::gov
+  Costs("Network-upgrade costs revealed late<br/>(proportional-impact allocation)"):::ext
+  Drop("77% of capacity withdrawn<br/>median wait >4 yrs"):::human
+  COD("Interconnection agreement → COD<br/>only ~13% make it"):::human
+
+  Dev --> Ready --> Cluster --> Fac
+  Cluster -. "68% of studies issued late" .-> Restudy
+  Restudy --> Cluster
+  Fac --> Costs
+  Dev --> AHJ
+  Costs -. "cost shock" .-> Drop
+  Fac --> COD

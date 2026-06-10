@@ -1,0 +1,26 @@
+flowchart LR
+  classDef human fill:#fdecec,stroke:#e0564f,stroke-width:1.5px,color:#0f172a;
+  classDef agent fill:#eafbf1,stroke:#16a34a,stroke-width:1.5px,color:#0f172a;
+  classDef ext fill:#fff7ed,stroke:#d97706,stroke-width:1.5px,color:#0f172a;
+  classDef store fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+
+  Dev("Developer / EPC<br/>portfolio of projects"):::human
+
+  Agent("Interconnection agent<br/>tracks every project's queue position<br/>+ deadline across utility & AHJ"):::agent
+
+  subgraph Owns["What the agent owns"]
+    direction TB
+    Pkt("Assemble utility application<br/>+ readiness evidence packet"):::agent
+    Permit("File per-AHJ local permits<br/>(zoning / use)"):::agent
+    Resp("Answer study rounds + restudies<br/>before each deadline"):::agent
+    Watch("Flag network-upgrade cost shocks<br/>early → go/no-go decision"):::agent
+  end
+
+  Data("ISO heatmaps · tariffs · queue data<br/>AHJ forms, mostly no API"):::ext
+  Gate{{"Developer signs financial commitments<br/>+ go/no-go (human gate)"}}:::human
+  Trail[("Deadline + evidence trail<br/>queue-position defense")]:::store
+
+  Dev --> Agent --> Owns
+  Owns -. "reads" .-> Data
+  Owns --> Gate
+  Agent -. "audit-ready record" .-> Trail
