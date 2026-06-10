@@ -1,0 +1,26 @@
+flowchart LR
+  classDef human fill:#fdecec,stroke:#e0564f,stroke-width:1.5px,color:#0f172a;
+  classDef agent fill:#eafbf1,stroke:#16a34a,stroke-width:1.5px,color:#0f172a;
+  classDef ext fill:#fff7ed,stroke:#d97706,stroke-width:1.5px,color:#0f172a;
+  classDef store fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+
+  Taxpayer("Taxpayer / small business<br/>uploads the notice"):::human
+
+  Agent("IRS-notice agent<br/>acts inside the 30/90-day window<br/>honest, low-cost, not a fee mill"):::agent
+
+  subgraph Owns["What the agent owns"]
+    direction TB
+    Triage("Parse the notice:<br/>type, year, amount, deadline"):::agent
+    Check("Verify the IRS math vs.<br/>the taxpayer's records<br/>(catch the 1-in-3 wrong)"):::agent
+    Remedy("Pick the response/remedy:<br/>dispute · abatement · IA · OIC · CNC"):::agent
+    Draft("Draft + file the response<br/>before the deadline"):::agent
+  end
+
+  Data("IRS transcripts/account · wage docs<br/>taxpayer records, mostly no clean API"):::ext
+  Gate{{"Taxpayer e-signs the response;<br/>CPA/EA gate on disputes (human gate)"}}:::human
+  Trail[("Audit-ready file:<br/>notice + basis + response")]:::store
+
+  Taxpayer --> Agent --> Owns
+  Owns -. "reads" .-> Data
+  Owns --> Gate
+  Agent -. "evidence trail" .-> Trail

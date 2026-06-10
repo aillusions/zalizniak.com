@@ -1,0 +1,22 @@
+flowchart LR
+  classDef human fill:#fdecec,stroke:#e0564f,stroke-width:1.5px,color:#0f172a;
+  classDef pro fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef gov fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+  classDef ext fill:#fff7ed,stroke:#d97706,stroke-width:1.5px,color:#0f172a;
+
+  IRS("IRS sends ~170M notices/yr<br/>CP2000, math-error, balance-due<br/>often long & confusing"):::gov
+  Taxpayer("Taxpayer / small business<br/>panics, often overpays or ignores<br/>(1 in 3 CP2000s owe nothing)"):::human
+
+  subgraph Paths["Two bad paths"]
+    direction TB
+    Ignore("Ignore it →<br/>30-day CP2000 lapses →<br/>90-day Notice of Deficiency →<br/>assessed + penalties + interest"):::ext
+    Hire("Hire a 'tax relief' firm →<br/>big upfront fee, 'pennies on<br/>the dollar' OIC pitch<br/>(FTC actions, OIC 'mills')"):::pro
+  end
+
+  Court("Tax Court petition<br/>or full assessment"):::gov
+  OIC("Offer in compromise:<br/>rarely filed, ~1 in 5 accepted"):::gov
+
+  IRS --> Taxpayer --> Ignore
+  Taxpayer --> Hire
+  Ignore --> Court
+  Hire --> OIC
