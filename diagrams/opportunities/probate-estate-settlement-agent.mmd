@@ -1,0 +1,32 @@
+flowchart LR
+  classDef human fill:#fdecec,stroke:#e0564f,stroke-width:1.5px,color:#0f172a;
+  classDef agent fill:#eafbf1,stroke:#16a34a,stroke-width:1.5px,color:#0f172a;
+  classDef court fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+  classDef ext fill:#fff7ed,stroke:#d97706,stroke-width:1.5px,color:#0f172a;
+  classDef store fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+
+  Exec("Executor<br/>gates signatures +<br/>final distribution"):::human
+
+  Agent("Estate-settlement agent<br/>durable, multi-month workflow<br/>acts, not just suggests"):::agent
+
+  subgraph Owns["What the agent owns"]
+    direction TB
+    Disc("Asset discovery<br/>read statements, trace accounts"):::agent
+    Forms("Generate county-specific<br/>forms + creditor notices"):::agent
+    Chase("Chase institutions<br/>portals · mail · phone trees"):::agent
+    Acct("Running inventory<br/>+ estate accounting"):::agent
+    TaxP("Assemble tax returns"):::agent
+  end
+
+  Inst("Banks · brokerages · IRS · creditors<br/>no-API, paper + portal surfaces"):::ext
+  Court("Probate court"):::court
+  Audit[("Audit trail<br/>every action + document logged")]:::store
+
+  Sign{{"Executor e-signs filings"}}:::human
+  Dist{{"Court-approved distribution"}}:::human
+
+  Exec --> Agent --> Owns
+  Owns -. "operates over" .-> Inst
+  Owns --> Sign --> Court
+  Court --> Dist
+  Agent -. "logs to" .-> Audit

@@ -37,7 +37,7 @@ Profit / Pain / Whitespace below are **seed estimates** to be confirmed in each 
 
 | Opportunity | The mess in one line | Profit | Pain | Whitespace | Lens |
 | --- | --- | --- | --- | --- | --- |
-| [Probate & estate settlement](/opportunities/probate-estate-settlement/) | Every death triggers a months-long, multi-party paper ordeal across courts, banks, and the IRS | Very High | Acute | ★★★ | Drastic |
+| [Probate & estate settlement](/opportunities/probate-estate-settlement/) | Every death triggers a months-long, multi-party paper ordeal across courts, banks, and the IRS | Very High | Acute | ★★ | Drastic |
 | [Commercial property-tax appeals](/opportunities/property-tax-appeals/) | Over-assessed properties overpay tax because appeals are deadline + comps drudgery | High | High | ★★★ | Drastic |
 | [Unclaimed property / escheatment](/opportunities/unclaimed-property-escheatment/) | Every company is legally exposed to state escheatment but most don't know it | Med–High | Latent→urgent | ★★★ | Drastic |
 | [Energy interconnection & permitting](/opportunities/energy-interconnection/) | Renewable projects stall for years in interconnection queues and AHJ permitting | High | High | ★★★ | Drastic |

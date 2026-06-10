@@ -1,0 +1,40 @@
+flowchart LR
+  classDef human fill:#fdecec,stroke:#e0564f,stroke-width:1.5px,color:#0f172a;
+  classDef pro fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef court fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+  classDef ext fill:#fff7ed,stroke:#d97706,stroke-width:1.5px,color:#0f172a;
+
+  Exec("Executor + family<br/>the manual hub<br/>~570 hrs over ~16 months"):::human
+
+  Atty("Attorney + CPA<br/>paid a % of the<br/>gross estate"):::pro
+
+  subgraph Court["Probate court · county-specific forms, no standard"]
+    direction TB
+    Pet("Petition + original will"):::court
+    Let("Letters issued<br/>executor empowered"):::court
+    Acct("Inventory + final<br/>accounting filed"):::court
+  end
+
+  subgraph Inst["Asset discovery · no API · mail + phone + hold queues"]
+    direction TB
+    Banks("Banks · brokerages"):::ext
+    Ret("401k · IRA · pensions"):::ext
+    Ins("Life insurance · annuities"):::ext
+    Prop("Home · vehicles · belongings"):::ext
+  end
+
+  Cred("Creditors<br/>statutory notice +<br/>claims window"):::ext
+  Tax("IRS + state<br/>final 1040 · estate returns"):::ext
+  Heirs("Heirs / beneficiaries<br/>44% see family conflict"):::human
+
+  Exec --> Atty
+  Exec --> Pet
+  Pet --> Let --> Acct
+  Exec --> Banks
+  Exec --> Ret
+  Exec --> Ins
+  Exec --> Prop
+  Exec --> Cred
+  Exec --> Tax
+  Acct --> Heirs
+  Exec --> Heirs
