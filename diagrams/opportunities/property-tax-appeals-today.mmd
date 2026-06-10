@@ -1,0 +1,29 @@
+flowchart LR
+  classDef human fill:#fdecec,stroke:#e0564f,stroke-width:1.5px,color:#0f172a;
+  classDef pro fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef gov fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+  classDef ext fill:#fff7ed,stroke:#d97706,stroke-width:1.5px,color:#0f172a;
+
+  Assr("County assessor<br/>sets assessed value"):::gov
+  Notice("Assessment notice<br/>~30–45 day appeal window"):::gov
+  Owner("CRE owner / CFO<br/>often misses it or eats it"):::human
+  Cons("Boutique consultant / attorney<br/>contingency: 33–50% of savings"):::pro
+
+  subgraph Work["Manual case-building, by hand"]
+    direction TB
+    Comps("Pull comparable sales"):::ext
+    Income("Income / cap-rate analysis"):::ext
+    Pkt("Assemble evidence packet"):::pro
+  end
+
+  Board("Board of review /<br/>assessment appeals board<br/>hearing"):::gov
+  Court("Tax court<br/>judicial review"):::gov
+  Save("Reduced assessment<br/>→ recurring annual tax savings"):::human
+
+  Assr --> Notice --> Owner --> Cons
+  Cons --> Comps
+  Cons --> Income
+  Comps --> Pkt
+  Income --> Pkt
+  Pkt --> Board --> Save
+  Board -. "escalate" .-> Court

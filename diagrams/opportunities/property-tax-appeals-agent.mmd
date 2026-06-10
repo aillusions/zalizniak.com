@@ -1,0 +1,26 @@
+flowchart LR
+  classDef human fill:#fdecec,stroke:#e0564f,stroke-width:1.5px,color:#0f172a;
+  classDef agent fill:#eafbf1,stroke:#16a34a,stroke-width:1.5px,color:#0f172a;
+  classDef ext fill:#fff7ed,stroke:#d97706,stroke-width:1.5px,color:#0f172a;
+  classDef store fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+
+  Owner("CRE owner / portfolio"):::human
+
+  Agent("Property-tax appeal agent<br/>watches every parcel + jurisdiction<br/>acts on the deadline, not on request"):::agent
+
+  subgraph Owns["What the agent owns"]
+    direction TB
+    Mon("Monitor assessments<br/>flag over-assessment"):::agent
+    Val("Build comps + income /<br/>cap-rate valuation"):::agent
+    Pkt("Generate jurisdiction-specific<br/>appeal packet · meet deadline"):::agent
+    Track("File + track hearing"):::agent
+  end
+
+  Data("Assessor rolls · sales comps · rent / cap data<br/>per-jurisdiction, mostly no API"):::ext
+  Gate{{"Licensed rep at hearing<br/>(human gate)"}}:::human
+  Bill[("Billed on tax saved · contingency<br/>audit-ready evidence packet")]:::store
+
+  Owner --> Agent --> Owns
+  Owns -. "reads" .-> Data
+  Owns --> Gate
+  Agent -. "evidence + meter" .-> Bill
