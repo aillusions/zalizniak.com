@@ -47,6 +47,8 @@ A working glossary of the strategy, unit-economics, go-to-market, and funnel voc
 
 **Underwriting** — assessing the risk of a deal and setting the price and terms to accept it: lending (credit, income, collateral → rate/limit), insurance (claim likelihood → premium), and securities (IPO/bond issuance → offering price). In fintech AI products it's the core decision being automated — the model *is* the underwriter, so its accuracy maps straight to loss rates and margin.
 
+**Escheatment** — the legal process by which property whose owner can't be located — an uncashed check, a credit balance, a stale dividend, an unused gift-card balance — must be turned over to the state after a multi-year *dormancy* period. Any business holding someone else's money is a "holder" obligated to track each item's dormancy clock, attempt owner outreach (*due diligence*), and remit on a per-state deadline in a prescribed file format. *Why it's an opportunity domain: compliance is near-universal as an obligation but rare in practice (in California, ~2% of holders comply), and the penalty for missing it is a contingent-fee auditor with a 15-year lookback and authority to estimate liability — an [arcane](#strategy--positioning), high-dollar workflow that's still mostly manual.*
+
 **Churn** — the rate customers leave. **Logo churn** = accounts lost; **revenue churn** = dollars lost. Low churn is the foundation of high LTV.
 
 **NRR / NDR (net revenue retention)** — revenue from your *existing* customers a year later, including expansion and net of churn. **>100%** means you'd grow even with zero new logos — the strongest single SaaS health signal.
