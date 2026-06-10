@@ -1,0 +1,26 @@
+flowchart LR
+  classDef human fill:#fdecec,stroke:#e0564f,stroke-width:1.5px,color:#0f172a;
+  classDef agent fill:#eafbf1,stroke:#16a34a,stroke-width:1.5px,color:#0f172a;
+  classDef ext fill:#fff7ed,stroke:#d97706,stroke-width:1.5px,color:#0f172a;
+  classDef store fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+
+  Lender("Lender / lessor<br/>portfolio of secured loans"):::human
+
+  Agent("UCC perfection agent<br/>watches every filing's 5-yr clock<br/>acts before lapse, not on alert"):::agent
+
+  subgraph Owns["What the agent owns"]
+    direction TB
+    Derive("Derive exact §9-503 name<br/>from organic record"):::agent
+    Pick("Confirm §9-307 jurisdiction<br/>(state of organization)"):::agent
+    Verify("Run safe-harbor search<br/>confirm office logic finds it"):::agent
+    Cont("File UCC-1 + auto-continue<br/>in the 6-month window"):::agent
+  end
+
+  Data("Secretary-of-State organic records<br/>+ filing-office search, mostly no API"):::ext
+  Gate{{"Counsel sign-off on perfection opinion<br/>(human gate)"}}:::human
+  Trail[("Per-loan priority evidence<br/>name + jurisdiction + search proof")]:::store
+
+  Lender --> Agent --> Owns
+  Owns -. "reads" .-> Data
+  Owns --> Gate
+  Agent -. "priority defense" .-> Trail

@@ -41,7 +41,7 @@ Profit / Pain / Whitespace below are **seed estimates** to be confirmed in each 
 | [Commercial property-tax appeals](/opportunities/property-tax-appeals/) | Over-assessed properties overpay tax because appeals are deadline + comps drudgery | High | High | ★★★ | Drastic |
 | [Unclaimed property / escheatment](/opportunities/unclaimed-property-escheatment/) | Every company is legally exposed to state escheatment but most don't know it | Med–High | Latent→urgent | ★★★ | Drastic |
 | [Energy interconnection & permitting](/opportunities/energy-interconnection/) | Renewable projects stall for years in interconnection queues and AHJ permitting | High | High | ★★★ | Drastic |
-| [UCC lien perfection & monitoring](/opportunities/ucc-lien-perfection/) | Lenders lose collateral priority on botched, deadline-driven filings | Med–High | High | ★★★ | Drastic |
+| [UCC lien perfection & monitoring](/opportunities/ucc-lien-perfection/) | Lenders lose collateral priority on botched, deadline-driven filings | Med–High | High | ★★ | Drastic |
 | [Government grants & permitting](/opportunities/government-grants-permitting/) | Paper-era approval chains with no status visibility and strict accessibility rules | Med–High | Med | ★★★ | Adjacent |
 | [Insurance subrogation recovery](/opportunities/insurance-subrogation/) | Carriers leave billions unrecovered because adjusters can't chase every file | High | High | ★★☆ | Drastic |
 | [Government RFP discovery & bid response](/opportunities/government-rfp-response/) | SMBs skip trillions in public contracts because responding is a compliance nightmare | Very High | High | ★★☆ | Drastic |

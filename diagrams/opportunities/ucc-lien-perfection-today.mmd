@@ -1,0 +1,23 @@
+flowchart LR
+  classDef human fill:#fdecec,stroke:#e0564f,stroke-width:1.5px,color:#0f172a;
+  classDef pro fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef gov fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+  classDef ext fill:#fff7ed,stroke:#d97706,stroke-width:1.5px,color:#0f172a;
+
+  Lender("Lender / lessor<br/>secured loan closes"):::human
+
+  subgraph Perfect["Get perfection right — by hand"]
+    direction TB
+    Name("Exact debtor name<br/>from public organic record<br/>(trade name = fatal)"):::pro
+    Juris("Pick filing state:<br/>debtor's state of organization"):::pro
+    File("File UCC-1 with<br/>Secretary of State"):::gov
+  end
+
+  Office("Filing office search logic<br/>safe harbor: must surface the name"):::gov
+  Clock("5-year clock<br/>continue only in 6-mo window"):::ext
+  Lapse("Miss it → unperfected,<br/>'deemed never perfected'<br/>vs. a purchaser for value"):::human
+
+  Lender --> Name --> Juris --> File --> Office
+  File --> Clock
+  Clock -. "lapse or wrong name" .-> Lapse
+  Office -. "no match" .-> Lapse
