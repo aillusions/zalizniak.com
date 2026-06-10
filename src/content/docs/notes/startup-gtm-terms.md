@@ -17,6 +17,8 @@ A working glossary of the strategy, unit-economics, go-to-market, and funnel voc
 
 **Defensibility** — whether that advantage actually *holds* over time. A feature is a head start; defensibility is what stops it from being competed away.
 
+**Arcane** — obscure and esoteric enough that mastering the domain takes specialized, hard-won knowledge most builders won't acquire. In opportunity-hunting it's a *feature*: high-dollar workflows that run on paper, fax, portals, and tribal knowledge are unglamorous enough that no AI-native company has shown up — *the arcaneness is the moat*, because the barrier that kept incumbents manual is the same one that deters new entrants.
+
 **Incumbent** — the established, dominant player already holding the market you're entering — the one with the distribution, brand, and customer base a startup has to displace or route around. Their weakness is usually structural (legacy tech, channel conflict, slow release cycles), which is what a wedge exploits; the *incumbent's advantage* is the moat you have to out-build.
 
 **PMF (product-market fit)** — the product solves a real problem well enough that the market pulls it from you (usage, retention, word-of-mouth) rather than you pushing it.
@@ -38,6 +40,8 @@ A working glossary of the strategy, unit-economics, go-to-market, and funnel voc
 **ARR / MRR** — annual / monthly recurring revenue: the predictable subscription run-rate (ARR ≈ MRR × 12). The default scoreboard for SaaS.
 
 **Gross margin** — revenue left after the direct cost of delivering the service (hosting, inference, support). High margin is what makes LTV work — *and why per-request inference cost matters so much for AI products.*
+
+**Contingency fee** — a pricing model where you're paid only on a successful outcome, typically a cut of the money recovered or saved, with no fee on failure. Common in legal, insurance subrogation, and tax appeals. *Upside: it bills from money found/saved rather than a budget line, so zero budget objection and instant ROI proof. Downside: revenue is outcome-dependent and lumpy, and you carry the cost of the losses.* The recurring monetization alternative to subscription or per-transaction for "recovery" workflows.
 
 **Underwriting** — assessing the risk of a deal and setting the price and terms to accept it: lending (credit, income, collateral → rate/limit), insurance (claim likelihood → premium), and securities (IPO/bond issuance → offering price). In fintech AI products it's the core decision being automated — the model *is* the underwriter, so its accuracy maps straight to loss rates and margin.
 
