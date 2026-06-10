@@ -1,0 +1,27 @@
+flowchart LR
+  classDef io fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef ai fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef gate fill:#fef6e7,stroke:#d9a441,stroke-width:1.5px,color:#0f172a;
+  classDef human fill:#fdecec,stroke:#e0564f,stroke-width:1.5px,color:#0f172a;
+
+  Trig("Trigger<br/>application / claim / message"):::io
+  subgraph engine["Durable workflow engine"]
+    Step("Idempotent activity<br/>(one stage)"):::ai
+    Child("LLM child workflow<br/>provider failover"):::ai
+    Retry{"Failed?"}:::gate
+    Wait{"External wait /<br/>human exception?"}:::gate
+  end
+  State[("Persisted state<br/>Postgres event log")]:::io
+  Human("Human exception<br/>handler"):::human
+  Done("Workflow complete"):::io
+
+  Trig --> Step
+  Step --> Child --> Retry
+  Retry -->|retry w/ backoff| Step
+  Retry -->|ok| Wait
+  Wait -->|park & escalate| Human
+  Human -->|signal resumes| Step
+  Wait -->|next stage| Step
+  Wait -->|all stages done| Done
+  Step <-->|checkpoint every step| State
+  State -.->|replay after crash| Step
