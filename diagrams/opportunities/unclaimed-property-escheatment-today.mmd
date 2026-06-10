@@ -1,0 +1,24 @@
+flowchart LR
+  classDef human fill:#fdecec,stroke:#e0564f,stroke-width:1.5px,color:#0f172a;
+  classDef pro fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef gov fill:#e8f1fd,stroke:#2563eb,stroke-width:1.5px,color:#0f172a;
+  classDef ext fill:#fff7ed,stroke:#d97706,stroke-width:1.5px,color:#0f172a;
+
+  Ledger("Company books<br/>uncashed checks · AR credits<br/>gift cards · dividends · suspense"):::ext
+  Holder("Finance / tax team<br/>~2% of CA holders even file"):::human
+
+  subgraph Work["Manual compliance, if it happens at all"]
+    direction TB
+    Find("Scour ledgers for<br/>property past dormancy<br/>(3–5 yrs, per type)"):::human
+    DD("Due-diligence outreach<br/>letters to each owner"):::human
+    File("Build per-state NAUPA file<br/>file by Oct 31 / Nov 1"):::pro
+  end
+
+  States("50+ state programs<br/>own dormancy, forms, deadlines<br/>priority: owner address, else incorp."):::gov
+  Auditor("Third-party contingent-fee auditor<br/>(Kelmar et al.) · 7+ states piggyback"):::gov
+  Bill("15-yr lookback · estimation<br/>interest up to 50%"):::gov
+
+  Ledger --> Holder --> Work
+  Find --> DD --> File --> States
+  Holder -. "most never file —<br/>silent non-compliance" .-> Auditor
+  Auditor --> Bill

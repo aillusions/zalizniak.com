@@ -1,0 +1,26 @@
+flowchart LR
+  classDef human fill:#fdecec,stroke:#e0564f,stroke-width:1.5px,color:#0f172a;
+  classDef agent fill:#eafbf1,stroke:#16a34a,stroke-width:1.5px,color:#0f172a;
+  classDef ext fill:#fff7ed,stroke:#d97706,stroke-width:1.5px,color:#0f172a;
+  classDef store fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+
+  Holder("Finance / tax team"):::human
+
+  Agent("Escheatment agent<br/>watches ledgers continuously<br/>acts on the deadline, not on audit"):::agent
+
+  subgraph Owns["What the agent owns"]
+    direction TB
+    Detect("Detect escheatable items<br/>across GL · classify by type/state"):::agent
+    Clock("Track per-state dormancy<br/>+ Oct 31 / Nov 1 deadlines"):::agent
+    Reach("Run due-diligence outreach<br/>letters / email to owners"):::agent
+    Gen("Generate per-state NAUPA file<br/>+ file & remit"):::agent
+  end
+
+  Data("ERP / AP / payroll / cap table<br/>50-state rules, mostly no API"):::ext
+  Gate{{"Officer sign-off on remittance<br/>+ counsel on VDA (human gate)"}}:::human
+  Defense[("Audit-ready evidence trail<br/>VDA / verified-report defense")]:::store
+
+  Holder --> Agent --> Owns
+  Owns -. "reads" .-> Data
+  Owns --> Gate
+  Agent -. "estimation-proof record" .-> Defense

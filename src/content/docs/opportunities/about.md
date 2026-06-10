@@ -73,7 +73,7 @@ Profit / Pain / Whitespace below are **seed estimates** to be confirmed in each 
 Each entry below is a **seed thesis** — a starting hypothesis, not yet researched to evidence standard. Deep dives run roughly in priority order; a candidate can be promoted, demoted, or killed once the evidence is in.
 
 **Wave 1 — blue ocean + provable ROI** (highest whitespace, and a model that bills from money found/saved):
-probate-estate-settlement · property-tax-appeals · insurance-subrogation · unclaimed-property-escheatment · energy-interconnection · ucc-lien-perfection
+probate-estate-settlement · property-tax-appeals · unclaimed-property-escheatment · energy-interconnection · ucc-lien-perfection · insurance-subrogation
 
 **Wave 2 — big TAM, reachable buyers:**
 government-rfp-response · title-search-curative · tax-resolution · customs-trade-compliance · workers-comp-claims · government-grants-permitting
