@@ -1,0 +1,23 @@
+flowchart LR
+  classDef io fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef ai fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef gate fill:#fef6e7,stroke:#d9a441,stroke-width:1.5px,color:#0f172a;
+
+  subgraph shared["Shared engine · built once"]
+    Q("Tenant query<br/>+ user identity"):::io
+    Retr("Hybrid retrieval<br/>lexical + vector + rerank"):::ai
+    Agent("Agent reasoning"):::ai
+    Resp("Grounded response"):::io
+  end
+  subgraph tenant["Per-tenant data layer"]
+    ACL{"ACL filter<br/>at retrieval"}:::gate
+    KB[("Learned memories /<br/>corpus / knowledge graph<br/>scoped by org id")]:::io
+  end
+  Ingest("Ingestion: infer memories,<br/>backtest, map ACLs"):::ai
+
+  Q --> Retr
+  Retr -->|user identity| ACL
+  ACL --> KB
+  KB -->|permitted results| Agent
+  Agent --> Resp
+  Ingest --> KB
