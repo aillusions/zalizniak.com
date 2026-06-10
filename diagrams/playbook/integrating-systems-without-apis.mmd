@@ -1,0 +1,30 @@
+flowchart LR
+  classDef io fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef ai fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef gate fill:#fef6e7,stroke:#d9a441,stroke-width:1.5px,color:#0f172a;
+  classDef human fill:#fdecec,stroke:#e0564f,stroke-width:1.5px,color:#0f172a;
+
+  Need("Agent must act on a<br/>system of record"):::ai
+  Q1{"Native<br/>API?"}:::gate
+  API("Call the API"):::io
+  Q2{"Vendor<br/>back door?"}:::gate
+  Built("Build API /<br/>MCP connector"):::io
+  Q3{"Human<br/>UI?"}:::gate
+  UI("Drive the UI<br/>headless browser +<br/>intent-keyed locator + cache"):::ai
+  Alt("No UI → voice call /<br/>document ingestion"):::ai
+  Norm[("Normalize to a<br/>fixed schema")]:::io
+  Gate{"Self-audit +<br/>HITL on low-confidence"}:::human
+  Sor[("System of record")]:::io
+
+  Need --> Q1
+  Q1 -->|yes| API
+  Q1 -->|no| Q2
+  Q2 -->|yes| Built
+  Q2 -->|no| Q3
+  Q3 -->|yes| UI
+  Q3 -->|no| Alt
+  API --> Norm
+  Built --> Norm
+  UI --> Norm
+  Alt --> Norm
+  Norm --> Gate --> Sor
