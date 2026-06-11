@@ -57,6 +57,14 @@ Most queues are **best-effort order** — fine for independent jobs. Strict orde
 | **Amazon SQS** | Fully-managed queue | **Standard** (at-least-once, best-effort order, near-infinite throughput) vs **FIFO** (ordered, exactly-once processing, limited throughput). Visibility timeout, DLQ, long polling. Pair with **SNS** for fanout. |
 | **Task queues** (Celery, Sidekiq, BullMQ) | App-level job frameworks | Sit *on top* of a broker (Redis/RabbitMQ) and add scheduling, retries, concurrency, result tracking — the everyday "background job" workhorse. |
 
+## Returning a result (and why it gets brittle)
+
+A queue is **one-way**: producer → worker. The moment the sender needs the *result* back, you bolt on a **reply queue** plus a **correlation ID** to match each response to its request. For a single round-trip that's fine.
+
+It falls apart at **multi-step** flows. Call A, wait for A's result, then call B, handle B's failure, compensate — now you're hand-maintaining correlation IDs, per-step state, timeouts, and retries scattered across several queues, with **no single place that owns the flow**. That's the "queue glue" trap: it works in a demo and rots in production — impossible to see end-to-end, painful to debug, scary to change. The result also creates a **command-disguised-as-event** tangle — every reply is really "here's your answer," but nobody owns the conversation.
+
+That brittleness *is* the signal you've outgrown the queue: when the hard part is **tracking the state of a process** rather than delivering a message, hand it to an [orchestrator](/system-design/temporal/) — the workflow `await`s each result durably and owns the whole flow.
+
 ## Queue vs log vs orchestrator
 
 Three tools, three jobs — don't force one into another's role:
