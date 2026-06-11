@@ -45,6 +45,10 @@ The reusable moves that recur once you read enough teardowns — how teams make 
 
 **Read-and-reason over record-and-replay** — Instead of brittle RPA that replays fixed clicks, an LLM agent reads the live screen/DOM, understands it, and adapts — so it survives portal redesigns and unscripted turns that break record-and-replay automation. — [Amperos](/teardowns/amperos-health/), [Momentic](/teardowns/momentic/)
 
+**Cross-document reconciliation** — Extract structured fields from several documents that are supposed to agree (invoice ↔ PO ↔ goods-receipt, claim ↔ chart ↔ remittance) and reconcile them line-by-line, auto-clearing the matches and routing only the mismatches to a human. The hard part is entity resolution and tolerance across inconsistent formats, not OCR. — [Confido](/teardowns/confido/), [Amperos](/teardowns/amperos-health/)
+
+**Document-vs-policy compliance** — Check a document against a codified ruleset (underwriting guidelines, regulatory controls, contract standards) and return *per-rule* pass/fail with the citing clause, not a bare yes/no. The policy stays the audited artifact and decides; the LLM locates and interprets the evidence. — [Pylon](/teardowns/pylon-lending/), [Norm AI](/teardowns/norm-ai/), [Comp AI](/teardowns/comp-ai/)
+
 ### Knowledge & retrieval
 
 **Knowledge as data, not code** — Build the connectors and reasoning once and amortize them across customers; keep each tenant's uniqueness as learned "memories" and facts in a data layer rather than per-customer code. Pallet's agents run on 20,000+ customer-specific memories. — [Pallet](/teardowns/pallet/), [Glean](/teardowns/glean/)
