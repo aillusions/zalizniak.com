@@ -1,0 +1,18 @@
+flowchart LR
+  classDef io fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef mem fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef disk fill:#e7f5ec,stroke:#3f9c5a,stroke-width:1.5px,color:#0f172a;
+
+  W(["Write"]):::io
+  CL[("Commit log<br/>append-only · durability")]:::disk
+  MT["Memtable<br/>in-memory, sorted"]:::mem
+  SS1[("SSTable")]:::disk
+  SS2[("SSTable")]:::disk
+  CMP[("Compaction<br/>merge · drop tombstones")]:::disk
+
+  W --> CL
+  W --> MT
+  MT -->|"flush when full"| SS1
+  MT -->|"flush"| SS2
+  SS1 --> CMP
+  SS2 --> CMP

@@ -1,0 +1,18 @@
+flowchart LR
+  classDef client fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef coord fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef replica fill:#e7f5ec,stroke:#3f9c5a,stroke-width:1.5px,color:#0f172a;
+
+  Client(["Client"]):::client
+  Coord{{"Coordinator<br/>(any node, per request)"}}:::coord
+  R1[("Replica A")]:::replica
+  R2[("Replica B")]:::replica
+  R3[("Replica C")]:::replica
+
+  Client -->|"CL = QUORUM"| Coord
+  Coord -->|"partition key → token"| R1
+  Coord --> R2
+  Coord --> R3
+  R1 -.->|ack| Coord
+  R2 -.->|ack| Coord
+  Coord -.->|"2 of RF=3 agree → respond"| Client
