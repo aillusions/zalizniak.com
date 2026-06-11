@@ -12,4 +12,5 @@ sidebar:
 - [Jordan Has No Life](https://www.youtube.com/@jordanhasnolife5163) (YouTube) — deep, practical walkthroughs.
 - [Hello Interview — Common Problems](https://www.hellointerview.com/learn/system-design/problem-breakdowns/bitly) — worked question breakdowns with answer keys (e.g. Bitly, Ticketmaster, WhatsApp).
 - [Hello Interview — Real Interview Questions](https://www.hellointerview.com/community/questions?sort=recentAndPopular&page=1) — actual questions from recent interviews, reported by other users.
+- [Hello Interview — Staff-Level System Design](https://www.hellointerview.com/blog/staff-level-system-design) — what raises the bar from senior to staff: leading deep dives, proactive trade-offs.
 - [Excalidraw](https://excalidraw.com/) — virtual whiteboard for timed practice.
