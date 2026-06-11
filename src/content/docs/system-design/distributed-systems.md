@@ -90,7 +90,7 @@ The two axes of scaling state — and where consistency choices bite:
 
 ## Building fluency
 
-Fluency here comes from **building, breaking, and then explaining** — not from reading. Run one drill at a time on a real (if small) system, and pair each with the write-up. The plan, grouped by what each kind teaches:
+Fluency here comes from **building, breaking, and then explaining** — not from reading. Run one drill at a time on a real (if small) system, and pair each with the write-up. The code lives in a companion repo, [aillusions/distributed-systems](https://github.com/aillusions/distributed-systems); these notes are the explanation half. The plan, grouped by what each kind teaches:
 
 **Build it — internalize the mechanism**
 
