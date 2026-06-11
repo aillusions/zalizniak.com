@@ -173,6 +173,51 @@ The same machinery above — access methods, hooks, background workers, WAL — 
 
 The pattern to take away: **"just use Postgres" stretches further than people expect** — search, analytics, queues, vectors, and durable workflows are increasingly extensions, not separate services. Fewer moving parts, one consistency model, one backup. The system-design trade-off is the usual one (a single store is simpler but scales as one unit); knowing the extension exists changes the build-vs-bolt-on decision.
 
+**One catch — managed Postgres.** "Bolt on an extension" assumes you control the instance. On a managed DBaaS (RDS/Aurora) you only get the provider's **allowlist** — `pgvector` yes; Citus, ParadeDB, and `pg_durable` no — plus whatever you can express in *trusted languages* via TLE (logic, not C access methods). See below.
+
+## Managed Postgres on AWS (RDS & Aurora)
+
+Because you have **no superuser and no filesystem** on a managed instance, RDS and Aurora only run extensions from **AWS's curated allowlist** — broad, but fixed. Anything needing custom C that AWS hasn't packaged simply can't be installed.
+
+**See what's available / installed:**
+
+```sql
+SELECT name, default_version, installed_version
+FROM pg_available_extensions ORDER BY name;
+```
+
+**Most extensions — just create them** (no preload needed):
+
+```sql
+CREATE EXTENSION IF NOT EXISTS vector;   -- pgvector
+```
+
+**Extensions that need preloading** (`pg_stat_statements`, `pg_cron`, …):
+
+1. In the DB's **parameter group**, add the library to `shared_preload_libraries` (comma-separated).
+2. **Reboot** the instance — `shared_preload_libraries` is a static parameter.
+3. `CREATE EXTENSION pg_stat_statements;`
+
+**Roughly what's on the allowlist:** `pgvector`, PostGIS, `pg_stat_statements`, `pg_trgm`, `pgcrypto`, `hstore`, `uuid-ossp`, `postgres_fdw`, `pg_cron`, `pg_partman`, PL/v8, and `pg_tle`. **Not** available: Citus, ParadeDB / `pg_search`, `pg_durable`, TimescaleDB — anything that needs C AWS doesn't ship. (Always confirm against `pg_available_extensions` for your engine version — the list grows.)
+
+**Bring your own, the trusted way (TLE).** [Trusted Language Extensions](https://github.com/aws/pg_tle) let you install extensions AWS hasn't packaged — but only in **trusted languages** (SQL, PL/pgSQL, PL/v8, PL/Perl), never C:
+
+1. Add `pg_tle` to `shared_preload_libraries` (parameter group) → reboot → `CREATE EXTENSION pg_tle;`.
+2. Register your extension, then create it like any other:
+
+```sql
+SELECT pgtle.install_extension(
+  'my_ext', '1.0', 'what it does',
+  $_pg_tle_$
+    CREATE FUNCTION my_ext_hello() RETURNS text LANGUAGE sql
+    AS $$ SELECT 'hi from TLE'::text $$;
+  $_pg_tle_$
+);
+CREATE EXTENSION my_ext;
+```
+
+TLE buys you custom functions, aggregates, triggers, and a few auth hooks (e.g. password-check) — **not** new index access methods, background workers, or anything that does I/O. So the table-as-inverted-index from the hands-on section is expressible in TLE/PL/v8; a real `IndexAmRoutine` (or pgvector/ParadeDB) is not — that lives in C, which is exactly what a managed engine won't run.
+
 ---
 
 These are working notes — a map of the subsystems and a starting path, not a substitute for the [Postgres docs](https://www.postgresql.org/docs/current/internals.html) or the source. See also the [Study List](/system-design/study-list/) for the WAL/MVCC/buffer-manager terms in one-liner form.
