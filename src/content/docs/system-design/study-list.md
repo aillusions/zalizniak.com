@@ -23,6 +23,10 @@ Like coding interviews, system design questions cluster into patterns. Practice 
 | Collaborative editing | Google Docs | Concurrency & conflict resolution (CRDT/OT) |
 | Cloud storage | Dropbox | Efficient, scalable file storage & sharing |
 | Competition / leaderboards | LeetCode, top-K | Real-time interaction, ranking at scale |
+| URL shortener / ID generation | Bitly, TinyURL, Snowflake | Read-heavy lookups, short-key generation, no collisions |
+| Search / autocomplete | Typeahead, FB post search | Inverted index, prefix matching, ranking at scale |
+| Analytics / stream aggregation | Ad-click aggregator, metrics monitoring | High-volume ingest, windowed aggregation, approximate top-K |
+| Notifications | Push / email / SMS | Multi-channel fan-out, dedup, delivery guarantees |
 | Foundational component | Rate limiter, message queue, distributed cache, web crawler, job scheduler | One building block, deeply |
 
 ## Design vocabulary
