@@ -5,6 +5,8 @@ sidebar:
   order: 1
 ---
 
+These are practical interviews, closer to real-world work than a LeetCode round — there's no single correct answer (most questions have many), so the interviewer is assessing how you navigate a complex problem, reason about trade-offs, and communicate your thinking, not whether you reach one "right" design.
+
 The fastest way to fail a system design interview is to not deliver a *working system* in the time given — usually misdiagnosed as "time management." A practiced structure fixes this: it keeps you focused on what the interviewer cares about and gives you a linear path to fall back on when nerves hit. Build the solution up in order, one layer at a time.
 
 The sequence and rough timings for a ~45-minute slot (~35 min of actual design):
