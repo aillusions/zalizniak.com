@@ -2,7 +2,7 @@
 title: Kubernetes & Orchestration
 description: "A from-zero map of Kubernetes for system design — the declarative reconciliation model, control-plane vs node architecture, the core objects, and how CRDs + controllers (kubebuilder/controller-runtime) make Operators — with a worked architecture of a Postgres cluster run by an operator."
 sidebar:
-  order: 7
+  order: 8
 ---
 
 Container **orchestration** is the problem of running many containers across many machines without hand-placing them: scheduling, healing, scaling, networking, rollout. **Kubernetes (K8s)** is the de-facto answer, and its one big idea is **declarative reconciliation** — you describe the *desired* state, and control loops continuously drive *actual* state toward it. Everything below is a consequence of that idea. The page ends on a worked architecture: a Postgres cluster managed by an Operator, which ties straight back to the [Postgres Internals](/system-design/postgres-internals/) page (replication, WAL/PITR) and the DBaaS-shaped drills in the [Study List](/system-design/study-list/#advanced--infra-deep-dives).

@@ -2,7 +2,7 @@
 title: OpenTelemetry
 description: OpenTelemetry & observability — coming soon.
 sidebar:
-  order: 14
+  order: 15
   label: OpenTelemetry · observability
   badge:
     text: Soon

@@ -1,0 +1,25 @@
+flowchart LR
+  classDef io fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef ec fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef data fill:#e7f5ec,stroke:#3f9c5a,stroke-width:1.5px,color:#0f172a;
+  classDef parity fill:#fef6e7,stroke:#d9a441,stroke-width:1.5px,color:#0f172a;
+
+  Obj(["PUT object"]):::io
+  EC{{"Erasure coding<br/>Reed–Solomon · 4 data + 2 parity"}}:::ec
+
+  subgraph N["Spread across drives/nodes — reconstruct after any 2 losses · ~1.5× storage"]
+    D1[("Data 1")]:::data
+    D2[("Data 2")]:::data
+    D3[("Data 3")]:::data
+    D4[("Data 4")]:::data
+    P1[("Parity 1")]:::parity
+    P2[("Parity 2")]:::parity
+  end
+
+  Obj --> EC
+  EC --> D1
+  EC --> D2
+  EC --> D3
+  EC --> D4
+  EC --> P1
+  EC --> P2

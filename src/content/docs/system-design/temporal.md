@@ -2,7 +2,7 @@
 title: Temporal
 description: Temporal & durable execution — coming soon.
 sidebar:
-  order: 13
+  order: 14
   label: Temporal · durable execution
   badge:
     text: Soon
