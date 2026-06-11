@@ -84,6 +84,7 @@ The durability and replication backbone: **every change is written to the WAL be
 - **LSN** (log sequence number) — a monotonic byte offset into the WAL; the unit of "how far has replay/replication gotten."
 - **Checkpoints** flush all dirty buffers to disk and record a redo point, bounding crash-recovery time and letting old WAL be recycled. `full_page_writes` protects against torn pages by logging the whole page on first touch after a checkpoint.
 - **Physical replication** ships raw WAL to standbys (streaming replication, `pg_basebackup`). **Logical replication / decoding** reads WAL and reconstructs *row-level* changes (`pgoutput`, `wal2json`) — this is the engine behind Postgres-based **[CDC](/system-design/study-list/#data--storage)** into Kafka/Debezium.
+- **PITR (point-in-time recovery)** — the same WAL stream is what lets you restore to *any moment*, not just the last backup. Take a **base backup** (`pg_basebackup`) and continuously **archive WAL** (`archive_command` → object storage); to recover, restore the base backup and replay archived WAL up to a chosen `recovery_target_time`. So your RPO is "how recent is the last archived WAL segment," and PITR turns "oops, a bad migration at 14:32" into a restore to 14:31 — the capability the [DBaaS backup drill](/system-design/study-list/#advanced--infra-deep-dives) and the [Postgres operator](/system-design/kubernetes/#worked-architecture-postgres-on-kubernetes) automate.
 
 ## Buffer manager
 
