@@ -1,0 +1,19 @@
+flowchart LR
+  classDef q fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef read fill:#e7f5ec,stroke:#3f9c5a,stroke-width:1.5px,color:#0f172a;
+  classDef skip fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+
+  Q["SELECT avg(price)<br/>WHERE day = '...'"]:::q
+
+  subgraph T["Columnar table — one compressed file per column"]
+    direction TB
+    Cday["day &nbsp;▮▮▮▮▮"]:::read
+    Cprice["price ▮▮▮▮▮"]:::read
+    Cuser["user_id ▮▮▮▮▮"]:::skip
+    Cmeta["... 40 more cols"]:::skip
+  end
+
+  Q -->|"reads only the 2<br/>columns it needs"| Cday
+  Q --> Cprice
+  Cuser -.->|not read| Q
+  Cmeta -.->|not read| Q

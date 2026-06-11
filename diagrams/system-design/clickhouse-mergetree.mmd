@@ -1,0 +1,22 @@
+flowchart LR
+  classDef ins fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef part fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef merged fill:#e7f5ec,stroke:#3f9c5a,stroke-width:1.5px,color:#0f172a;
+  classDef idx fill:#fef6e7,stroke:#d9a441,stroke-width:1.5px,color:#0f172a;
+
+  I1(["Batch insert"]):::ins
+  I2(["Batch insert"]):::ins
+  I3(["Batch insert"]):::ins
+  P1[("Part · sorted by ORDER BY")]:::part
+  P2[("Part")]:::part
+  P3[("Part")]:::part
+  M[("Merged part<br/>re-sorted · dedup/aggregate")]:::merged
+  IDX["Sparse primary index<br/>1 mark / ~8192-row granule"]:::idx
+
+  I1 --> P1
+  I2 --> P2
+  I3 --> P3
+  P1 -->|background merge| M
+  P2 --> M
+  P3 --> M
+  IDX -.->|skip granules| M
