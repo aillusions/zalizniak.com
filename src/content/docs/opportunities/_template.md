@@ -72,7 +72,7 @@ Render with diagrams/mermaid-theme.json. Short prose carries the reader through.
 
 <!-- The agent thesis: which steps an agent owns vs. where a human gates; act-not-
 suggest; durable long-running workflow; audit trail. Link the relevant
-/playbook/ patterns (assistant-to-actor, durable workflows, integrating systems
+/ai-playbook/ patterns (assistant-to-actor, durable workflows, integrating systems
 without APIs, encoding domain rules) instead of re-explaining them. A second
 themed Mermaid diagram of the PROPOSED agent flow. -->
 

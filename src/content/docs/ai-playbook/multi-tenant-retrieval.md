@@ -39,7 +39,7 @@ The naïve approach — branch the code per customer — collapses under its own
 
 The system splits into a shared plane and a per-tenant plane. A query arrives carrying the user's identity; the **shared engine** — hybrid retrieval (lexical + vector + rerank) feeding an agent — is built once and serves every tenant. It reads from the **per-tenant data layer**: learned memories, a proprietary corpus, or an ACL-bearing knowledge graph, scoped by org id or by single-tenant deployment. An ACL filter applies the user's permissions *at retrieval*, so results can never include something the user can't open. A separate ingestion pipeline keeps that data layer fresh — inferring memories, backtesting them, mapping each source's ACLs — without ever touching the shared engine's code.
 
-![Multi-tenant retrieval architecture: a tenant query carrying user identity enters a shared engine (hybrid retrieval plus agent) built once; retrieval reads a per-tenant data layer of learned memories, corpus, or knowledge graph scoped by org id, through an ACL filter that enforces the user's permissions at retrieval time; an ingestion pipeline learns memories, backtests them, and maps ACLs into the data layer.](/diagrams/playbook/multi-tenant-retrieval.svg)
+![Multi-tenant retrieval architecture: a tenant query carrying user identity enters a shared engine (hybrid retrieval plus agent) built once; retrieval reads a per-tenant data layer of learned memories, corpus, or knowledge graph scoped by org id, through an ACL filter that enforces the user's permissions at retrieval time; an ingestion pipeline learns memories, backtests them, and maps ACLs into the data layer.](/diagrams/ai-playbook/multi-tenant-retrieval.svg)
 
 <details>
 <summary>Mermaid source</summary>
@@ -77,7 +77,7 @@ flowchart LR
 - **Put the uniqueness in data, not code.** If onboarding a customer means writing code, it won't scale — make it loading memories, connectors, or a corpus into a shared engine.
 - **Enforce permissions at retrieval, never as a post-filter.** A query should be incapable of returning a document the user can't open; carry the user's identity into the retrieval call itself.
 - **Go hybrid.** Lexical catches exact terms, vectors catch meaning, and a reranker with domain signals beats either alone — don't ship vector-only and call it search.
-- **Learn the tenant's knowledge, then backtest it.** Inferred SOPs are only safe once validated against historical cases — gate activation on that, the same way you'd gate a model change (see [Testing output that isn't reproducible](/playbook/evaluating-non-deterministic-agents/)).
+- **Learn the tenant's knowledge, then backtest it.** Inferred SOPs are only safe once validated against historical cases — gate activation on that, the same way you'd gate a model change (see [Testing output that isn't reproducible](/ai-playbook/evaluating-non-deterministic-agents/)).
 - **Scope isolation explicitly.** Single-tenant deployment or row-level security keyed on org id — don't rely on the app layer to remember which tenant it's serving.
 
 ## Seen in

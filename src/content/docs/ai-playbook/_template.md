@@ -46,8 +46,8 @@ a choice is typical rather than confirmed. -->
 
 ## Reference architecture
 
-<!-- At least one themed Mermaid diagram (diagrams/playbook/<slug>.mmd → rendered
-SVG in public/diagrams/playbook/), source collapsed in <details> below it. Render
+<!-- At least one themed Mermaid diagram (diagrams/ai-playbook/<slug>.mmd → rendered
+SVG in public/diagrams/ai-playbook/), source collapsed in <details> below it. Render
 with diagrams/mermaid-theme.json. A short paragraph carries the reader through it. -->
 
 ## Best practices

@@ -39,7 +39,7 @@ A long workflow is mostly *waiting* — on an appraisal, a title company, a huma
 
 A trigger — an application, a claim, an inbound message — starts a workflow on a durable engine that drives it stage by stage, checkpointing every step to a persisted event log (Postgres). Each stage is an idempotent activity; a failure retries with backoff, and LLM-heavy steps run as child workflows that fail over across providers without redoing earlier work. When the flow hits an external wait or an ambiguity it can't resolve, it parks on a durable timer or escalates to a human and resumes on their signal — no spinning, no lost state. And because every step is journaled, a process crash replays from the recorded events and continues from the last completed activity rather than the beginning.
 
-![Durable workflow architecture: a trigger starts a workflow on a durable engine that runs idempotent activities stage by stage, checkpointing each to a persisted Postgres event log; LLM steps run as child workflows with provider failover, retries use backoff, external waits and human exceptions park the workflow on a durable timer or signal that resumes it, and a crash replays from the event log to resume at the last completed step.](/diagrams/playbook/durable-long-running-workflows.svg)
+![Durable workflow architecture: a trigger starts a workflow on a durable engine that runs idempotent activities stage by stage, checkpointing each to a persisted Postgres event log; LLM steps run as child workflows with provider failover, retries use backoff, external waits and human exceptions park the workflow on a durable timer or signal that resumes it, and a crash replays from the event log to resume at the last completed step.](/diagrams/ai-playbook/durable-long-running-workflows.svg)
 
 <details>
 <summary>Mermaid source</summary>
@@ -81,7 +81,7 @@ flowchart LR
 - **Persist the workflow, not just the data.** A durable engine that journals every step turns a crash from "start over" into "resume from the last activity" — that's the whole game for multi-day flows.
 - **Make every side effect idempotent.** Replay and retries are only safe if charging a fee or filing a document twice is a no-op; key activities so re-execution can't double-act.
 - **Model the human as a durable wait.** Park the workflow on a timer or signal and resume on the human's action — humans handle exceptions, not the happy path, so they shouldn't block a thread for days.
-- **Checkpoint the expensive steps.** Wrap LLM calls so a provider failure resumes at the checkpoint with a backup model, instead of re-running the whole chain (see [Keeping inference cheap & fast](/playbook/inference-cost-and-latency/)).
+- **Checkpoint the expensive steps.** Wrap LLM calls so a provider failure resumes at the checkpoint with a backup model, instead of re-running the whole chain (see [Keeping inference cheap & fast](/ai-playbook/inference-cost-and-latency/)).
 - **Split the durable run from the disposable worker.** Keep run state — history, refs, artifacts — in a control plane so workers can crash or be torn down, and so durability and zero retention can coexist.
 
 ## Seen in

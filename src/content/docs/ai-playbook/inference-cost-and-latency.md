@@ -36,7 +36,7 @@ Cost and latency compound with depth: a ten-step agent at one frontier call per 
 
 The shape is a cost funnel, widest at the cheap end. An incoming step first hits the **cache**, keyed on intent — a hit returns in milliseconds with no model call at all. Only on a miss does the request flow on: a context builder trims it with retrieval and dedup into the smallest prompt that still carries what the model needs, then a router sends it to the cheapest model that can handle it — frontier only for genuinely hard steps. The result is written back to the cache so the next identical step is free. Every stage exists to keep work *off* the frontier model.
 
-![Inference cost funnel: an incoming step checks an intent-keyed cache and returns instantly on a hit; on a miss it is trimmed by retrieval and dedup into a small prompt, routed to a cheap model for easy steps or a frontier model for hard reasoning, and the result is written back to the cache.](/diagrams/playbook/inference-cost-and-latency.svg)
+![Inference cost funnel: an incoming step checks an intent-keyed cache and returns instantly on a hit; on a miss it is trimmed by retrieval and dedup into a small prompt, routed to a cheap model for easy steps or a frontier model for hard reasoning, and the result is written back to the cache.](/diagrams/ai-playbook/inference-cost-and-latency.svg)
 
 <details>
 <summary>Mermaid source</summary>
@@ -72,7 +72,7 @@ flowchart LR
 ## Best practices
 
 - **Cache before you call.** The cheapest token is the one you never generate; key the cache on intent so cosmetic input changes don't force a needless re-run.
-- **Default to the cheap model; earn the frontier.** Route by measured difficulty, not habit — reserve the big model for the steps that actually need it, and verify the cheap path's quality with the eval rail (see [Testing output that isn't reproducible](/playbook/evaluating-non-deterministic-agents/)).
+- **Default to the cheap model; earn the frontier.** Route by measured difficulty, not habit — reserve the big model for the steps that actually need it, and verify the cheap path's quality with the eval rail (see [Testing output that isn't reproducible](/ai-playbook/evaluating-non-deterministic-agents/)).
 - **Trim the prompt, not just the model.** Retrieval and dedup cut tokens at the input; fewer tokens are cheaper and faster on any model, frontier or not.
 - **Keep the model swappable.** Benchmark candidates per release behind a provider-agnostic router so a cheaper or better model upgrades the whole system without a rewrite — don't hard-wire one vendor.
 - **Budget latency per step, not per request.** A multi-step agent multiplies any single-call latency; track it per step and cache aggressively, because that's where the seconds add up.

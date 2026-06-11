@@ -33,13 +33,13 @@ The rules are dense and they change — too intricate to trust to a model's late
 | Proving the decision | Data lineage + confidence + sentence-level citations | [Basis](/teardowns/basis/) attaches lineage and confidence per output; [Harvey](/teardowns/harvey/) cites at sentence level across 30k concurrent cells. |
 | Mapping to regulation | Many-to-many control → framework mappings, version-controlled | [Comp AI](/teardowns/comp-ai/)'s `RequirementMap`: one control satisfies many frameworks. |
 | Authoring | SME-in-the-loop: experts write/validate; HITL on hard cases | [Pylon](/teardowns/pylon-lending/) with mortgage experts; [Confido](/teardowns/confido/) reviewers on low-confidence / high-$. |
-| Testing | Golden-file / snapshot regression over historical cases in CI | Gates rule changes against real history — see [Testing output that isn't reproducible](/playbook/evaluating-non-deterministic-agents/). |
+| Testing | Golden-file / snapshot regression over historical cases in CI | Gates rule changes against real history — see [Testing output that isn't reproducible](/ai-playbook/evaluating-non-deterministic-agents/). |
 
 ## Reference architecture
 
 There are two planes: an authoring plane and a runtime plane. In authoring, domain experts and the LLM together turn regulation into a deterministic, version-controlled rule layer — a DSL or schema-defined policy set — and a regression suite over historical cases gates every change before it lands. At runtime, the LLM proposes a *structured* output, which a deterministic check validates against the rule layer and stamps with data lineage, confidence, and citations. Clear cases act and write to an audit trail; low-confidence or high-stakes cases route to an expert. The model never *is* the rule — it drafts the rule offline and proposes inputs online, and the deterministic layer is what actually decides.
 
-![Domain-rules architecture: in an authoring plane, experts and an LLM encode regulation into a deterministic version-controlled rule layer gated by a regression suite over historical cases; at runtime the LLM proposes structured output that a deterministic check validates against the rule layer, attaching lineage, confidence, and citations, then clears cases to act with an audit trail or routes low-confidence and high-stakes cases to expert review.](/diagrams/playbook/encoding-domain-rules.svg)
+![Domain-rules architecture: in an authoring plane, experts and an LLM encode regulation into a deterministic version-controlled rule layer gated by a regression suite over historical cases; at runtime the LLM proposes structured output that a deterministic check validates against the rule layer, attaching lineage, confidence, and citations, then clears cases to act with an audit trail or routes low-confidence and high-stakes cases to expert review.](/diagrams/ai-playbook/encoding-domain-rules.svg)
 
 <details>
 <summary>Mermaid source</summary>
@@ -79,7 +79,7 @@ flowchart LR
 
 - **Encode the rule, don't hope the model knows it.** Dense regulation belongs in deterministic, tested code — let the LLM draft the encoding and propose inputs, but enforce the rule outside the model.
 - **Constrain generation to a schema.** Where output feeds a rule, force structure so it's machine-checkable, not prose to parse after the fact.
-- **Make explainability a ship gate.** A rule-bound decision must carry its lineage, confidence, and citations; if the system can't say why, it doesn't go live (see [Graduating an agent from assistant to actor](/playbook/agent-assistant-to-actor/)).
+- **Make explainability a ship gate.** A rule-bound decision must carry its lineage, confidence, and citations; if the system can't say why, it doesn't go live (see [Graduating an agent from assistant to actor](/ai-playbook/agent-assistant-to-actor/)).
 - **Author with the experts, gate the hard cases to them.** SMEs write and validate the rules; route low-confidence or high-stakes items to a human instead of auto-executing.
 - **Test the rulebook like code.** Snapshot and regression suites over historical cases catch a rule change that silently breaks — version the rules and gate changes in CI.
 

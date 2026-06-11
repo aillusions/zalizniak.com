@@ -9,7 +9,7 @@ The applied-AI products in the teardowns live inside specific industries, and th
 
 ## Healthcare & revenue cycle (RCM)
 
-Why agents matter here: healthcare operations run across a huge number of legacy third-party web portals that usually expose no API. The agent logs into someone else's system — a payer portal, an EHR — and clicks buttons, navigates menus, reads claim status, downloads documents, submits forms, and extracts data. Historically that was [RPA](/notes/ai-engineering-terms/); the bet (e.g. [Amperos](/teardowns/amperos-health/)) is that an LLM agent is more resilient, because it can reason "this page is asking for a member ID" and continue even when the layout changed, instead of "click button X at coordinates Y."
+Why agents matter here: healthcare operations run across a huge number of legacy third-party web portals that usually expose no API. The agent logs into someone else's system — a payer portal, an EHR — and clicks buttons, navigates menus, reads claim status, downloads documents, submits forms, and extracts data. Historically that was [RPA](/ai-playbook/ai-engineering-terms/); the bet (e.g. [Amperos](/teardowns/amperos-health/)) is that an LLM agent is more resilient, because it can reason "this page is asking for a member ID" and continue even when the layout changed, instead of "click button X at coordinates Y."
 
 **RCM (revenue cycle management)** — the end-to-end financial process a provider runs to get paid for care: eligibility, coding, claim submission, status checks, denials, and collections. The domain these healthcare agents automate.
 

@@ -2,7 +2,7 @@
 title: AI Engineering Terms
 description: Practical applied-AI patterns and recipes distilled from the teardowns — autonomy gating, agent eval, model routing, durable execution — plus the foundational LLM/agent/retrieval vocabulary underneath.
 sidebar:
-  order: 2
+  order: 10
 ---
 
 A working reference for applied-AI engineering, in two parts. First, **patterns and recipes** distilled from how the teardown companies actually build — the recurring solutions to the genuinely hard problems, each linked to the teardowns it's drawn from. Then the **foundational vocabulary** those patterns are built on. Same rule throughout: a definition plus a sentence or two, not an essay.
@@ -169,7 +169,7 @@ The base terms the patterns above are built from — models and inference, retri
 
 **Observability / tracing** — the ability to see inside a running non-deterministic system: logs, traces, and a record of what the agent actually did at each step. You can't debug or trust an agent you can't watch, so this is foundational for production AI.
 
-**Lineage (data / decision lineage)** — the auditable family tree of an outcome: which data sources, transformations, and specific rules produced it, traceable end to end. In regulated domains, making every decision carry the lineage that proves *which rule fired* is what turns a non-deterministic answer into a defensible one — see [Encoding domain rules](/playbook/encoding-domain-rules/).
+**Lineage (data / decision lineage)** — the auditable family tree of an outcome: which data sources, transformations, and specific rules produced it, traceable end to end. In regulated domains, making every decision carry the lineage that proves *which rule fired* is what turns a non-deterministic answer into a defensible one — see [Encoding domain rules](/ai-playbook/encoding-domain-rules/).
 
 **Fallback** — the backup path taken when a model or tool fails, times out, or returns low-confidence output (e.g. retry, switch models, hand off to a human). It keeps the system graceful instead of broken when the primary path doesn't work.
 

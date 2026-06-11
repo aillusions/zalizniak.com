@@ -33,13 +33,13 @@ The surface you're handed is the one built for a person, not a program: a web po
 | No UI → voice | Real-time voice AI on the phone line | [Amperos](/teardowns/amperos-health/) works payer phone lines as an integration surface; OpenAI-voice / ElevenLabs-class ASR+TTS. |
 | Unstructured ingestion | Multimodal LLM extraction to a fixed schema | [Confido](/teardowns/confido/)'s format-agnostic pipeline parses messy invoices and deductions across hundreds of retailer formats. |
 | Connector strategy | A tenant-agnostic connector / MCP library + learned per-tenant config | [Pallet](/teardowns/pallet/) builds APIs where none exist plus MCP connectors; [Confido](/teardowns/confido/) keeps 50+ connectors — config, not forks. |
-| Correctness gate | Human-in-the-loop on low-confidence / high-$ + self-audit | [Amperos](/teardowns/amperos-health/)'s AI auditor reviews each action before handoff — see [Graduating an agent from assistant to actor](/playbook/agent-assistant-to-actor/). |
+| Correctness gate | Human-in-the-loop on low-confidence / high-$ + self-audit | [Amperos](/teardowns/amperos-health/)'s AI auditor reviews each action before handoff — see [Graduating an agent from assistant to actor](/ai-playbook/agent-assistant-to-actor/). |
 
 ## Reference architecture
 
 The shape is a cascade with a gate at the end. When an agent must act on a system of record, it tries the most stable surface first — a native API — and steps down only when that's absent: build an API or MCP connector if the vendor allows it, else drive the human UI with a headless browser and an intent-keyed locator, else fall back to the phone line or document inbox. Whatever surface it used, the action is normalized to a fixed schema, then passed through a self-audit and a human-in-the-loop gate for low-confidence or high-value items before it's written back — because UI and voice actions are the hardest to unwind.
 
-![No-API integration cascade: an agent trying to act on a system of record prefers a native API, falls back to a built API or MCP connector, then to driving the human UI with a headless browser and intent-keyed locator, then to voice or document ingestion; every path normalizes to a fixed schema and passes a self-audit plus human-in-the-loop gate before writing back to the system of record.](/diagrams/playbook/integrating-systems-without-apis.svg)
+![No-API integration cascade: an agent trying to act on a system of record prefers a native API, falls back to a built API or MCP connector, then to driving the human UI with a headless browser and intent-keyed locator, then to voice or document ingestion; every path normalizes to a fixed schema and passes a self-audit plus human-in-the-loop gate before writing back to the system of record.](/diagrams/ai-playbook/integrating-systems-without-apis.svg)
 
 <details>
 <summary>Mermaid source</summary>
@@ -83,7 +83,7 @@ flowchart LR
 
 - **Climb only as far down the ladder as you must.** API beats built-API beats UI beats voice/docs — each rung down is more brittle and more expensive, so reach for the most stable surface the system offers.
 - **Target meaning, not markup.** Locate by text, role, and structure so a CSS refactor doesn't break you, and cache the resolved path keyed on intent so a cosmetic change doesn't force a re-run.
-- **Read-and-reason over record-and-replay.** Scripted click-paths break on the first layout change; an agent that reads the screen adapts — pay the inference cost once, then cache it (see [Keeping inference cheap & fast](/playbook/inference-cost-and-latency/)).
+- **Read-and-reason over record-and-replay.** Scripted click-paths break on the first layout change; an agent that reads the screen adapts — pay the inference cost once, then cache it (see [Keeping inference cheap & fast](/ai-playbook/inference-cost-and-latency/)).
 - **Treat voice and documents as first-class integrations.** When there's no UI, the phone line and the inbox *are* the API — budget for ASR/TTS and document extraction the same way you'd budget for an HTTP client.
 - **Make integration config, not a fork.** A connector library plus learned per-tenant memories scales across customers; a branch of code per customer does not.
 - **Gate writes to the system of record.** UI and voice actions are hard to unwind, so self-audit them and route low-confidence or high-value actions to a human before they land.

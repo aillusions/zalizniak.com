@@ -10,7 +10,7 @@ Every applied-AI team faces the same fork: train or fine-tune a model you own, o
 
 ## Why it's hard
 
-The frontier moves faster than any training budget: a model you fine-tune today is competing with next quarter's general model, so a custom model is a depreciating asset unless your data gives an edge the labs can't get. But renting isn't free either — frontier calls on every step are expensive (see [Keeping inference cheap & fast](/playbook/inference-cost-and-latency/)), some tasks are saturated enough that a cheap open-source model matches frontier quality, and regulated domains have constraints — zero data retention, conflict-aware governance — that no managed API offers. So "own vs. rent" isn't one decision; it's a per-capability call weighing data moat, cost, latency, control, and compliance.
+The frontier moves faster than any training budget: a model you fine-tune today is competing with next quarter's general model, so a custom model is a depreciating asset unless your data gives an edge the labs can't get. But renting isn't free either — frontier calls on every step are expensive (see [Keeping inference cheap & fast](/ai-playbook/inference-cost-and-latency/)), some tasks are saturated enough that a cheap open-source model matches frontier quality, and regulated domains have constraints — zero data retention, conflict-aware governance — that no managed API offers. So "own vs. rent" isn't one decision; it's a per-capability call weighing data moat, cost, latency, control, and compliance.
 
 ## Patterns
 
@@ -39,7 +39,7 @@ The frontier moves faster than any training budget: a model you fine-tune today 
 
 Treat "own vs. rent" as a decision cascade run per capability, with everything downstream of a provider-agnostic router. First ask whether you have a unique dataset that beats the frontier — if so, own or fine-tune a vertical model. If not, ask whether compliance constraints (ZDR, governance) rule out managed platforms — if so, own the *runtime* even while renting the models inside it. Otherwise, ask whether the task is high-volume and saturated enough that open-source clears your quality bar — if so, self-host it; if not, rent the frontier. Every path terminates at the router, and a benchmark re-run each release decides which concrete model serves each call — so the decision is revisited automatically as the frontier moves.
 
-![Own-vs-rent decision cascade: for each capability, if a unique dataset beats the frontier, own or fine-tune a vertical model; else if compliance blocks managed platforms, own the runtime; else if the task is high-volume and saturated, self-host open-source behind a quality bar; otherwise rent the frontier — all paths route through a provider-agnostic router whose model choice is set by a benchmark re-run each release.](/diagrams/playbook/own-vs-rent-the-model.svg)
+![Own-vs-rent decision cascade: for each capability, if a unique dataset beats the frontier, own or fine-tune a vertical model; else if compliance blocks managed platforms, own the runtime; else if the task is high-volume and saturated, self-host open-source behind a quality bar; otherwise rent the frontier — all paths route through a provider-agnostic router whose model choice is set by a benchmark re-run each release.](/diagrams/ai-playbook/own-vs-rent-the-model.svg)
 
 <details>
 <summary>Mermaid source</summary>
@@ -81,7 +81,7 @@ flowchart LR
 
 - **Rent the reasoning by default.** Frontier reasoning is a commodity moving faster than you can train — put it behind a provider-agnostic router and treat the model as swappable.
 - **Own only where your data wins.** Fine-tune or train when a unique proprietary dataset (field audio, supply-chain, CPG docs) beats the frontier; don't build a general model to compete with the labs.
-- **Route by benchmark, not allegiance.** A scored internal eval re-run each release lets a better model earn promotion without a rewrite (see [Testing output that isn't reproducible](/playbook/evaluating-non-deterministic-agents/)).
+- **Route by benchmark, not allegiance.** A scored internal eval re-run each release lets a better model earn promotion without a rewrite (see [Testing output that isn't reproducible](/ai-playbook/evaluating-non-deterministic-agents/)).
 - **Self-host open-source for saturated, high-volume tasks.** Measure which tasks OSS clears your quality bar on and route them there for big cost cuts; keep the frontier for the hard reasoning.
 - **Own the runtime when compliance demands it.** Zero retention, conflict-aware governance, and DB-layer access control can be blockers no managed platform meets — that, not the model, is the reason to own infrastructure.
 - **Remember the moat is rarely the model.** Retrieval, permissions, memory, integrations, and proprietary data compound; the model is rented.

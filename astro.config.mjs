@@ -71,8 +71,8 @@ export default defineConfig({
 				// Cross-company synthesis: the recurring hard problems of applied
 				// AI and how teams across the teardowns solve them.
 				{
-					label: 'Applied AI Playbook',
-					items: [{ autogenerate: { directory: 'playbook' } }],
+					label: 'AI Playbook',
+					items: [{ autogenerate: { directory: 'ai-playbook' } }],
 				},
 				// Forward-looking companion to the teardowns: industries and
 				// workflows where an AI agent could own high-value pain nobody

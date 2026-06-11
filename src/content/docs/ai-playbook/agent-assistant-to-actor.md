@@ -27,7 +27,7 @@ The output is non-deterministic, so you can't prove correctness up front the way
 | Decision | Common choice | Notes |
 | --- | --- | --- |
 | Where the gate lives | An explicit confidence + blast-radius router before any side-effecting action | The classifier that decides auto-act vs. escalate; the single most important control point. |
-| Capturing override signal | Annotation / feedback datasets (e.g. Langfuse), versioned alongside prompts | Every human correction becomes ground truth for the next eval run — see [Testing output that isn't reproducible](/playbook/evaluating-non-deterministic-agents/). |
+| Capturing override signal | Annotation / feedback datasets (e.g. Langfuse), versioned alongside prompts | Every human correction becomes ground truth for the next eval run — see [Testing output that isn't reproducible](/ai-playbook/evaluating-non-deterministic-agents/). |
 | Proof-of-work surface | The product's own audit log / activity feed — transcripts, exported docs, reasoning traces | Reviewers approve from the artifact, not by re-doing the work. |
 | Tracking the promotion bar | Per-action-class acceptance & override dashboards | Promotion is a metrics decision, not a calendar one; each action class graduates on its own curve. |
 
@@ -35,7 +35,7 @@ The output is non-deterministic, so you can't prove correctness up front the way
 
 The shape is a ladder, not a switch. An action enters as a *suggestion* a human executes (Rung 1). Once acceptance and override rates clear a bar, a router decides per item: auto-act on the confident majority, escalate the low-confidence or high-dollar tail to a human (Rung 2). Both paths flow through a self-audit step that emits proof-of-work and lineage, and human corrections loop back as eval signal. Only when an *individual action class* clears its own metrics does it graduate to unattended action (Rung 3) — and any new action class re-enters at Rung 1.
 
-![Autonomy ladder: an agent climbs from assistant (suggest) through a supervised actor stage gated by a confidence and blast-radius router, with human-in-the-loop and self-audit, to per-action-class autonomy — and each new action class restarts at the bottom.](/diagrams/playbook/autonomy-ladder.svg)
+![Autonomy ladder: an agent climbs from assistant (suggest) through a supervised actor stage gated by a confidence and blast-radius router, with human-in-the-loop and self-audit, to per-action-class autonomy — and each new action class restarts at the bottom.](/diagrams/ai-playbook/autonomy-ladder.svg)
 
 <details>
 <summary>Mermaid source</summary>

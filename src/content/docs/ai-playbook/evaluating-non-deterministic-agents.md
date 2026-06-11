@@ -32,13 +32,13 @@ There's no ground truth to diff against, and "correct" is usually a graded judge
 | The grader | LLM-as-judge over a golden set | The consensus mechanism. The judge is itself non-deterministic, so it needs tuning and human-agreement checks when the judgement is subjective. |
 | What gates a release | An internal benchmark suite re-run per model candidate | [Basis](/teardowns/basis/) scores every model candidate against its own suite before promotion; the suite is the release gate, not a calendar date. |
 | Online signal | A/B + production tracing (OpenTelemetry) | Offline eval can't see distribution shift; [Glean](/teardowns/glean/) measures relevance online (+24%) and keeps tracing, dashboards, and production forensics as the second rail. |
-| Capturing ground truth | Human corrections / operator overrides, versioned as datasets | Traba's operator final-check and Basis's CPA sign-off both become next-run ground truth — see [Graduating an agent from assistant to actor](/playbook/agent-assistant-to-actor/). |
+| Capturing ground truth | Human corrections / operator overrides, versioned as datasets | Traba's operator final-check and Basis's CPA sign-off both become next-run ground truth — see [Graduating an agent from assistant to actor](/ai-playbook/agent-assistant-to-actor/). |
 
 ## Reference architecture
 
 Eval is a loop, not a gate you pass once. A candidate change — a new prompt or model — runs over a **golden set** of human-labeled inputs; an LLM judge scores the output (often including an explainability score), and a comparison against baseline decides whether the change ships or is blocked as a regression. Shipped changes go out behind an online A/B with production tracing, because the offline set can't see every real-world input. Production then feeds the loop back: human corrections and operator overrides become new ground truth that grows the golden set, so the rail gets stronger every cycle.
 
-![Non-deterministic eval loop: a candidate prompt or model runs over a human-labeled golden set, an LLM judge scores it including explainability, a baseline comparison gates ship-vs-block, shipped changes run an online A/B with tracing, and production corrections feed back to grow the golden set.](/diagrams/playbook/evaluating-non-deterministic-agents.svg)
+![Non-deterministic eval loop: a candidate prompt or model runs over a human-labeled golden set, an LLM judge scores it including explainability, a baseline comparison gates ship-vs-block, shipped changes run an online A/B with tracing, and production corrections feed back to grow the golden set.](/diagrams/ai-playbook/evaluating-non-deterministic-agents.svg)
 
 <details>
 <summary>Mermaid source</summary>

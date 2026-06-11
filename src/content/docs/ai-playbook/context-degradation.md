@@ -28,7 +28,7 @@ The failure is silent and gradual — nothing errors, the answers just get worse
 
 | Decision | Common choice | Notes |
 | --- | --- | --- |
-| Bounding a long task | Multi-agent decomposition with handoff at a context threshold | [Traba](/teardowns/traba/) transfers between specialized agents before the window degrades — see [Graduating an agent from assistant to actor](/playbook/agent-assistant-to-actor/) for the autonomy angle. |
+| Bounding a long task | Multi-agent decomposition with handoff at a context threshold | [Traba](/teardowns/traba/) transfers between specialized agents before the window degrades — see [Graduating an agent from assistant to actor](/ai-playbook/agent-assistant-to-actor/) for the autonomy angle. |
 | Representing a complex system | An explicit world model (graph + ontology + temporal/causal layers), not a context dump | [Antimetal](/teardowns/antimetal/): structural / temporal / causal / semantic layers; agents reason over the model, not raw logs. |
 | Holding long-lived state | External memory store + retrieval, pulled per step | [Pallet](/teardowns/pallet/) memories over pgvector; [Glean](/teardowns/glean/) retrieval substrate — keep facts out of the window. |
 | Coordinating sub-agents | A supervisor + a shared central context layer | [Basis](/teardowns/basis/): workers share context through a central layer; the supervisor routes each step. |
@@ -38,7 +38,7 @@ The failure is silent and gradual — nothing errors, the answers just get worse
 
 The shape inverts the naïve "one agent, one growing window." A supervisor decomposes the task and hands it off to specialized sub-agents, each holding only the context for its own piece and passing a compact structured state — not its full transcript — to the next. The sub-agents don't accumulate knowledge in their prompts: they read and write a shared context layer and pull durable facts from external memory and retrieval, and where the domain is complex they reason over an explicit world model rather than raw data. Each window stays small, so quality holds across a task far longer than any single context could span.
 
-![Context-degradation architecture: a supervisor decomposes a long task and hands it to specialized sub-agents that each hold only their own bounded context, passing compact structured state between them; the sub-agents read and write a shared context layer plus external memory and retrieval and reason over an explicit world model, so no single context window grows large enough to degrade.](/diagrams/playbook/context-degradation.svg)
+![Context-degradation architecture: a supervisor decomposes a long task and hands it to specialized sub-agents that each hold only their own bounded context, passing compact structured state between them; the sub-agents read and write a shared context layer plus external memory and retrieval and reason over an explicit world model, so no single context window grows large enough to degrade.](/diagrams/ai-playbook/context-degradation.svg)
 
 <details>
 <summary>Mermaid source</summary>
@@ -77,7 +77,7 @@ flowchart LR
 
 - **Hand off before you degrade, don't summarize after.** Watch the window and pass to a fresh specialized agent at a threshold — recovering a degraded context is harder than never letting it bloat.
 - **Fix representation before you add tokens.** If quality falls in complex cases, the cause is usually *how* the world is represented, not the context size — structure it so the agent reasons over a compact model.
-- **Externalize durable state.** Memory stores and retrieval keep long-lived facts out of the window; pull only what the step needs (see [Retrieval at multi-tenant scale](/playbook/multi-tenant-retrieval/)).
+- **Externalize durable state.** Memory stores and retrieval keep long-lived facts out of the window; pull only what the step needs (see [Retrieval at multi-tenant scale](/ai-playbook/multi-tenant-retrieval/)).
 - **Pass structured state between agents, not raw transcripts.** A handoff should carry a compact decision/state object — concatenating the whole conversation just moves the bloat downstream.
 - **Share context through a layer.** A central context layer lets short-lived workers coordinate without each one accumulating everyone else's history.
 
