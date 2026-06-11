@@ -1,0 +1,17 @@
+flowchart TB
+  classDef svc fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef coord fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+
+  subgraph CH["Choreography — services react to events (no central owner)"]
+    direction LR
+    A1["Order svc"]:::svc -->|"OrderPlaced"| B1["Payment svc"]:::svc
+    B1 -->|"PaymentTaken"| C1["Shipping svc"]:::svc
+  end
+
+  subgraph OR["Orchestration — a coordinator directs the flow"]
+    direction LR
+    O["Orchestrator"]:::coord -->|"charge"| B2["Payment svc"]:::svc
+    O -->|"ship"| C2["Shipping svc"]:::svc
+    B2 -.->|"result"| O
+    C2 -.->|"result"| O
+  end

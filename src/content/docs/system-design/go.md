@@ -2,7 +2,7 @@
 title: Go
 description: Go for backend & infrastructure — coming soon.
 sidebar:
-  order: 15
+  order: 16
   label: Go · backend & infra
   badge:
     text: Soon
