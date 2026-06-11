@@ -2,7 +2,7 @@
 title: References
 description: Sources behind these system design notes — the prep method, the delivery framework, primers, and practice resources worth your time.
 sidebar:
-  order: 10
+  order: 11
 ---
 
 - [The best way to prepare for system design interviews](https://www.reddit.com/r/leetcode/comments/1el083l/the_best_way_to_prepare_for_system_design/) — the practice-loop method (struggle first, read the answer key last).

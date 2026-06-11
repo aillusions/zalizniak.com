@@ -1,0 +1,22 @@
+flowchart LR
+  classDef client fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef wf fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef act fill:#e7f5ec,stroke:#3f9c5a,stroke-width:1.5px,color:#0f172a;
+  classDef store fill:#fef6e7,stroke:#d9a441,stroke-width:1.5px,color:#0f172a;
+
+  Client(["Start workflow"]):::client
+  WF["Workflow — orchestrator<br/>your code · deterministic"]:::wf
+
+  subgraph WK["Workers"]
+    A1["Activity<br/>charge card"]:::act
+    A2["Activity<br/>archive docs"]:::act
+  end
+
+  EH[("Event history<br/>every step persisted")]:::store
+
+  Client --> WF
+  WF -->|"call + await result"| A1
+  A1 -.->|"durable result · auto-retry"| WF
+  WF -->|"call + await result"| A2
+  A2 -.->|result| WF
+  WF <-->|"append · replay on crash"| EH

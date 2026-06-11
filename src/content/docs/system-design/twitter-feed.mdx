@@ -2,7 +2,7 @@
 title: Design Twitter / X (Feed)
 description: "A tight system-design walkthrough of a Twitter/X feed — non-functional requirements, a naive fan-out-on-read baseline, then the deep dives that get it under 200ms at 100M+ DAU: fan-out-on-write, the celebrity hybrid, sharding, and caching."
 sidebar:
-  order: 11
+  order: 12
 ---
 
 The interesting half of Twitter is the **home feed read** — serving each user a merged, reverse-chronological stream of the people they follow, fast, at enormous scale. The skill being tested is *evolving* a simple baseline under questioning, not presenting the optimized design first. This walks that arc, with the diagram refined in stages — **grey = baseline, indigo = fan-out-on-write, green = celebrity hybrid** — so you can see exactly what each deep dive adds. Terms are defined in the [Study List](/system-design/study-list/).
