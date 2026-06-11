@@ -20,6 +20,8 @@ The sequence and rough timings for a ~45-minute slot (~35 min of actual design):
 
 ## Requirements (~5 min)
 
+**The prompt is one line, and that's the point.** It's given verbally almost always (sometimes pasted into the shared doc — still a one-liner): *"Design Twitter."* *"Design a URL shortener."* No requirements doc, no test cases, deliberately almost nothing. The vagueness *is* the test — these first ~5 minutes are you extracting the spec the interviewer is withholding: functional scope ("just tweets + timeline, or DMs and search too?"), scale numbers (they'll give you "assume 200M DAU" when asked, or tell you to pick reasonable ones), and the non-functional targets.
+
 **Functional requirements — pick 3–5 core features, then stop.** "Users should be able to…" statements. Drive them out as a back-and-forth with the interviewer and *prioritize* — a long list hurts you; many FAANG loops grade exactly this focus. For Twitter: *post a tweet, follow users, view the home timeline.* Add 1–2 more only if the interviewer pushes (search, notifications). And **say what you're cutting out loud**: "I'll scope out DMs and ads." Naming the cut is as much signal as naming the feature.
 
 **Non-functional requirements — pick 3–4 with teeth.** "The system should be…" statements about qualities, and they must be **quantified and contextual**. Choose the ones that actually *drive the design*, not generic wishes — "low latency" is meaningless (every system wants that), but "home timeline renders in < 200 ms" names the part that matters and gives a target. Pull your 3–4 from this checklist:
