@@ -36,7 +36,7 @@ The sequence and rough timings for a ~45-minute slot (~35 min of actual design):
 
 A popular mnemonic for the checklist: **FCC + SLEDS** — *Fault tolerance, CAP, Compliance · Scalability, Latency, Environment, Durability, Security.*
 
-**Capacity estimation** — don't do it upfront just to prove arithmetic. Do the math *only when it changes a design decision* — e.g. estimating the number of trending topics to decide whether a single min-heap fits or you must shard it. Otherwise tell the interviewer you'll calculate while designing, when needed.
+**Capacity estimation** — don't do it upfront just to prove arithmetic. Do the math *only when it changes a design decision* — e.g. estimating the number of trending topics to decide whether a single min-heap fits or you must shard it. Otherwise tell the interviewer you'll calculate while designing, when needed — in practice that lands in **deep dives** (below), where a number decides a shard count, cache size, or instance fan-out.
 
 ## Core Entities (~2 min)
 
@@ -74,6 +74,8 @@ Draw the components — servers, databases, caches, queues — and the arrows be
 ## Deep Dives (~10 min)
 
 Now harden the design against the **non-functional requirements**, edge cases, and bottlenecks. This is where the interesting problems live — for Twitter, fan-out-on-write vs. fan-out-on-read for the feed; horizontal scaling, caching, and DB sharding for 100M+ DAU.
+
+This is also where the **capacity math you deferred** gets done — and only the numbers that *decide* something. Estimate the QPS to size the instance fleet, the data volume to justify sharding, the working-set size to size the cache. A number that doesn't change the design isn't worth computing out loud.
 
 Seniority sets the dynamic: junior candidates can let the interviewer point out where to improve; senior candidates should *proactively* identify and lead these discussions. But it's a balance — **don't talk over the interviewer.** They have specific signals they're probing for; leave room for their questions or you'll miss them (and tank your communication score).
 
