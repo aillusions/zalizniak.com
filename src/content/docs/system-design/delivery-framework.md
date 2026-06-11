@@ -26,7 +26,7 @@ The sequence and rough timings for a ~45-minute slot (~35 min of actual design):
 
 - **CAP** — consistency vs. availability? (Partition tolerance is a given in a distributed system.)
 - **Availability / uptime** — what uptime does the system promise, *if it matters*? Quantify it: 99.9% ("three nines") ≈ 8.7h down/yr, 99.99% ≈ 52min/yr. The "A" in CAP, stated as a target.
-- **Scalability** — bursty traffic, peak events, read:write ratio?
+- **Scale (Scalability)** — DAU/MAU, QPS, bursty traffic, peak events, read:write ratio?
 - **Latency** — how fast, on which operations specifically?
 - **Environment** — mobile battery, limited memory/bandwidth?
 - **Durability** — how bad is data loss? (Social feed vs. bank ledger.)
