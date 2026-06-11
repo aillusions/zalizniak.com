@@ -16,6 +16,16 @@ const links = config.social || [];
 					<Icon name={icon} />
 				</a>
 			))}
+			{/* SpecCraft — a brand link with its own favicon, not a built-in icon. */}
+			<a
+				href="https://speccraft.io/"
+				target="_blank"
+				rel="me noopener noreferrer"
+				class="sl-flex speccraft-link"
+			>
+				<span class="sr-only">SpecCraft</span>
+				<img src="/speccraft-icon.png" alt="" />
+			</a>
 		</>
 	)
 }
@@ -29,6 +39,13 @@ const links = config.social || [];
 		}
 		a:hover {
 			color: var(--sl-color-white);
+		}
+		/* Match the built-in social SVG icons' rendered size. */
+		.speccraft-link img {
+			display: block;
+			width: 1em;
+			height: 1em;
+			border-radius: 3px;
 		}
 	}
 </style>
