@@ -20,9 +20,9 @@ The sequence and rough timings for a ~45-minute slot (~35 min of actual design):
 
 ## Requirements (~5 min)
 
-**Functional requirements** — "Users should be able to…" statements. The core features. This is a back-and-forth with the interviewer; ask targeted product questions to arrive at a *prioritized* list. **Identify the top ~3 and stop** — a long list hurts you. Many FAANG loops explicitly grade your ability to focus on what matters.
+**Functional requirements — pick 3–5 core features, then stop.** "Users should be able to…" statements. Drive them out as a back-and-forth with the interviewer and *prioritize* — a long list hurts you; many FAANG loops grade exactly this focus. For Twitter: *post a tweet, follow users, view the home timeline.* Add 1–2 more only if the interviewer pushes (search, notifications). And **say what you're cutting out loud**: "I'll scope out DMs and ads." Naming the cut is as much signal as naming the feature.
 
-**Non-functional requirements** — "The system should be…" statements about qualities, and they must be **quantified and contextual**. "Low latency" is meaningless — every system wants that. "Feed renders in < 200 ms" is useful: it names the part that matters and gives a target. Pick the top 3–5 from this checklist:
+**Non-functional requirements — pick 3–4 with teeth.** "The system should be…" statements about qualities, and they must be **quantified and contextual**. Choose the ones that actually *drive the design*, not generic wishes — "low latency" is meaningless (every system wants that), but "home timeline renders in < 200 ms" names the part that matters and gives a target. Pull your 3–4 from this checklist:
 
 - **CAP** — consistency vs. availability? (Partition tolerance is a given in a distributed system.)
 - **Availability / uptime** — what uptime does the system promise, *if it matters*? Quantify it: 99.9% ("three nines") ≈ 8.7h down/yr, 99.99% ≈ 52min/yr. The "A" in CAP, stated as a target.
