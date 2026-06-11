@@ -6,12 +6,14 @@ sidebar:
   label: Event-driven architecture
 ---
 
-The layer *above* the transports ([Kafka](/system-design/kafka/), [queues](/system-design/queues/), [Temporal](/system-design/temporal/)): how services actually talk. **Message-driven** is the umbrella — components communicate by **async message-passing** instead of direct synchronous calls, which buys loose coupling, isolation, and resilience (a slow or dead consumer doesn't take the producer down). Inside it sit two styles, split by what the messages *are*:
+The layer *above* the transports ([Kafka](/system-design/kafka/), [queues](/system-design/queues/), [Temporal](/system-design/temporal/)): how services actually talk. In **event-driven architecture (EDA)** — the standard name for this — services communicate by **asynchronous messages** instead of direct synchronous calls, which buys loose coupling, isolation, and resilience (a slow or dead consumer doesn't take the producer down).
 
-- **Event-driven** — services emit and react to **events** (facts). The producer doesn't know who reacts; consumers decide. Maximally decoupled and reactive.
-- **Command-driven** — services send **commands** (instructions) to specific handlers; something *directs* the work.
+The messages are mostly **events** — facts like `OrderPlaced` — which is where the name comes from, but the same pipes also carry **commands** (instructions like `ChargeCard`):
 
-So **message-driven ⊃ { event-driven, command-driven }**, and the messages are the same on the wire — the difference is [intent](/system-design/study-list/#async--messaging).
+- **Event** — announces a fact; the producer doesn't know or care who reacts. Maximally decoupled.
+- **Command** — directs a specific handler to do something.
+
+Same messages on the wire; the difference is [intent](/system-design/study-list/#async--messaging). (The Reactive Manifesto calls the underlying async-messaging foundation "message-driven" — a less-common synonym you'll occasionally see.)
 
 ## Choreography vs orchestration
 
