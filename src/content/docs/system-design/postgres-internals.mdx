@@ -138,6 +138,15 @@ GROUP BY doc_id HAVING count(DISTINCT term) = 2;
 
 That already demonstrates tokenization → postings → boolean retrieval. **The graduation step** — and the reason this lives on an *internals* page — is to stop storing postings in a heap table and instead implement a real **index access method** (`IndexAmRoutine`) in pgrx, so `WHERE body @@ 'query'` is served by your own `amgettuple`. That's the same seam `pgvector` uses; building a minimal one is the most direct way to understand how GIN's posting lists actually work.
 
+## Extensions worth knowing
+
+The same machinery above — access methods, hooks, background workers, WAL — is what lets extensions add capabilities that used to mean standing up a *separate* system. Two that fold whole categories of infrastructure back into Postgres:
+
+- **[ParadeDB](https://github.com/paradedb/paradedb)** — Elastic-quality **full-text search and analytics** as a Postgres extension. Its `pg_search` ships a real **BM25 index access method** (built on the Tantivy search library), so ranked relevance search runs *inside* Postgres on your live tables — no Elasticsearch to provision, sync, and keep consistent. It's the production answer to the from-scratch inverted index above: the same `IndexAmRoutine` seam, done properly.
+- **[pg_durable](https://github.com/microsoft/pg_durable)** (Microsoft) — **durable execution inside Postgres**: workflows that survive restarts and are auditable in SQL, living right next to the data they touch. It puts the [durable-execution](/system-design/study-list/#async--messaging) pattern (the Temporal idea) *in the database* — a fit for runbooks that must be crash-safe, or data/AI pipelines that need durable, resumable work per row, document, or batch.
+
+The pattern to take away: **"just use Postgres" stretches further than people expect** — search, analytics, queues, vectors, and durable workflows are increasingly extensions, not separate services. Fewer moving parts, one consistency model, one backup. The system-design trade-off is the usual one (a single store is simpler but scales as one unit); knowing the extension exists changes the build-vs-bolt-on decision.
+
 ---
 
 These are working notes — a map of the subsystems and a starting path, not a substitute for the [Postgres docs](https://www.postgresql.org/docs/current/internals.html) or the source. See also the [Study List](/system-design/study-list/) for the WAL/MVCC/buffer-manager terms in one-liner form.
