@@ -3,7 +3,7 @@ title: Concurrency
 description: Concurrency for system design — coming soon.
 sidebar:
   order: 11
-  label: Concurrency · primitives & races
+  label: Concurrency · races
   badge:
     text: Soon
     variant: note
