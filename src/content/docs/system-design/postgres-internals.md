@@ -202,18 +202,20 @@ CREATE EXTENSION IF NOT EXISTS vector;   -- pgvector
 
 **Bring your own, the trusted way (TLE).** [Trusted Language Extensions](https://github.com/aws/pg_tle) let you install extensions AWS hasn't packaged — but only in **trusted languages** (SQL, PL/pgSQL, PL/v8, PL/Perl), never C:
 
-1. Add `pg_tle` to `shared_preload_libraries` (parameter group) → reboot → `CREATE EXTENSION pg_tle;`.
-2. Register your extension, then create it like any other:
+1. Add `pg_tle` to `shared_preload_libraries` (parameter group) → reboot → `CREATE EXTENSION pg_tle;` (and `CREATE EXTENSION plv8;` for JavaScript).
+2. Register your extension, then create it like any other. Here it's the `tokenize` from the hands-on section, but written in **PL/v8** — the kind of JS logic TLE is good for:
 
 ```sql
 SELECT pgtle.install_extension(
-  'my_ext', '1.0', 'what it does',
+  'js_tokenize', '1.0', 'tokenize text in JavaScript',
   $_pg_tle_$
-    CREATE FUNCTION my_ext_hello() RETURNS text LANGUAGE sql
-    AS $$ SELECT 'hi from TLE'::text $$;
+    CREATE FUNCTION tokenize(t text) RETURNS text[] LANGUAGE plv8 AS $plv8$
+      return t.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+    $plv8$;
   $_pg_tle_$
 );
-CREATE EXTENSION my_ext;
+CREATE EXTENSION js_tokenize;
+SELECT tokenize('Hello, Postgres!');   -- {hello,postgres}
 ```
 
 TLE buys you custom functions, aggregates, triggers, and a few auth hooks (e.g. password-check) — **not** new index access methods, background workers, or anything that does I/O. So the table-as-inverted-index from the hands-on section is expressible in TLE/PL/v8; a real `IndexAmRoutine` (or pgvector/ParadeDB) is not — that lives in C, which is exactly what a managed engine won't run.
