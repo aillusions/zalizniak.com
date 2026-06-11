@@ -106,6 +106,8 @@ Beyond the common pool — infrastructure-flavored, often staff-level. Not what 
 
 ## Data & storage
 
+**OLTP vs OLAP** — **OLTP** (online *transaction* processing): many small, fast, concurrent reads/writes of individual rows — the operational database ([Postgres](/system-design/postgres-internals/), row-oriented). **OLAP** (online *analytical* processing): scan and aggregate huge volumes for analytics/dashboards — the columnar warehouse ([ClickHouse](/system-design/clickhouse/), column-oriented). Rule of thumb: row stores serve OLTP, column stores serve OLAP.
+
 **Sharding / partitioning** — splitting one logical dataset across many nodes by a partition key, so no single machine holds (or serves) all of it. The key choice decides hot spots.
 
 **Consistent hashing** — a hashing scheme that maps keys onto a ring so adding/removing a node only remaps a small slice of keys, not the whole keyspace. Standard for distributing cache/DB partitions.
