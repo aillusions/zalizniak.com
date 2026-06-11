@@ -141,6 +141,12 @@ The recurring confusion is "Kafka or a task queue?" — and it's settled by **wh
 
 **The test:** is the message a *fact for anyone to observe* (event → Kafka), or a *unit of work for one worker to run once* (task → queue)? Kafka is a retained, replayable log with per-consumer offsets — it has no per-message ack/delete, redelivery, visibility timeout, or priority, which are exactly what a job queue is built around. (You *can* bend each into the other — a consumer group is competing consumers; a fanout exchange is pub/sub — but the natural fit and failure modes are as above.)
 
+## Kafka vs Temporal — moving data vs moving work
+
+A close cousin of the queue confusion: gluing microservices into a **multi-step process** with Kafka. Event-driven *choreography* (services react to each other's events) is a legitimate pattern for simple flows — but the moment you find yourself hand-rolling **retries, timeouts, correlation IDs, compensation, and process state** across topics, that's no longer messaging. That's **workflow orchestration**, and a [durable-execution](/system-design/study-list/#async--messaging) engine like [Temporal](/system-design/temporal/) is built for exactly it: it persists each step, owns the retries/timeouts/compensation, and lets you write the flow as ordinary code instead of reconstructing it from event soup.
+
+**Kafka moves data; Temporal moves work.** Kafka is the backbone for events and streams; once you're tracking *the state of a process* spanning services, reach for orchestration — not more glue code on the log.
+
 ---
 
 These are working notes — a model and a map, not a substitute for the [Kafka docs](https://kafka.apache.org/documentation/). The "append-only, replayable, partitioned log" idea is the one thing to internalize; topics, groups, replication, and EOS all follow from it. The one-liner terms (pub/sub, exactly-once, backpressure, CDC) live in the [Study List](/system-design/study-list/#async--messaging).
