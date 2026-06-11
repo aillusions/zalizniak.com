@@ -15,6 +15,8 @@ export default defineConfig({
 	integrations: [
 		starlight({
 			title: 'Oleksandr Zalizniak',
+			// Site-wide CSS tweaks (smaller in-content headings, etc.).
+			customCss: ['./src/styles/custom.css'],
 			components: {
 				// Make header social icons open in a new tab.
 				SocialIcons: './src/components/SocialIcons.astro',

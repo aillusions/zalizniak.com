@@ -1,0 +1,12 @@
+/* Site-wide tweaks layered on top of Starlight's theme. */
+
+/* Starlight's default in-content H2/H3 run large; on dense reference pages
+   (glossary, teardowns with many sections) they dominate the page. Shrink the
+   in-content headings a notch so sections read as section breaks, not banners. */
+.sl-markdown-content h2 {
+	font-size: 1.25rem;
+	margin-top: 1.75rem;
+}
+.sl-markdown-content h3 {
+	font-size: 1.05rem;
+}

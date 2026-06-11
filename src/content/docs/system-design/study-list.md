@@ -3,13 +3,6 @@ title: Study List
 description: A working study list of system design interview vocabulary — the design framework terms, the API/traffic edge, feed and timeline patterns, data and storage, caching, async messaging, distributed transactions, scaling/reliability, and storage internals — defined tight, one or two lines each.
 sidebar:
   order: 2
-head:
-  - tag: style
-    content: |
-      /* This is a dense glossary with many sections — shrink the section
-         headers so they don't dominate the page. Scoped to this page only. */
-      .sl-markdown-content h2 { font-size: 1.25rem; margin-top: 1.75rem; }
-      .sl-markdown-content h3 { font-size: 1.05rem; }
 ---
 
 A running study list of the vocabulary that comes up while practicing system design — terms collected as I hit them, defined for quick recall. Tight definitions, one or two lines each. Some entries (the API-edge cluster) are AWS-flavored because that's where they first showed up; the concepts generalize.
