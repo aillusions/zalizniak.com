@@ -124,6 +124,8 @@ Beyond the common pool — infrastructure-flavored, often staff-level. Not what 
 
 **Quorum (R + W > N)** — requiring a majority of replicas to ack a read/write so reads and writes overlap on at least one current node; the knob behind Dynamo-style tunable consistency.
 
+**Consensus (Raft / Paxos)** — getting a set of nodes to agree on one value, or one ordered log of values, despite failures — always via a majority **quorum**. **Raft** (explicit leader + replicated log) is the understandable standard; it's what runs under etcd, Kafka KRaft, and Postgres-HA leader election. See [consensus](/system-design/distributed-systems/#consensus).
+
 **Denormalization** — duplicating data across rows/tables/stores to make reads cheap, accepting write-time duplication and consistency work. The storage analog of fan-out-on-write.
 
 **CDC (Change Data Capture)** — streaming a database's row-level changes (often off the WAL) to other systems — search indexes, caches, analytics — so they stay in sync without dual writes.
