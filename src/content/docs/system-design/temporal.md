@@ -74,6 +74,19 @@ A single workflow orchestrating its own activities is one team's process. **Nexu
 
 **Avoid it for:** simple request/response, single fire-and-forget tasks (a [queue](/system-design/kafka/#event-vs-task--kafka-vs-a-queue) is lighter), pure event fan-out (that's [Kafka](/system-design/kafka/)), or ultra-low-latency hot paths. It's an orchestration layer, not a message bus or a job runner.
 
+## The durable-execution landscape
+
+Temporal is the best-known, not the only option — they differ mostly in *deployment shape*:
+
+| Engine | Shape | Notes |
+| --- | --- | --- |
+| **Temporal** | self-hosted cluster or Temporal Cloud | the most mature; the model described above |
+| **Cadence** | self-hosted cluster | Uber's open-source engine — **Temporal is a fork of it**, so the model is nearly identical; still developed at Uber |
+| **DBOS** | **library on Postgres** | durable steps persisted in your *own* Postgres, running in-process — no separate cluster to operate; lighter when you already run Postgres |
+| Step Functions · Azure Durable Functions · Restate · Inngest | managed / serverless | the same durable-execution idea as a hosted service — less to run, less control |
+
+The axis to weigh: **a cluster to operate (Temporal/Cadence)** vs. **a library on a DB you already run (DBOS)** vs. **a managed service** — power and portability against operational weight.
+
 ---
 
 These are working notes on durable execution. The one idea to keep: **persist every step so the process survives anything, and make one thing own the flow** — which is what separates orchestration from a pile of events and glue. Vocabulary in the [Study List](/system-design/study-list/#async--messaging); the data-vs-work contrast on the [Kafka page](/system-design/kafka/#kafka-vs-temporal--moving-data-vs-moving-work).
