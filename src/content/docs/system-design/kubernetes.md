@@ -191,6 +191,25 @@ flowchart LR
 
 </details>
 
+## Is Kubernetes the right base for a cloud product?
+
+Worth knowing because it's a live debate — and the operator example above is exactly where it bites. A managed cloud product *is itself a control plane*, so building it on Kubernetes means **stacking control planes**: your operator reconciles your CRD into K8s objects, K8s reconciles those into containers on nodes, and the cloud's own control plane schedules those nodes onto hardware. Critics call this **wrapping a wrapper** — each layer is a general-purpose, leaky abstraction you must operate, debug, and pay for, even though you run *one* known workload that doesn't need K8s's generality (arbitrary scheduling, the CNI/CSI plugin matrix, the cluster-upgrade treadmill). Their pitch: orchestrate VMs (or microVMs) **directly**, with automation built for your single workload — fewer layers, tighter control of networking/storage/placement, and failure modes that belong to *your* product rather than to Kubernetes.
+
+The counter is plain build-vs-buy. K8s hands you a hardened reconciliation engine, self-healing, rollouts, and a whole ecosystem (operators, CSI storage, service mesh) you'd otherwise reinvent — plus multi-cloud portability. For a team that can't afford to build and run its own control plane, that's a decade of solved problems for free, and the operator pattern maps cleanly onto "encode our ops knowledge." The trade is **generality-overhead vs. build-it-yourself cost**, and it splits real companies:
+
+| Built **on** Kubernetes | Deliberately **not** K8s — VMs / own orchestrator |
+| --- | --- |
+| Confluent Cloud (Kafka) | AWS — its own services run on EC2 + decades of homegrown automation |
+| ClickHouse Cloud (pods + object storage) | MongoDB Atlas — VMs + a homegrown automation agent across clouds |
+| …and many newer data/infra clouds | Snowflake — VM-based compute clusters, own architecture |
+| | Fly.io — Firecracker microVMs, own orchestrator (famously, loudly anti-K8s) |
+| | Railway — built their own orchestrator |
+| | Oxide — own stack down to the hardware |
+
+Two names sit on the seam: **Supabase** ships official K8s **Helm charts** for self-hosting (its managed platform leans on dedicated per-project instances), and **Temporal** ships a Helm chart and is commonly run on K8s by its users — both *support* K8s without it being the whole story of their hosted product.
+
+Rule of thumb: if orchestration *is* your product's hard part and you have the engineers, rolling your own wins control (Fly, Railway, Oxide); if orchestration is incidental and you want to ship a managed service fast, K8s buys you the most. It's the same build-vs-bolt-on call as the [Postgres extensions](/system-design/postgres-internals/#extensions-worth-knowing) trade-off, one layer down.
+
 ---
 
 These are from-zero working notes — a map and a mental model, not a substitute for the [Kubernetes docs](https://kubernetes.io/docs/concepts/) or the [kubebuilder book](https://book.kubebuilder.io/). The reconciliation/control-loop pattern is the one thing worth internalizing; the rest follows from it.
