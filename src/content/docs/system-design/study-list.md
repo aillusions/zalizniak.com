@@ -154,6 +154,8 @@ Beyond the common pool — infrastructure-flavored, often staff-level. Not what 
 
 **Pub/sub** — one published message delivered to many independent subscribers; decouples a producer from an unknown set of consumers (SNS, Kafka topics).
 
+**Event vs command (task)** — an *event* is a **fact** ("OrderPlaced", past tense) that many consumers observe and that's retained for replay → an event **log** (Kafka); a *command/task* is an **instruction** ("SendEmail") run once by one worker then deleted → a **work queue** (SQS/RabbitMQ). Pick the transport by which one the message *is* — see [event vs task](/system-design/kafka/#event-vs-task--kafka-vs-a-queue).
+
 **Kafka** — a partitioned, replicated, durable log; high-throughput streaming and event backbone, with consumers tracking their own offsets.
 
 **Dead-letter queue (DLQ)** — where messages land after repeated processing failures, so a poison message doesn't block the queue and can be inspected later.

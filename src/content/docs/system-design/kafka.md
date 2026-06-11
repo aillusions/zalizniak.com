@@ -125,7 +125,21 @@ When a design calls for an event backbone, this is usually the reach — and *wh
 - **Stream processing** — Kafka Streams, Flink, or ksqlDB do windowed aggregation and joins directly on topics — the engine behind ad-click aggregation / metrics pipelines.
 - **Replay & event sourcing** — a retained or compacted log can rebuild state or backfill a brand-new consumer from offset 0 ([event sourcing](/system-design/study-list/#distributed-transactions--consistency)).
 
-**When *not* to reach for it.** Low-volume or request/response work (use RPC or a plain task queue); workloads needing per-message priority, arbitrary TTLs, or selective acks (a broker like SQS/RabbitMQ fits better); and small apps where Kafka's operational weight isn't worth it. Kafka shines at high-throughput, ordered, replayable streams — not as a general-purpose job queue.
+**When *not* to reach for it.** Low-volume or request/response work (use RPC or a plain task queue); workloads needing per-message priority, arbitrary TTLs, or selective acks (a broker like SQS/RabbitMQ fits better); and small apps where Kafka's operational weight isn't worth it. Kafka shines at high-throughput, ordered, replayable streams — not as a general-purpose job queue. The next section is *why*.
+
+## Event vs task — Kafka vs a queue
+
+The recurring confusion is "Kafka or a task queue?" — and it's settled by **what the message is**, not by throughput. An **event** is a *fact* ("OrderPlaced", past tense) that anyone may observe; a **task/command** is an *instruction* ("SendEmail") for exactly one worker to execute once. That difference drives every other property:
+
+| | Event → **log** (Kafka) | Task / command → **queue** (SQS, RabbitMQ) |
+| --- | --- | --- |
+| The message is | a **fact**: "X happened" | an **instruction**: "do X" |
+| Consumed by | **many** independent consumers, each at its own offset | **one** worker, then deleted (competing consumers) |
+| Producer expects | nothing — fire-and-forget fan-out | the work to get *done* |
+| Lifecycle | **retained & replayable**, immutable | **ephemeral**: ack → delete, redeliver on failure |
+| Needs | ordering, replay, fan-out | per-message ack / retry / visibility / priority / DLQ |
+
+**The test:** is the message a *fact for anyone to observe* (event → Kafka), or a *unit of work for one worker to run once* (task → queue)? Kafka is a retained, replayable log with per-consumer offsets — it has no per-message ack/delete, redelivery, visibility timeout, or priority, which are exactly what a job queue is built around. (You *can* bend each into the other — a consumer group is competing consumers; a fanout exchange is pub/sub — but the natural fit and failure modes are as above.)
 
 ---
 
