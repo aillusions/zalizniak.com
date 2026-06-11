@@ -7,6 +7,24 @@ sidebar:
 
 A running study list of the vocabulary that comes up while practicing system design — terms collected as I hit them, defined for quick recall. Tight definitions, one or two lines each. Some entries (the API-edge cluster) are AWS-flavored because that's where they first showed up; the concepts generalize.
 
+## Question patterns to cover
+
+Like coding interviews, system design questions cluster into patterns. Practice at least one from each category so no shape catches you cold:
+
+| Pattern | Representative system | Core challenge |
+| --- | --- | --- |
+| Online ticketing | Ticketmaster | Consistency & concurrency under high-demand sales |
+| Streaming / content delivery | YouTube, Netflix | Real-time streaming, CDN, large blobs |
+| Location-based | Uber, Yelp | Geo indexing, location tracking, proximity search |
+| E-commerce | Amazon | Scalability + transaction management |
+| Social network | Twitter, FB News Feed, Instagram | Data scale, real-time updates, fan-out |
+| Messaging | WhatsApp, FB Live Comments | Real-time delivery, presence, notifications |
+| Banking / financial | Robinhood, payment system | Security, privacy, transaction consistency |
+| Collaborative editing | Google Docs | Concurrency & conflict resolution (CRDT/OT) |
+| Cloud storage | Dropbox | Efficient, scalable file storage & sharing |
+| Competition / leaderboards | LeetCode, top-K | Real-time interaction, ranking at scale |
+| Foundational component | Rate limiter, message queue, distributed cache, web crawler, job scheduler | One building block, deeply |
+
 ## Design vocabulary
 
 **HLD (High-Level Design)** — the boxes and their data ownership; the structural skeleton you draw first.

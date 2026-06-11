@@ -9,7 +9,7 @@ The sources these notes are distilled from, plus the practice resources worth yo
 
 ## Distilled from
 
-- [The best way to prepare for system design interviews](https://www.reddit.com/r/leetcode/comments/1el083l/the_best_way_to_prepare_for_system_design/) — the practice-loop method behind [How to Prepare](/system-design/about/) (struggle first, read the answer key last).
+- [The best way to prepare for system design interviews](https://www.reddit.com/r/leetcode/comments/1el083l/the_best_way_to_prepare_for_system_design/) — the practice-loop method (struggle first, read the answer key last).
 - [Hello Interview — Delivery Framework](https://www.hellointerview.com/learn/system-design/in-a-hurry/delivery) — the in-room structure behind [The Delivery Framework](/system-design/delivery-framework/).
 
 ## Primers & foundations
