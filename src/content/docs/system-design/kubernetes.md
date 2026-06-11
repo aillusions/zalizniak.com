@@ -206,7 +206,7 @@ The counter is plain build-vs-buy. K8s hands you a hardened reconciliation engin
 | | Railway — built their own orchestrator |
 | | Oxide — own stack down to the hardware |
 
-Two names sit on the seam: **Supabase** ships official K8s **Helm charts** for self-hosting (its managed platform leans on dedicated per-project instances), and **Temporal** ships a Helm chart and is commonly run on K8s by its users — both *support* K8s without it being the whole story of their hosted product.
+Two names sit on the seam — they *support* K8s without their hosted product being built on it. **Supabase** ships official K8s **Helm charts** for self-hosting, but its managed platform leans on dedicated per-project instances. **Temporal** ships a Helm chart and is commonly self-hosted on K8s (and your Workers can run there) — yet Temporal Cloud itself is documented as a **cell-based** architecture on AWS/GCP, not a Kubernetes product. That distinction — *runs on K8s* vs. *can be run on K8s* — is exactly why neither is in the left column.
 
 Rule of thumb: if orchestration *is* your product's hard part and you have the engineers, rolling your own wins control (Fly, Railway, Oxide); if orchestration is incidental and you want to ship a managed service fast, K8s buys you the most. It's the same build-vs-bolt-on call as the [Postgres extensions](/system-design/postgres-internals/#extensions-worth-knowing) trade-off, one layer down.
 
