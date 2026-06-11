@@ -1,0 +1,36 @@
+flowchart LR
+  classDef cp fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef node fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef store fill:#e7f5ec,stroke:#3f9c5a,stroke-width:1.5px,color:#0f172a;
+  classDef op fill:#fef6e7,stroke:#d9a441,stroke-width:1.5px,color:#0f172a;
+
+  CR["Cluster CR<br/>kind: Cluster<br/>instances: 3"]:::op
+  OP("Postgres operator<br/>custom controller<br/>reconcile loop"):::cp
+
+  subgraph WL["Reconciled workload"]
+    PRIM(["Primary Pod"]):::node
+    R1(["Replica Pod"]):::node
+    R2(["Replica Pod"]):::node
+    PV1[("PVC")]:::store
+    PV2[("PVC")]:::store
+    PV3[("PVC")]:::store
+  end
+
+  RW{{"rw Service<br/>→ primary"}}:::cp
+  RO{{"ro Service<br/>→ replicas"}}:::cp
+  BAK[("Object storage<br/>base backup + WAL · PITR")]:::store
+
+  CR --> OP
+  OP -->|create / heal| PRIM
+  OP -->|create / heal| R1
+  OP -->|create / heal| R2
+  PRIM --- PV1
+  R1 --- PV2
+  R2 --- PV3
+  PRIM -->|streaming replication| R1
+  PRIM -->|streaming replication| R2
+  RW --> PRIM
+  RO --> R1
+  RO --> R2
+  OP -->|archive WAL| BAK
+  OP -.->|promote on failure| R1
