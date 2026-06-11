@@ -56,6 +56,14 @@ Beyond the common pool — infrastructure-flavored, often staff-level. Not what 
 
 **Modular monolith** — one deployable with clean internal module boundaries; the sane pre-microservices starting point, and usually the right interview default.
 
+**Control plane** — the part of a system that decides *what should happen* and manages state: provisioning, scheduling, config, orchestration. The brain — it shouldn't sit on the request hot path. (Kubernetes' [control plane](/system-design/kubernetes/#architecture) is the canonical example.)
+
+**Data plane** — the part that actually carries the workload: serves user requests, moves the bytes, runs the queries. The hot path.
+
+**Management plane** — the operator-facing surface for administration, observability, and policy (consoles, admin APIs, billing, RBAC). Often folded into the control plane; called out separately when the human-/admin-facing layer is distinct from internal orchestration.
+
+**Control/data plane isolation** — keep the control plane's failures *off* the serving path, so the data plane keeps serving even when provisioning/management is down. A recurring cloud-architecture principle — and a [DBaaS design drill](#advanced--infra-deep-dives).
+
 ## API & traffic edge
 
 **API Gateway** — application-layer API front door; routes per-path to different services *and* manages cross-cutting concerns (auth, throttling, keys, metering, versioning).
