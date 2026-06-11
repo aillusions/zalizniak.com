@@ -2,11 +2,21 @@
 
 The source for [zalizniak.com](https://zalizniak.com) — Oleksandr Zalizniak's
 personal site, built with [Astro Starlight](https://starlight.astro.build/) and
-deployed to AWS Amplify. One site, two parts:
+deployed to AWS Amplify. A personal landing page plus several content libraries:
 
 - **Landing page** (`src/content/docs/index.mdx`) — the personal profile: what
   I'm building, background, and links. Rendered as a normal doc page so it keeps
   the sidebar and in-page table of contents.
+- **System Design** (`src/content/docs/system-design/`) — study notes for system
+  design interviews: the delivery framework, a study list of vocabulary, and
+  deep dives (Postgres internals, Kubernetes), plus worked questions.
+- **Notes** (`src/content/docs/notes/`) — working glossaries and reference notes
+  (AI engineering patterns, startup/GTM terms, domain vocabulary).
+- **Applied AI Playbook** (`src/content/docs/playbook/`) — cross-company
+  synthesis of the recurring hard problems of applied AI and how teams solve them.
+- **Opportunities** (`src/content/docs/opportunities/`) — industries and
+  workflows where an AI agent could own high-value pain nobody has built for yet,
+  each scored on profit, pain, and whitespace.
 - **Applied AI Teardowns** (`src/content/docs/teardowns/`) — a library of
   architecture teardowns of applied-AI startups, reconstructed from public
   signals only (job postings, blogs, docs, product behavior). Audience: engineers.
