@@ -160,6 +160,8 @@ Beyond the common pool — infrastructure-flavored, often staff-level. Not what 
 
 **Event vs command (task)** — both are **messages**; the difference is intent. An *event* is a **fact** ("OrderPlaced", past tense) that many consumers observe and that's retained for replay → an event **log** (Kafka); a *command/task* is an **instruction** ("SendEmail") run once by one worker then deleted → a **work queue** (SQS/RabbitMQ). (A third kind, a **query**, asks for data.) Pick the transport by which one the message *is* — see [event vs task](/system-design/kafka/#event-vs-task--kafka-vs-a-queue).
 
+**Event-driven architecture (EDA)** — an architecture where services communicate by **asynchronous messages** instead of direct synchronous calls — giving loose coupling, independent scaling, and resilience. The messages are mostly **events** (facts), which is where the name comes from, but the same pipes also carry **commands**. *Terminology, to avoid the confusion:* **"EDA" is the standard term;** "**message-driven**" is a niche synonym (from the Reactive Manifesto) for the same async-messaging idea — same concept, different label. See [Event-Driven Architecture](/system-design/event-driven-architecture/).
+
 **Kafka** — a partitioned, replicated, durable log; high-throughput streaming and event backbone, with consumers tracking their own offsets.
 
 **Dead-letter queue (DLQ)** — where messages land after repeated processing failures, so a poison message doesn't block the queue and can be inspected later.
