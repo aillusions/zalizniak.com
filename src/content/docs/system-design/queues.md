@@ -8,6 +8,8 @@ sidebar:
 
 A message queue is a durable buffer that hands each message to **one** worker and **deletes it on success**. That one sentence is the whole difference from a [log](/system-design/kafka/): a queue is *deliver-then-forget*, built for **tasks** — units of work to run once, retry on failure, and scale across workers. It's the counterpart to the Kafka page; reach for it when the message is a **command** ("do this"), not an event for many to observe (see [event vs task](/system-design/kafka/#event-vs-task--kafka-vs-a-queue)).
 
+**Message vs event vs command.** *Message* is the umbrella — the envelope you send through any broker, queue, or log. An **event** states a fact, a **command/task** requests an action, and a **query** asks for data: same wire format, different **intent**. So all events and tasks are messages; a queue just happens to be the natural home for *command* messages.
+
 ## The model: competing consumers
 
 Many workers read the *same* queue, but each message goes to exactly **one** of them — so adding workers scales throughput. The lifecycle of a message is the part worth knowing:

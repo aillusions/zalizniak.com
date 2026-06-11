@@ -156,7 +156,9 @@ Beyond the common pool — infrastructure-flavored, often staff-level. Not what 
 
 **Pub/sub** — one published message delivered to many independent subscribers; decouples a producer from an unknown set of consumers (SNS, Kafka topics).
 
-**Event vs command (task)** — an *event* is a **fact** ("OrderPlaced", past tense) that many consumers observe and that's retained for replay → an event **log** (Kafka); a *command/task* is an **instruction** ("SendEmail") run once by one worker then deleted → a **work queue** (SQS/RabbitMQ). Pick the transport by which one the message *is* — see [event vs task](/system-design/kafka/#event-vs-task--kafka-vs-a-queue).
+**Message** — the umbrella term: the envelope (bytes + metadata) sent through a broker, queue, or log. **Events**, **commands/tasks**, and **queries** are *kinds* of message — identical on the wire, differing only in intent. All events and tasks are messages; not every message is an event.
+
+**Event vs command (task)** — both are **messages**; the difference is intent. An *event* is a **fact** ("OrderPlaced", past tense) that many consumers observe and that's retained for replay → an event **log** (Kafka); a *command/task* is an **instruction** ("SendEmail") run once by one worker then deleted → a **work queue** (SQS/RabbitMQ). (A third kind, a **query**, asks for data.) Pick the transport by which one the message *is* — see [event vs task](/system-design/kafka/#event-vs-task--kafka-vs-a-queue).
 
 **Kafka** — a partitioned, replicated, durable log; high-throughput streaming and event backbone, with consumers tracking their own offsets.
 
