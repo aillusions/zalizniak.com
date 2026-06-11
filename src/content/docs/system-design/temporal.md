@@ -2,7 +2,7 @@
 title: Temporal
 description: "How Temporal and durable execution work for system design — workflows-as-code, activities, workers, deterministic replay from event history, retries/timeouts/durable timers, orchestration vs choreography (who owns the flow), and Nexus for cross-service coordination."
 sidebar:
-  order: 10
+  order: 11
   label: Temporal · durable execution
 ---
 

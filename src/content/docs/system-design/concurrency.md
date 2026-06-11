@@ -2,7 +2,7 @@
 title: Concurrency
 description: Concurrency for system design — coming soon.
 sidebar:
-  order: 13
+  order: 14
   label: Concurrency · races
   badge:
     text: Soon

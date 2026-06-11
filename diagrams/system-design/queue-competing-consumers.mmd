@@ -1,0 +1,20 @@
+flowchart LR
+  classDef io fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef q fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef worker fill:#e7f5ec,stroke:#3f9c5a,stroke-width:1.5px,color:#0f172a;
+  classDef dlq fill:#fef6e7,stroke:#d9a441,stroke-width:1.5px,color:#0f172a;
+
+  P(["Producer"]):::io
+  Q["Queue"]:::q
+  W1["Worker"]:::worker
+  W2["Worker"]:::worker
+  W3["Worker"]:::worker
+  DLQ[("Dead-letter queue")]:::dlq
+
+  P --> Q
+  Q -->|"each message → one worker"| W1
+  Q --> W2
+  Q --> W3
+  W1 -.->|"ack → delete"| Q
+  W2 -.->|"fail → redeliver after<br/>visibility timeout"| Q
+  Q -.->|"after N failures"| DLQ
