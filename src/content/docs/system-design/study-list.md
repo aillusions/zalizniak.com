@@ -29,6 +29,21 @@ Like coding interviews, system design questions cluster into patterns. Practice 
 | Notifications | Push / email / SMS | Multi-channel fan-out, dedup, delivery guarantees |
 | Foundational component | Rate limiter, message queue, distributed cache, web crawler, job scheduler | One building block, deeply |
 
+### Advanced / infra deep dives
+
+Beyond the common pool — infrastructure-flavored, often staff-level. Not what you'd be handed in a typical product-design round, but high-value if you work on platforms or interview for infra roles. Several lean on the same internals as the [Postgres Internals](/system-design/postgres-internals/) page.
+
+| Problem | Angle | What it drills |
+| --- | --- | --- |
+| Payments API layer | Stripe | Idempotency keys, exactly-once charges, API versioning, webhook delivery |
+| Durable execution engine | Temporal, from scratch | Persisting workflow state, deterministic replay, timers, retries at scale |
+| Multi-tenant search service | Per-tenant SaaS search | Tenant isolation + relevance with no per-customer code |
+| Managed database service (DBaaS) | RDS / Aurora | Fleet provisioning, multi-tenant ops, control plane vs. data plane |
+| HA & automated failover | Replica promotion | Leader election, split-brain avoidance, RTO/RPO targets |
+| Zero-downtime upgrades | Rolling version changes | Connection draining, backward-compatible schemas, online migrations |
+| Backup & restore with PITR | Continuous WAL archiving | Point-in-time recovery, restore SLAs, [WAL](/system-design/postgres-internals/#wal-write-ahead-log)-based replay |
+| Control plane / data plane isolation | Any managed service | Keeping management-layer failures off the serving path |
+
 ## Design vocabulary
 
 **HLD (High-Level Design)** — the boxes and their data ownership; the structural skeleton you draw first.
