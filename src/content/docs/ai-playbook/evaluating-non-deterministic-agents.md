@@ -2,7 +2,7 @@
 title: Testing output that isn't reproducible
 description: How applied-AI teams gate changes to agents whose output isn't reproducible — golden sets graded by an LLM judge, eval-as-code, gating on downstream lift, explainability metrics, and agent-scored assertions — drawn from the teardowns.
 sidebar:
-  order: 2
+  order: 3
   label: Non-deterministic eval · Testing
 ---
 

@@ -2,7 +2,7 @@
 title: Surviving long, multi-day workflows
 description: How applied-AI teams run multi-day, multi-party workflows that survive crashes, retries, and human waits — durable execution engines, idempotent activities, checkpointed LLM calls, and humans as exception handlers — drawn from the teardowns.
 sidebar:
-  order: 6
+  order: 7
   label: Durable workflows · Orchestration
 ---
 

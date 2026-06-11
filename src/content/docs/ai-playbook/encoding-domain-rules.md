@@ -2,7 +2,7 @@
 title: Encoding dense domain rules
 description: How applied-AI teams make regulatory, underwriting, and compliance logic exact, testable, and auditable — rules-as-code with the LLM as draft layer, schema-constrained output, explainability gates, and expert-authored rulebooks tested like code — drawn from the teardowns.
 sidebar:
-  order: 8
+  order: 9
   label: Domain rules as code · Rules
 ---
 

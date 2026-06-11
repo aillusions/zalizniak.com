@@ -2,7 +2,7 @@
 title: Retrieval at multi-tenant scale
 description: How applied-AI teams ground every tenant in its own knowledge without per-customer code — knowledge-as-data, permission-faithful hybrid retrieval, learn-then-backtest, and a proprietary corpus as the retrieval asset — drawn from the teardowns.
 sidebar:
-  order: 5
+  order: 6
   label: Multi-tenant retrieval · Knowledge
 ---
 

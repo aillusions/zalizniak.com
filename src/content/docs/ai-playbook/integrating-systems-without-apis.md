@@ -2,7 +2,7 @@
 title: Reaching systems with no clean API
 description: How applied-AI agents reach legacy systems of record built for humans — the API → built-API → drive-the-UI ladder, read-and-reason over record-and-replay, intent-keyed locators, and voice/documents as integration surfaces — drawn from the teardowns.
 sidebar:
-  order: 4
+  order: 5
   label: No-API integration · Integration
 ---
 

@@ -2,7 +2,7 @@
 title: Beating context degradation
 description: How applied-AI teams stop quality falling off as one agent's context grows — splitting at a context threshold, building a better representation, externalizing state to memory and retrieval, and a shared context layer — drawn from the teardowns.
 sidebar:
-  order: 7
+  order: 8
   label: Context degradation · Orchestration
 ---
 

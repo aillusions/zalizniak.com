@@ -2,7 +2,7 @@
 title: Keeping inference cheap & fast
 description: How applied-AI teams keep agent inference affordable and responsive — cache-first execution, tiered per-step model routing, trimming the prompt before the call, and keeping the model swappable — drawn from the teardowns.
 sidebar:
-  order: 3
+  order: 4
   label: Inference cost & latency · Cost
 ---
 

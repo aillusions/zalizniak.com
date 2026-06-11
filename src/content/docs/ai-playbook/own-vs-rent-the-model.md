@@ -2,7 +2,7 @@
 title: Own vs. rent the model
 description: How applied-AI teams decide where to spend a training budget vs. renting a frontier LLM — rent the reasoning, own the data, fine-tune only where a unique dataset wins, route by benchmark, and self-host open-source for cost — drawn from the teardowns.
 sidebar:
-  order: 9
+  order: 10
   label: Own vs. rent the model · Models
 ---
 

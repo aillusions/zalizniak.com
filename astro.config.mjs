@@ -62,12 +62,6 @@ export default defineConfig({
 					label: 'System Design',
 					items: [{ autogenerate: { directory: 'system-design' } }],
 				},
-				// About (the teardowns methodology) first, then one entry per
-				// teardown, generated from the files in src/content/docs/teardowns/.
-				{
-					label: 'Notes',
-					items: [{ autogenerate: { directory: 'notes' } }],
-				},
 				// Cross-company synthesis: the recurring hard problems of applied
 				// AI and how teams across the teardowns solve them.
 				{
@@ -84,6 +78,11 @@ export default defineConfig({
 				{
 					label: 'Teardowns',
 					items: [{ autogenerate: { directory: 'teardowns' } }],
+				},
+				// Working glossaries / reference notes — kept at the bottom.
+				{
+					label: 'Notes',
+					items: [{ autogenerate: { directory: 'notes' } }],
 				},
 			],
 		}),

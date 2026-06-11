@@ -2,7 +2,7 @@
 title: Graduating an agent from assistant to actor
 description: How applied-AI teams cross an agent from "suggest" to "act" without losing user trust — confidence-graduated autonomy, human-in-the-loop gating, self-audit, and explainability — drawn from the teardowns.
 sidebar:
-  order: 1
+  order: 2
   label: Assistant → actor · Autonomy
 ---
 

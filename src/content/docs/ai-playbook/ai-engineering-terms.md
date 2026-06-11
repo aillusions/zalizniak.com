@@ -2,7 +2,7 @@
 title: AI Engineering Terms
 description: Practical applied-AI patterns and recipes distilled from the teardowns — autonomy gating, agent eval, model routing, durable execution — plus the foundational LLM/agent/retrieval vocabulary underneath.
 sidebar:
-  order: 10
+  order: 1
 ---
 
 A working reference for applied-AI engineering, in two parts. First, **patterns and recipes** distilled from how the teardown companies actually build — the recurring solutions to the genuinely hard problems, each linked to the teardowns it's drawn from. Then the **foundational vocabulary** those patterns are built on. Same rule throughout: a definition plus a sentence or two, not an essay.
