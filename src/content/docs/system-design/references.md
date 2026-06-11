@@ -11,4 +11,5 @@ sidebar:
 - *System Design Interview – An Insider's Guide* (Alex Xu) — the standard primer; broad coverage of the building blocks.
 - [Jordan Has No Life](https://www.youtube.com/@jordanhasnolife5163) (YouTube) — deep, practical walkthroughs.
 - [Hello Interview — Common Problems](https://www.hellointerview.com/learn/system-design/problem-breakdowns/bitly) — worked question breakdowns with answer keys (e.g. Bitly, Ticketmaster, WhatsApp).
+- [Hello Interview — Real Interview Questions](https://www.hellointerview.com/community/questions?sort=recentAndPopular&page=1) — actual questions from recent interviews, reported by other users.
 - [Excalidraw](https://excalidraw.com/) — virtual whiteboard for timed practice.
