@@ -1,0 +1,16 @@
+flowchart LR
+  classDef prod fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef leader fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef follower fill:#e7f5ec,stroke:#3f9c5a,stroke-width:1.5px,color:#0f172a;
+
+  Prod(["Producer<br/>acks=all"]):::prod
+  L[("Partition 0 — leader<br/>Broker 1")]:::leader
+  F1[("Follower · ISR<br/>Broker 2")]:::follower
+  F2[("Follower · ISR<br/>Broker 3")]:::follower
+  Cons(["Consumers<br/>read from leader"]):::prod
+
+  Prod -->|write| L
+  L -->|replicate| F1
+  L -->|replicate| F2
+  L -.->|"ack after min.insync.replicas"| Prod
+  L --> Cons

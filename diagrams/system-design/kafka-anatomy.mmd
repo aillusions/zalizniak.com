@@ -1,0 +1,25 @@
+flowchart LR
+  classDef prod fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef part fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef cons fill:#e7f5ec,stroke:#3f9c5a,stroke-width:1.5px,color:#0f172a;
+
+  P1(["Producer"]):::prod
+  P2(["Producer"]):::prod
+
+  subgraph T["Topic: orders"]
+    direction TB
+    Part0["Partition 0 · log: 0 1 2 3 →"]:::part
+    Part1["Partition 1 · log: 0 1 2 →"]:::part
+    Part2["Partition 2 · log: 0 1 2 3 4 →"]:::part
+  end
+
+  subgraph G["Consumer group: billing"]
+    C1(["Consumer A"]):::cons
+    C2(["Consumer B"]):::cons
+  end
+
+  P1 -->|"key=acct-7 → hash"| Part1
+  P2 -->|"key=acct-3 → hash"| Part0
+  Part0 --> C1
+  Part1 --> C1
+  Part2 --> C2
