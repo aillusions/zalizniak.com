@@ -18,6 +18,8 @@ The sequence and rough timings for a ~45-minute slot (~35 min of actual design):
 | High-Level Design | ~10–15 min | Boxes and arrows that satisfy the API |
 | Deep Dives | ~10 min | Harden it against the non-functional requirements |
 
+**Format and medium.** A few shapes recur: **remote** over video with a shared virtual whiteboard (most common today), **in-person** at a physical whiteboard, or a take-home/written design doc (rarer). Whatever the format, **you are always drawing** — boxes and arrows — and remotely that's almost always **[Excalidraw](https://excalidraw.com/)** (or the company's own tool like CoderPad). Ask your recruiter which tool ahead of time and practice in it so you're not fumbling on the day.
+
 ## Requirements (~5 min)
 
 **The prompt is one line, and that's the point.** It's given verbally almost always (sometimes pasted into the shared doc — still a one-liner): *"Design Twitter."* *"Design a URL shortener."* No requirements doc, no test cases, deliberately almost nothing. **The interviewer says one or two sentences; you're expected to drive from there.**
