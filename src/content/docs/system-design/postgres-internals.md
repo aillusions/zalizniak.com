@@ -94,6 +94,30 @@ Postgres caches 8 KB pages in a shared-memory array (`shared_buffers`) and media
 - **Dirty pages** are written by the **background writer** and the **checkpointer**, not by the query that dirtied them (WAL already guarantees durability).
 - **Double caching** — pages also sit in the OS page cache, so `shared_buffers` is typically sized to ~25% of RAM rather than "as big as possible." **Ring buffers** keep bulk ops (seq scans, `VACUUM`, `COPY`) from evicting the whole working set.
 
+## Scaling Postgres
+
+A single Postgres instance goes *very* far — so the order of moves matters more than the menu. Climb this ladder; don't jump to sharding because it sounds impressive.
+
+| Rung | Move | Buys you | Cost |
+| --- | --- | --- | --- |
+| 1 | **Scale up** (bigger box, tuned config) | Most workloads, with zero architecture change | Hits a ceiling; one failure domain |
+| 2 | **Connection pooling** | Survive many clients — Postgres is **process-per-connection**, so 10k app connections will OOM it | A pooler to run (PgBouncer) |
+| 3 | **Read replicas** | Read scaling + a failover target | Replication lag; reads can be stale |
+| 4 | **Partitioning** | Big tables stay fast on *one* node | Schema work; partition-key choice |
+| 5 | **Sharding** | Write scaling beyond one node | Big jump in complexity; cross-shard queries hurt |
+
+![Postgres read/write split with pooling and streaming replication](/diagrams/system-design/postgres-scaling.svg)
+
+**Connection pooling.** Each connection is a backend *process* with real memory overhead, so a few hundred is plenty and thousands will tip the box over. A pooler — **PgBouncer** (transaction-mode is the sweet spot) — multiplexes many client connections onto a small pool of server connections. This is usually the *first* scaling problem you hit, before any of the data-distribution moves below.
+
+**Replication & read replicas.** Physical **streaming replication** ships the [WAL](#wal-write-ahead-log) to standbys that replay it, giving read-scaling replicas and a failover target. The catch is **replication lag**: async replication means a replica can serve slightly stale data, so a read right after a write may not see it (the **read-your-writes** problem) — route those reads to the primary, or use synchronous replication for the rows that can't be stale (at a write-latency cost). A pooler/proxy like **pgcat** or app-level logic does the read/write split. **Logical** replication (decoding the WAL into row changes) is the other flavor — selective, cross-version, and the basis of [CDC](/system-design/study-list/#data--storage).
+
+**Partitioning (one node, big table).** Declarative partitioning splits one logical table into child partitions by **range** (time-series: a partition per month), **list**, or **hash**. The planner does **partition pruning** — skipping partitions a query can't match — and old partitions drop in O(1) (`DROP` the December table) instead of a slow bulk `DELETE`. It's a single-instance technique: it keeps a huge table's indexes and `VACUUM` manageable, but doesn't add machines.
+
+**Sharding (many nodes).** Postgres has **no native sharding** — spreading writes across instances takes one of: **[Citus](https://github.com/citusdata/citus)** (an extension: a coordinator distributes tables across worker nodes by a shard key and routes/aggregates queries), **`postgres_fdw`** foreign tables stitched together, or **application-level** routing. The shard-key choice is the whole game (co-locate what you join; avoid cross-shard fan-out), and it's the rung with by far the steepest complexity jump — which is why you exhaust 1–4 first.
+
+**HA & automatic failover.** Replicas only help availability if promotion is automatic. **Patroni** (with etcd/Consul for leader election) or **repmgr** handle failover for self-managed clusters; on Kubernetes an [operator](/system-design/kubernetes/#worked-architecture-postgres-on-kubernetes) does it. The hard parts are the usual distributed-systems ones: avoiding split-brain (two primaries) and meeting **RTO/RPO** targets.
+
 ## Hands-on: pgrx
 
 [pgrx](https://github.com/pgcentralfoundation/pgrx) is a Rust framework for building Postgres extensions — it handles the C ABI, `PG_FUNCTION_INFO_V1` boilerplate, memory contexts, and gives you `cargo pgrx run` to compile-install-and-`psql` against a throwaway instance.

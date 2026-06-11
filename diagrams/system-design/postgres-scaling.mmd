@@ -1,0 +1,18 @@
+flowchart LR
+  classDef app fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef proxy fill:#fef6e7,stroke:#d9a441,stroke-width:1.5px,color:#0f172a;
+  classDef prim fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef rep fill:#e7f5ec,stroke:#3f9c5a,stroke-width:1.5px,color:#0f172a;
+
+  App(["App servers ×N"]):::app
+  PB{{"Pooler / proxy<br/>PgBouncer · pgcat"}}:::proxy
+  PRIM[("Primary<br/>all writes")]:::prim
+  R1[("Read replica")]:::rep
+  R2[("Read replica")]:::rep
+
+  App --> PB
+  PB -->|"writes + read-your-writes"| PRIM
+  PB -->|"read-only queries"| R1
+  PB -->|"read-only queries"| R2
+  PRIM -.->|"streaming WAL<br/>(async · lag)"| R1
+  PRIM -.->|"streaming WAL"| R2
