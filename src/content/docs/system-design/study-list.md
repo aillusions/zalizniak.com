@@ -1,11 +1,11 @@
 ---
-title: Glossary
-description: A working glossary of system design interview vocabulary — the design framework terms, the API/traffic edge, feed and timeline patterns, data and storage, caching, async messaging, and scaling/reliability — defined tight, one or two lines each.
+title: Study List
+description: A working study list of system design interview vocabulary — the design framework terms, the API/traffic edge, feed and timeline patterns, data and storage, caching, async messaging, distributed transactions, scaling/reliability, and storage internals — defined tight, one or two lines each.
 sidebar:
   order: 2
 ---
 
-A running glossary of the vocabulary that comes up while practicing system design — terms collected as I hit them, defined for quick recall. Tight definitions, one or two lines each. Some entries (the API-edge cluster) are AWS-flavored because that's where they first showed up; the concepts generalize.
+A running study list of the vocabulary that comes up while practicing system design — terms collected as I hit them, defined for quick recall. Tight definitions, one or two lines each. Some entries (the API-edge cluster) are AWS-flavored because that's where they first showed up; the concepts generalize.
 
 ## Design vocabulary
 
@@ -115,6 +115,24 @@ A running glossary of the vocabulary that comes up while practicing system desig
 
 **Durable execution (Temporal)** — a workflow engine that persists each step's state so a long-running, multi-step process survives crashes and resumes exactly where it left off, instead of you hand-rolling sagas and retries.
 
+## Distributed transactions & consistency
+
+How to keep "update the DB *and* tell other systems" correct when there's no single transaction spanning them.
+
+**Dual write (anti-pattern)** — writing to the DB and the queue as two separate operations; a crash in between leaves them diverged. The problem the outbox and CDC patterns exist to solve — name it, then reach for one of them.
+
+**Transactional outbox** — write the business row and an *outbox* message row in the **same** DB transaction; a relay then polls the outbox and publishes to the queue. Makes "update state and emit an event" atomic without distributed commit.
+
+**CQRS (Command Query Responsibility Segregation)** — separate the write model from one or more read models, kept in sync via published events; reads can be denormalized/precomputed independently of the write schema. Often paired with event sourcing.
+
+**Event sourcing** — persist state as an append-only log of events rather than a mutable row; current state is a fold over the log. Full audit trail and time-travel, at the cost of rebuilds and projections.
+
+**Saga** — model a distributed transaction as a chain of local steps, each with a **compensating** action to undo it on failure — eventual consistency instead of a global lock. Orchestrated (central coordinator) or choreographed (events).
+
+**Two-phase commit (2PC)** — a coordinator drives an atomic commit across participants (prepare → commit). Strongly consistent, but blocks on the coordinator and scales poorly; usually avoided at web scale in favor of sagas.
+
+**Idempotent consumer** — a consumer that dedupes on a message/idempotency key so redelivery is safe; the consumer-side half of [exactly-once](#async--messaging) under at-least-once delivery.
+
 ## Scaling & reliability
 
 **Horizontal vs vertical scaling** — add more machines (scale out) vs. a bigger machine (scale up). Interviews almost always want horizontal, behind a load balancer.
@@ -134,3 +152,29 @@ A running glossary of the vocabulary that comes up while practicing system desig
 **Allowlist / denylist** — explicitly permitted vs. explicitly blocked sets (IPs, keys, users). A denylist blocks known-bad; an allowlist permits only known-good (stricter default).
 
 **Bloom filter** — a compact probabilistic set membership test: "definitely not present" or "possibly present," no false negatives. Used to skip expensive lookups (e.g. is this key in the DB at all?).
+
+## Storage internals (deeper shelf)
+
+Write-path mechanics below the design level — rarely the main thread of an interview, but the vocabulary that wins a storage-engine deep dive.
+
+**Group commit** — batch many pending writes into a single log flush (`fsync`), trading a little latency for far higher write throughput.
+
+**Journaling** — write intended changes to a sequential journal before applying them in place, so a crash can replay or roll back; the filesystem cousin of a WAL.
+
+**Copy-on-write (CoW)** — never overwrite in place: write a new copy and atomically swap the pointer. Basis of cheap snapshots and crash-safe updates (filesystems, B-trees).
+
+**Shadow paging** — a CoW variant: write changed pages to new locations, then atomically flip the root to point at them; the old version stays intact until the switch.
+
+**Write amplification** — one logical write triggering several physical writes (compaction, page rewrites, replication fan-out). A key cost metric for LSM- and SSD-backed stores.
+
+**Double buffering** — write into one buffer while the other is flushed/read, then swap; hides flush latency and avoids tearing.
+
+**Scatter-gather (vectored) I/O** — read into / write from multiple non-contiguous buffers in one syscall (`readv`/`writev`), cutting copies and syscall count.
+
+**Write combining / coalescing** — merge multiple adjacent or pending writes into one larger write before it hits the device, reducing round-trips.
+
+**Compare-and-swap (CAS) / atomic write** — update a value only if it still equals an expected prior value; the hardware primitive under lock-free concurrency and optimistic concurrency control.
+
+**Read-modify-write** — read a value, change it, write it back; not atomic unless guarded (CAS, lock, transaction) — otherwise two racing updates and one is lost.
+
+**Write skew** — a snapshot-isolation anomaly: two transactions read an overlapping set, each writes a disjoint part, and together they break an invariant neither would alone.

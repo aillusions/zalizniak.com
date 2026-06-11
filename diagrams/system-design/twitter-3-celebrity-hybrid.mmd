@@ -1,0 +1,34 @@
+flowchart LR
+  classDef base fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef write fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef celeb fill:#e7f5ec,stroke:#3f9c5a,stroke-width:1.5px,color:#0f172a;
+
+  Client(["Client<br/>web · iOS · Android"]):::base
+  GW{{"API Gateway<br/>route · auth · throttle"}}:::base
+  TS("Tweet Service"):::base
+  FS("Follower Service"):::base
+  Feed("Feed Service<br/>merge cache + celebrities"):::base
+  TDB[("Tweet DB · Postgres<br/>sharded by authorId")]:::base
+  FDB[("Following DB · Postgres")]:::base
+
+  Q["Fan-out queue"]:::write
+  W("Fan-out workers ×N"):::write
+  TC[("Timeline cache · Redis<br/>per-user precomputed feed")]:::write
+
+  CC[("Celebrity tweet cache<br/>recent tweets · cached once, shared")]:::celeb
+
+  Client --> GW
+  GW -->|write| TS
+  GW --> FS
+  GW -->|read feed| Feed
+  TS --> TDB
+  FS --> FDB
+
+  TS -->|"on tweet · async<br/>(normal authors only)"| Q
+  Q --> W
+  W -->|"getFollowers()"| FS
+  W -->|"push into each<br/>follower's timeline"| TC
+  Feed -->|"normal: 1 cache lookup"| TC
+
+  TS -.->|"recent tweets"| CC
+  Feed ==>|"celebrity authors:<br/>cached pull + merge"| CC

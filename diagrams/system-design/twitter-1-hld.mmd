@@ -1,0 +1,21 @@
+flowchart LR
+  classDef base fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef write fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef celeb fill:#e7f5ec,stroke:#3f9c5a,stroke-width:1.5px,color:#0f172a;
+
+  Client(["Client<br/>web · iOS · Android"]):::base
+  GW{{"API Gateway<br/>route · auth · throttle"}}:::base
+  TS("Tweet Service"):::base
+  FS("Follower Service"):::base
+  Feed("Feed Service<br/>stateless · fan-out-on-read"):::base
+  TDB[("Tweet DB · Postgres")]:::base
+  FDB[("Following DB · Postgres")]:::base
+
+  Client --> GW
+  GW -->|write| TS
+  GW --> FS
+  GW -->|read feed| Feed
+  TS --> TDB
+  FS --> FDB
+  Feed -->|"getFollowers()"| FS
+  Feed -->|"getTweets(followees)<br/>merge live · slow"| TS
