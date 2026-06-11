@@ -1,0 +1,29 @@
+flowchart LR
+  classDef stage fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef hook fill:#fef6e7,stroke:#d9a441,stroke-width:1.5px,color:#0f172a;
+  classDef store fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+
+  SQL(["SQL text"]):::stage
+  Parse("Parser<br/>→ parse tree"):::stage
+  Analyze("Analyze<br/>→ query tree"):::stage
+  Rewrite("Rewriter<br/>rules · views"):::stage
+  Plan("Planner / Optimizer<br/>cost-based plan tree"):::stage
+  Exec("Executor<br/>Volcano iterator"):::stage
+
+  AM[("Access methods<br/>btree · gin · gist · custom")]:::store
+  Buf[("Buffer manager<br/>shared_buffers · clock-sweep")]:::store
+  Heap[("Heap / table AM<br/>MVCC tuples")]:::store
+  WAL[("WAL<br/>durability · replication")]:::store
+
+  SQL --> Parse --> Analyze --> Rewrite --> Plan --> Exec
+  Exec --> AM
+  AM --> Buf
+  Buf <--> Heap
+  Heap --> WAL
+
+  H1{{"post_parse_analyze_hook"}}:::hook
+  H2{{"planner_hook ·<br/>set_rel_pathlist_hook"}}:::hook
+  H3{{"ExecutorStart/Run_hook"}}:::hook
+  Analyze -.-> H1
+  Plan -.-> H2
+  Exec -.-> H3

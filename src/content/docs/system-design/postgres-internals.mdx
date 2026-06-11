@@ -1,0 +1,143 @@
+---
+title: Postgres Internals
+description: "How Postgres actually works under the hood — the query lifecycle and extension hooks, access methods, MVCC, WAL, and the buffer manager — plus a hands-on track building a toy extension and a from-scratch search index with pgrx."
+sidebar:
+  order: 6
+---
+
+Not "I use Postgres" — *how Postgres works inside.* The query lifecycle and the hooks that let you intercept it, the access-method API that lets you add an index type, MVCC and tuple visibility, the WAL, and the buffer manager. This is the layer that explains the things you reason about in a design deep dive — why replication and CDC work the way they do ([WAL](/system-design/study-list/#data--storage)), what an isolation level actually *is* (MVCC snapshots), and why `shared_buffers` behaves like a cache. The page ends with a hands-on track: write a toy extension and a from-scratch search index in [pgrx](https://github.com/pgcentralfoundation/pgrx).
+
+## Query lifecycle & hooks
+
+A statement flows through fixed stages, each a tree transformation. Postgres exposes **C function-pointer hooks** at most stages — set them in a shared-preloaded library's `_PG_init()`, and you can observe or rewrite what the engine does without patching core. This is how `pg_stat_statements`, `auto_explain`, and `pg_hint_plan` work.
+
+![Postgres query lifecycle with extension hook points](/diagrams/system-design/postgres-query-lifecycle.svg)
+
+| Stage | What it does | Hook(s) |
+| --- | --- | --- |
+| Parser | SQL text → raw parse tree (syntax only) | — |
+| Analyze | Parse tree → query tree; resolve names/types | `post_parse_analyze_hook` |
+| Rewriter | Apply rules and expand views | — |
+| Planner / Optimizer | Query tree → cost-based **plan tree**: access paths, join order, join methods | `planner_hook`, `set_rel_pathlist_hook`, `set_join_pathlist_hook`, `get_relation_info_hook` |
+| Executor | Run the plan tree — **Volcano/iterator** model (each node: `init` → `next`* → `end`) | `ExecutorStart/Run/Finish/End_hook` |
+| Utility (DDL) | Non-plannable commands (`CREATE`, `VACUUM`, …) | `ProcessUtility_hook` |
+
+The planner is **cost-based**: it enumerates candidate paths (seq scan vs. index scan vs. bitmap scan; nested-loop vs. hash vs. merge join), estimates each with statistics from `pg_statistic` (via `ANALYZE`), and picks the cheapest. `EXPLAIN` prints the chosen plan tree; `EXPLAIN ANALYZE` runs it and shows estimate-vs-actual — the first place to look when the planner picks wrong.
+
+<details>
+<summary>Mermaid source</summary>
+
+```mermaid
+flowchart LR
+  classDef stage fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef hook fill:#fef6e7,stroke:#d9a441,stroke-width:1.5px,color:#0f172a;
+  classDef store fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+
+  SQL(["SQL text"]):::stage
+  Parse("Parser<br/>→ parse tree"):::stage
+  Analyze("Analyze<br/>→ query tree"):::stage
+  Rewrite("Rewriter<br/>rules · views"):::stage
+  Plan("Planner / Optimizer<br/>cost-based plan tree"):::stage
+  Exec("Executor<br/>Volcano iterator"):::stage
+  AM[("Access methods<br/>btree · gin · gist · custom")]:::store
+  Buf[("Buffer manager<br/>shared_buffers · clock-sweep")]:::store
+  Heap[("Heap / table AM<br/>MVCC tuples")]:::store
+  WAL[("WAL<br/>durability · replication")]:::store
+
+  SQL --> Parse --> Analyze --> Rewrite --> Plan --> Exec
+  Exec --> AM
+  AM --> Buf
+  Buf <--> Heap
+  Heap --> WAL
+  H1{{"post_parse_analyze_hook"}}:::hook
+  H2{{"planner_hook ·<br/>set_rel_pathlist_hook"}}:::hook
+  H3{{"ExecutorStart/Run_hook"}}:::hook
+  Analyze -.-> H1
+  Plan -.-> H2
+  Exec -.-> H3
+```
+
+</details>
+
+## Access methods
+
+How Postgres stays extensible at the storage layer: the engine talks to indexes and tables through **access-method APIs** (structs of function pointers), so new index types and storage engines plug in behind the same interface.
+
+- **Index access methods** (`IndexAmRoutine`) — the built-ins are **btree, hash, GiST, SP-GiST, GIN, BRIN**. An index AM implements `ambuild`, `aminsert`, `ambeginscan`, `amgettuple`/`amgetbitmap`, `amrescan`, `amcostestimate`, and friends. You register one with `CREATE ACCESS METHOD … TYPE INDEX HANDLER …` — this is the seam through which extensions like `pgvector` (HNSW/IVFFlat) and `rum` add entirely new index types.
+- **Operator classes / families** — an AM is generic; an **opclass** binds it to a data type by supplying the strategy operators and support functions (e.g. btree needs a comparator). This is why one btree serves `int`, `text`, and your custom type alike.
+- **Table access methods** (`TableAmRoutine`, since PG12) — pluggable *storage*. `heap` is the default; the API is what makes columnar (Citus `columnar`, Hydra) and alternative MVCC layouts (zheap) possible without forking.
+
+## MVCC (multi-version concurrency control)
+
+Postgres never updates a row in place for readers — it keeps **multiple versions** so readers never block writers and vice versa. Every tuple header carries `xmin` (inserting transaction id), `xmax` (deleting/updating xid), and `ctid` (pointer to the next version).
+
+- **Visibility** — a tuple is visible to a transaction if its `xmin` committed before the transaction's **snapshot** and its `xmax` hasn't committed (or is null). Commit status lives in `pg_xact` (clog); **hint bits** cache it on the tuple to avoid repeat lookups.
+- **Updates make new tuples** — an `UPDATE` writes a new version and sets the old tuple's `xmax`; the old version survives until no snapshot can still see it. This is why high-churn tables **bloat**.
+- **HOT (heap-only tuple)** — if no indexed column changed and the new version fits on the same page, Postgres chains it on the page and skips new index entries — a major write optimization.
+- **VACUUM** — reclaims dead tuples and updates the visibility map and statistics; **autovacuum** runs it automatically. **Freezing** rewrites very old xids to a sentinel so the 32-bit xid counter can't **wrap around** (`relfrozenxid`) — the failure mode behind "must vacuum to prevent wraparound" outages.
+- **Isolation = snapshot timing** — *Read Committed* takes a fresh snapshot per statement; *Repeatable Read* takes one per transaction; *Serializable* adds **SSI** (predicate locking to detect dangerous read/write skew). The [write-skew](/system-design/study-list/#storage-internals-deeper-shelf) anomaly is exactly what SSI catches and Repeatable Read does not.
+
+## WAL (write-ahead log)
+
+The durability and replication backbone: **every change is written to the WAL before the data page is flushed.** On crash, Postgres replays WAL from the last checkpoint to recover.
+
+- **LSN** (log sequence number) — a monotonic byte offset into the WAL; the unit of "how far has replay/replication gotten."
+- **Checkpoints** flush all dirty buffers to disk and record a redo point, bounding crash-recovery time and letting old WAL be recycled. `full_page_writes` protects against torn pages by logging the whole page on first touch after a checkpoint.
+- **Physical replication** ships raw WAL to standbys (streaming replication, `pg_basebackup`). **Logical replication / decoding** reads WAL and reconstructs *row-level* changes (`pgoutput`, `wal2json`) — this is the engine behind Postgres-based **[CDC](/system-design/study-list/#data--storage)** into Kafka/Debezium.
+
+## Buffer manager
+
+Postgres caches 8 KB pages in a shared-memory array (`shared_buffers`) and mediates all heap/index access through it.
+
+- **Buffer tag** — `(relation, fork, block#)` identifies a page; a hash table maps tags to buffer slots.
+- **Eviction** — **clock-sweep** (an approximate LRU): each buffer has a `usage_count` decremented on each sweep; the first unpinned, zero-count buffer is evicted. **Pinning** (a refcount) protects a buffer in active use.
+- **Dirty pages** are written by the **background writer** and the **checkpointer**, not by the query that dirtied them (WAL already guarantees durability).
+- **Double caching** — pages also sit in the OS page cache, so `shared_buffers` is typically sized to ~25% of RAM rather than "as big as possible." **Ring buffers** keep bulk ops (seq scans, `VACUUM`, `COPY`) from evicting the whole working set.
+
+## Hands-on: pgrx
+
+[pgrx](https://github.com/pgcentralfoundation/pgrx) is a Rust framework for building Postgres extensions — it handles the C ABI, `PG_FUNCTION_INFO_V1` boilerplate, memory contexts, and gives you `cargo pgrx run` to compile-install-and-`psql` against a throwaway instance.
+
+**1 — A toy extension.** Scaffold and ship a SQL-callable function:
+
+```rust
+use pgrx::prelude::*;
+pgrx::pg_module_magic!();
+
+#[pg_extern]
+fn tokenize(text: &str) -> Vec<String> {
+    text.to_lowercase()
+        .split(|c: char| !c.is_alphanumeric())
+        .filter(|t| !t.is_empty())
+        .map(|t| t.to_string())
+        .collect()
+}
+```
+
+```sh
+cargo pgrx new search_demo && cd search_demo
+cargo pgrx run            # builds, installs, opens psql
+# in psql:  CREATE EXTENSION search_demo;  SELECT tokenize('Hello, Postgres!');
+```
+
+**2 — A from-scratch search index.** Build the simplest thing that *is* a search index — an **inverted index** as a table — before reaching for a real access method:
+
+```sql
+-- postings: term -> document, populated by tokenize()
+CREATE TABLE postings (term text, doc_id bigint);
+CREATE INDEX ON postings (term);
+
+-- index a document
+INSERT INTO postings
+SELECT t, $1 FROM unnest(tokenize($2)) AS t;   -- (doc_id, body)
+
+-- query: docs containing all query terms (AND)
+SELECT doc_id FROM postings WHERE term = ANY(tokenize('postgres internals'))
+GROUP BY doc_id HAVING count(DISTINCT term) = 2;
+```
+
+That already demonstrates tokenization → postings → boolean retrieval. **The graduation step** — and the reason this lives on an *internals* page — is to stop storing postings in a heap table and instead implement a real **index access method** (`IndexAmRoutine`) in pgrx, so `WHERE body @@ 'query'` is served by your own `amgettuple`. That's the same seam `pgvector` uses; building a minimal one is the most direct way to understand how GIN's posting lists actually work.
+
+---
+
+These are working notes — a map of the subsystems and a starting path, not a substitute for the [Postgres docs](https://www.postgresql.org/docs/current/internals.html) or the source. See also the [Study List](/system-design/study-list/) for the WAL/MVCC/buffer-manager terms in one-liner form.
