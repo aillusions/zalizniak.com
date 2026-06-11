@@ -88,6 +88,32 @@ The two axes of scaling state — and where consistency choices bite:
 - **Idempotency & retries** — because timeouts are ambiguous, clients retry, so operations must be **[idempotent](/system-design/study-list/#async--messaging)** (an idempotency key) or you double-apply.
 - **CRDTs** — Conflict-free Replicated Data Types merge concurrent updates *deterministically* with no coordination (counters, sets, sequences), so multi-leader/offline edits converge without conflict resolution — the engine under collaborative editing.
 
+## Building fluency
+
+Fluency here comes from **building, breaking, and then explaining** — not from reading. Run one drill at a time on a real (if small) system, and pair each with the write-up. The plan, grouped by what each kind teaches:
+
+**Build it — internalize the mechanism**
+
+1. **Raft from scratch (Go)** — election, log replication, then kill nodes and watch it recover. Nothing crystallizes [consensus](#consensus) like debugging your own split-brain.
+2. **A replicated KV store** — leader/follower with a WAL, then add failover. A mini-Aurora; you feel every consistency choice as a line of code.
+3. **[MIT 6.824 / 6.5840](https://pdos.csail.mit.edu/6.824/) labs** — graded, test-hardened versions of the above with brutal failure-injection tests already written for you. Do the labs; the lectures are optional.
+
+**Break it — meet partial failure for real**
+
+4. **Chaos drills on your own staging stack** — one scenario a day: kill the primary, fill a disk, PITR restore, partition the network with `iptables`. Failure stops being theoretical.
+5. **Break Postgres replication by hand** — stand up streaming replication on 2–3 boxes with *no operator*, then induce lag, drop WAL segments, promote the wrong node, and repair. (Pairs with [Scaling Postgres](/system-design/postgres-internals/#scaling-postgres).)
+6. **Operate a real cluster and break it** — run CockroachDB / Cassandra / etcd as a multi-node cluster, then kill nodes and watch quorum loss, re-election, and rebalancing — [consensus](#consensus) and [quorum](/system-design/study-list/#data--storage) behavior without building it yourself.
+7. **Reproduce a famous outage** — take a Cloudflare/AWS/GitHub postmortem and recreate the failure mode in miniature. The best ones teach a failure you'd never have imagined.
+
+**Verify it — prove the guarantees (the dimension build-and-break misses)**
+
+8. **[Jepsen](https://jepsen.io/)-style consistency testing** — partition a datastore (yours or a real one) under load and check the history with a linearizability/serializability checker (Elle, Knossos). This is how you find out whether a system's *claimed* consistency actually holds — the gap between the docs and reality.
+9. **Model-check a protocol with [TLA+](https://learntla.com/)** — spec a commit protocol, a lock, or your Raft in TLA+/PlusCal and let TLC find the interleaving you'd never hit by hand. Verifies the *design* before you write code. (Deterministic simulation testing — à la FoundationDB/TigerBeetle — is the runtime cousin: a simulated clock + network that makes failures reproducible.)
+
+**Explain it — the multiplier**
+
+10. **Teach-back writing** — after every drill, write the explanation you couldn't give fluently before. Publishing forces precision, and the gaps you hit while writing are your next drill.
+
 ---
 
 These are working notes — the conceptual spine, with the concrete realizations on the [Postgres](/system-design/postgres-internals/), [Kafka](/system-design/kafka/), and [Kubernetes](/system-design/kubernetes/) pages and the one-liner terms in the [Study List](/system-design/study-list/#data--storage). The throughline: every mechanism here is a way to cope with partial failure and the absence of a global clock.

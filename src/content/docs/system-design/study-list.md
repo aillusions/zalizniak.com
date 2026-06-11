@@ -118,6 +118,10 @@ Beyond the common pool — infrastructure-flavored, often staff-level. Not what 
 
 **Read-your-writes** — a consistency guarantee that a client always sees its own most recent write, even if others see it later.
 
+**Clock drift** — physical clocks on different machines tick at slightly different rates and steadily diverge; NTP only *bounds* the error, so you can't trust wall-clock timestamps to order events across machines.
+
+**Clock skew** — the instantaneous offset between two machines' clocks at a given moment. It's why "which write happened first?" has no free answer across nodes — distributed systems construct order with [logical clocks](/system-design/distributed-systems/#time--ordering) instead of reading it off a clock.
+
 **Quorum (R + W > N)** — requiring a majority of replicas to ack a read/write so reads and writes overlap on at least one current node; the knob behind Dynamo-style tunable consistency.
 
 **Denormalization** — duplicating data across rows/tables/stores to make reads cheap, accepting write-time duplication and consistency work. The storage analog of fan-out-on-write.
