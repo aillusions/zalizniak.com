@@ -127,6 +127,8 @@ The base terms the patterns above are built from — models and inference, retri
 
 **Memory (long-term)** — facts or past interactions an agent persists and recalls across sessions, beyond the context window. Often stored as retrievable "memories" so behavior personalizes over time.
 
+**Context pruning / compaction** — actively managing the working context during a long run: summarizing finished steps, dropping stale or irrelevant turns, and checkpointing key facts to external memory so the live context stays small and sharp. Without it a long agent run fills the window with noise and quality degrades — it's the housekeeping that keeps long-horizon reasoning viable.
+
 ### Agents & orchestration
 
 **Agentic** — an LLM that doesn't just answer but *acts*: it plans steps, calls tools, observes the results, and loops until a goal is met, rather than producing one response and stopping. This shift from single-shot answer to autonomous action is what most of the teardowns are really building.
@@ -154,6 +156,8 @@ The base terms the patterns above are built from — models and inference, retri
 **Planner** — the component or model step that breaks a goal into an ordered set of steps before execution, rather than reacting one move at a time. Separating planning from acting improves complex multi-step tasks.
 
 **Supervisor / sub-agent** — an orchestration pattern where a supervisor decomposes a task, delegates pieces to specialized sub-agents, and integrates their results. Keeps each agent's job — and context — narrow.
+
+**Hierarchical planning** — planning in layers: break a macro-goal into sub-goals, then plan each sub-goal's steps, so the agent never has to reason over hundreds of flat steps at once. Bounding the planning horizon at each level is a main defense against the drift and combinatorial blow-up of long-horizon reasoning.
 
 **Computer use / browser agent** — an agent that operates software the way a person does, reading the screen and clicking/typing in a real browser or desktop, to reach systems with no API. The adaptive fallback when integration isn't available.
 
@@ -192,6 +196,12 @@ The base terms the patterns above are built from — models and inference, retri
 **Confidence scoring** — attaching a calibrated certainty to an output so the system can auto-act when confident and escalate when not. The signal most autonomy-gating and HITL routing depends on.
 
 **Drift** — the gradual decay of output quality as inputs, data, or an upstream model change underneath a system tuned for the old conditions. Why evals run continuously, not once.
+
+**Error compounding** — in a multi-step agent run, per-step errors multiply: even 95%-accurate steps strung across 50 interdependent decisions leave roughly a one-in-thirteen chance the whole run survives (0.95⁵⁰ ≈ 8%). It's the math that makes long-horizon reliability hard, and the reason teams bound step count, checkpoint, and verify mid-run instead of trusting a long chain end to end.
+
+**Context degradation** — the quality fall-off as an agent's context fills over a long run: accumulated state, stale instructions, and prior steps crowd and confuse the model, so later decisions get worse. The driver behind context pruning, phase-splitting, and capping how long any one agent runs before handing off.
+
+**Self-correction / reflection** — having the model critique its own output and revise before committing (the Reflexion-style loop). It helps, but is unreliable on its own — models often double down on an early hallucination rather than catch it — which is why external evals, guardrails, and human-in-the-loop remain the real safety rails.
 
 **Red-teaming** — deliberately attacking your own system (prompt injection, jailbreaks, edge cases) to find failure modes before users or adversaries do.
 
