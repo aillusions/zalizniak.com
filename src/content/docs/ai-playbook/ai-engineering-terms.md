@@ -133,6 +133,8 @@ The base terms the patterns above are built from — models and inference, retri
 
 **Agent loop** — the core cycle of an agentic system: plan → act (call a tool) → observe the result → decide the next step, repeating until done. It's the control structure that turns a one-shot model into something that pursues a goal.
 
+**Long-horizon reasoning** — sustaining coherent, goal-directed reasoning across many steps over a long run — minutes to days, sometimes thousands of decisions — without losing the thread as context fills and small errors compound. It's the hard part of serious agents: the failure modes are context degradation and drift over the run, which is why teams reach for phase-splitting, durable execution, and trajectory-level credit assignment to keep a long run on track.
+
 **Multi-agent** — multiple specialized agents coordinating on a task, each with a narrower role (e.g. a planner, a researcher, a checker). Splitting the work can improve quality and focus, at the cost of more orchestration and more places for things to go wrong.
 
 **Orchestration** — coordinating the models, tools, retrieval, and steps into a coherent workflow with state, retries, and branching. As soon as a product is more than one model call, orchestration is where most of the engineering lives.
