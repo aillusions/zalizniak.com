@@ -139,6 +139,8 @@ The base terms the patterns above are built from — models and inference, retri
 
 **Multi-agent** — multiple specialized agents coordinating on a task, each with a narrower role (e.g. a planner, a researcher, a checker). Splitting the work can improve quality and focus, at the cost of more orchestration and more places for things to go wrong.
 
+**Agent swarm** — running many agents in parallel on one problem, usually many copies of the *same* role rather than a few specialized ones: fan out the work, let each explore independently, then merge or vote on the results. Where *multi-agent* divides a task by role, a swarm divides it by scale — useful for broad search, redundancy, or sampling many attempts, at the cost of multiplied inference and a harder merge step. Marketed counts ("hundreds of sub-agents") are usually a throughput claim, not a fixed architecture.
+
 **Orchestration** — coordinating the models, tools, retrieval, and steps into a coherent workflow with state, retries, and branching. As soon as a product is more than one model call, orchestration is where most of the engineering lives.
 
 **Tool / function calling** — the model invoking external functions or APIs in a structured (typically JSON) format, so it can fetch data or take actions in the real world. It's the bridge from "generates text" to "does something."
