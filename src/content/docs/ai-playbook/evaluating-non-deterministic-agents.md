@@ -26,9 +26,11 @@ There's no ground truth to diff against, and "correct" is usually a graded judge
 
 ## Tools & popular choices
 
+One platform usually threads the whole loop. An eval/observability tool like **Langfuse** or **Braintrust** captures a *trace* of every agent run in production, lets you promote the interesting traces into a versioned, human-annotated *dataset*, scores new prompt or model candidates against that dataset with an LLM judge, and keeps each prompt version tied to the scores it produced. The same tool that watches prod is the one that gates the next change — that trace → dataset → judge → prompt-version loop is why [Traba](/teardowns/traba/) can turn a prompt change around "in minutes rather than hours."
+
 | Decision | Common choice | Notes |
 | --- | --- | --- |
-| Eval / dataset platform | **Langfuse** and **Braintrust** | Confirmed at [Traba](/teardowns/traba/) and [Basis](/teardowns/basis/) — store human-annotated datasets, run scored evals, version prompts. The de-facto pair for applied-AI eval. |
+| Eval / observability platform | **Langfuse** and **Braintrust** | Confirmed at [Traba](/teardowns/traba/) and [Basis](/teardowns/basis/). One tool spans the loop: trace every run, curate traces into versioned human-annotated datasets, run scored (LLM-as-judge) evals in CI, and version prompts against their scores. The de-facto pair for applied-AI eval. |
 | The grader | LLM-as-judge over a golden set | The consensus mechanism. The judge is itself non-deterministic, so it needs tuning and human-agreement checks when the judgement is subjective. |
 | What gates a release | An internal benchmark suite re-run per model candidate | [Basis](/teardowns/basis/) scores every model candidate against its own suite before promotion; the suite is the release gate, not a calendar date. |
 | Online signal | A/B + production tracing (OpenTelemetry) | Offline eval can't see distribution shift; [Glean](/teardowns/glean/) measures relevance online (+24%) and keeps tracing, dashboards, and production forensics as the second rail. |
