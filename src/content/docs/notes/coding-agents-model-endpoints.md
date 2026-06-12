@@ -40,6 +40,20 @@ The real constraint is the **format**, not the vendor. Any endpoint that impleme
 
 Point Claude Code's `ANTHROPIC_BASE_URL` at the proxy; the proxy holds the `nvapi-` key and talks OpenAI to NVIDIA. So the answer to "can Claude Code use Kimi on NVIDIA?" is **yes, via a proxy** — the opposite of what it first looks like.
 
+## Which agent to actually run
+
+You don't need a Kimi-branded agent to use Kimi. The question "what coding agent works with NVIDIA's free endpoint?" has a simple answer: **any agent that speaks OpenAI format and lets you set a custom base URL + key.** Point it at `https://integrate.api.nvidia.com/v1` with your `nvapi-` key and model `moonshotai/kimi-k2.6`. The mature, real options:
+
+- **Aider** — git-native, edits via diffs and auto-commits; strong for multi-file refactors. Set `OPENAI_API_BASE` / `OPENAI_API_KEY`, run `aider --model openai/moonshotai/kimi-k2.6`.
+- **OpenCode** (sst) — terminal TUI agent with plan/build modes and LSP; add NVIDIA as a custom provider in its config.
+- **Goose** (Block) — agent with a large MCP-extension ecosystem; configure an OpenAI-compatible provider.
+- **OpenAI Codex CLI** (`@openai/codex`) — sandboxed shell execution; takes a custom OpenAI-compatible provider.
+- Editor-based: **Cline** and **Continue** (VS Code) do the same with a custom endpoint.
+
+For **Claude Code** specifically, the path is the proxy from the previous section — it speaks Anthropic format, so it can't bind to NVIDIA's OpenAI endpoint without one.
+
+Be skeptical of "Claude Code clone" tools that surface in a quick search: vet the repo before installing. A confident chatbot answer once invented a tool ("born from a source leak"), complete with a fake install command and fabricated star counts — a good reminder that this note exists to record *verified* paths, not search-result folklore.
+
 ## Why bother — and the free-tier catches
 
 NVIDIA's hosted NIM is free (no card required), which is the whole appeal. The catches to check before relying on it:
