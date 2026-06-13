@@ -2,7 +2,7 @@
 title: How Guardrails Work
 description: A practical reference for constraining LLM and agent behavior — the layers wrapped around the model (input filters, output validation, action limits), the deterministic-checks-plus-LLM-critics pattern, and what guardrails can't fix.
 sidebar:
-  order: 6
+  order: 11
 ---
 
 A guardrail is any constraint that stops a model from doing something unsafe, off-policy, or malformed. The key idea: guardrails live **around** the model, mostly as plain code and separate model calls — not inside the model you're prompting. You layer them at three points: input, output, and (for agents) actions. Companion to [Prompting Techniques](/notes/prompting-techniques/) and the [AI Engineering Terms](/ai-playbook/ai-engineering-terms/) glossary.
