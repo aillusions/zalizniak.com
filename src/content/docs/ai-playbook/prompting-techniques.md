@@ -2,7 +2,7 @@
 title: Prompting Techniques
 description: A practical, personal reference for getting reliable output from an LLM — the techniques worth reaching for, when to use each, and the production habits that keep prompts from rotting. Companion to the AI Engineering Terms glossary.
 sidebar:
-  order: 2
+  order: 12
 ---
 
 A working reference for *how* to prompt, not just what the terms mean (for definitions, see [AI Engineering Terms](/ai-playbook/ai-engineering-terms/)). Each technique: what it does, when to reach for it, and the shape of it. Ordered roughly from foundation to production habit.
