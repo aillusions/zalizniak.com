@@ -85,6 +85,8 @@ The base terms the patterns above are built from — models and inference, retri
 
 **Fine-tuning** — further-training a base model on your own examples to specialize it for a narrower task or style. It trades flexibility for sharper, cheaper performance on the specific job, but needs data and re-training when the task shifts.
 
+**RL (reinforcement learning)** — training a model by rewarding good outputs and penalizing bad ones so it learns to favor what scores highest. It's how foundation LLMs get post-trained — **RLHF** (reward modeled on human preferences) for alignment and helpfulness, **RLVR** (reward from verifiable answers) behind reasoning models. Mostly the model provider's tool: if you only call a model via API, you get its effects pre-baked and reach for prompting, RAG, or fine-tuning instead.
+
 **Prompt / prompt engineering** — the input instructions you give a model; prompt engineering is the craft of shaping them (wording, examples, structure) for reliable output. In production prompts are version-controlled and tested like code, not hand-tweaked.
 
 **System prompt** — the persistent instruction that sets a model's role, rules, and tone for a whole session, separate from the user's turn-by-turn messages. It's where persona and guardrails live.
