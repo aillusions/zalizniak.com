@@ -110,6 +110,10 @@ Beyond the common pool — infrastructure-flavored, often staff-level. Not what 
 
 **Sharding / partitioning** — splitting one logical dataset across many nodes by a partition key, so no single machine holds (or serves) all of it. The key choice decides hot spots.
 
+**Hash function** — deterministically maps any input (string, number, blob) to a fixed-size number; the same input always yields the same output, and outputs scatter evenly across the range so different inputs spread out (`hash("user_42") → 8493021847`). The primitive under sharding, consistent hashing, hash indexes, and dedup.
+
+**Modulo (`%`)** — the remainder after division: `hash % 4` divides the hash by 4, discards the quotient, keeps the leftover — always `0 … N-1`. How you collapse a big hash into one of N buckets/shards. Its weakness — changing `N` reshuffles almost every key — is the whole reason [consistent hashing](#data--storage) exists.
+
 **Consistent hashing** — a hashing scheme that maps keys onto a ring so adding/removing a node only remaps a small slice of keys, not the whole keyspace. Standard for distributing cache/DB partitions.
 
 **Replication** — keeping copies of data on multiple nodes for durability and read scaling. Leader-follower (primary handles writes) is the common shape.
@@ -137,6 +141,8 @@ Beyond the common pool — infrastructure-flavored, often staff-level. Not what 
 **Presigned URL** — a time-limited, signed URL that lets a client upload/download a blob (e.g. to S3) directly, keeping large files off your servers.
 
 **Blob / object storage** — store for large unstructured files (images, video) — S3/GCS — fronted by a CDN, referenced from the DB by key rather than stored inline.
+
+**Cursor- vs offset-based pagination** — *offset* (`LIMIT/OFFSET`, page numbers) is simple and fine for most cases, but skips or duplicates rows when items are inserted mid-scroll and slows down at large offsets; *cursor* (keyset — "items after this id/timestamp") is stable under inserts and stays fast regardless of depth. Cursor-based works better for real-time data where new items get added frequently; offset-based is fine for most cases.
 
 ## Caching
 

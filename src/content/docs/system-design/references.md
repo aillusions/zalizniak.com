@@ -9,6 +9,7 @@ sidebar:
 - [Hello Interview — Delivery Framework](https://www.hellointerview.com/learn/system-design/in-a-hurry/delivery) — the in-room structure these notes follow.
 - [System Design in a Hurry](https://www.hellointerview.com/learn/system-design/in-a-hurry/introduction) (Hello Interview) — condensed, interview-focused: core concepts, key technologies, numbers to know.
 - *System Design Interview – An Insider's Guide* (Alex Xu) — the standard primer; broad coverage of the building blocks.
+- [ByteByteGo — System Design Interview course](https://bytebytego.com/courses/system-design-interview/foreword) (Alex Xu) — the online-course version of the book; same material, chapter by chapter.
 - [Jordan Has No Life](https://www.youtube.com/@jordanhasnolife5163) (YouTube) — deep, practical walkthroughs.
 - [Hello Interview — Common Problems](https://www.hellointerview.com/learn/system-design/problem-breakdowns/bitly) — worked question breakdowns with answer keys (e.g. Bitly, Ticketmaster, WhatsApp).
 - [Hello Interview — Real Interview Questions](https://www.hellointerview.com/community/questions?sort=recentAndPopular&page=1) — actual questions from recent interviews, reported by other users.
