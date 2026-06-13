@@ -69,6 +69,23 @@ Fixes the resize problem in distributed caches and sharded stores. With `hash(ke
 
 Adding one node to a 10-node cluster moves ~90% of keys under modulo, ~10% under consistent hashing. Used by Redis Cluster, Memcached, Cassandra, DynamoDB, some CDNs and load balancers. In interviews it's usually enough to *name* it ("consistent hashing to distribute across cache nodes") — bring it up when discussing elastic scaling. See [Distributed Systems](/system-design/distributed-systems/).
 
+### How it works internally
+
+The "ring" is just the **hash output space wrapped into a circle** — positions `0 … 2^m − 1` (e.g. `m = 32`, so `0 … 2³²−1`), where the largest value wraps back to `0`.
+
+1. **Place each node.** `pos(node) = hash(node_id) mod 2^m`. Each server lands at a point on the ring.
+2. **Place each key.** `pos(key) = hash(key) mod 2^m` — same hash, same ring.
+3. **Assign by successor.** A key is owned by the **first node clockwise** from its position — the smallest `pos(node) ≥ pos(key)`, wrapping past `0` if there's none above it. In practice: keep node positions in a sorted array and **binary-search** for that successor → `O(log N)` lookup.
+
+```
+pos(K) = hash(key) % 2^m
+owner  = first node N on the ring where pos(N) ≥ pos(K)   (wrap to the lowest if none)
+```
+
+**Why resizing is cheap:** add a node at position `p` and only the keys in the arc between `p` and the *previous* node clockwise move to it — every other key keeps its successor. Remove a node and only its arc shifts to the next node. Nothing else is touched, because a key's owner depends only on its neighbors on the ring, not on `N`.
+
+**Virtual nodes** fix the catch: with few servers the arcs are wildly uneven (one node may own half the ring) and removing a node dumps its whole load on a single neighbor. So each physical node is hashed to **V positions** — `hash(node_id + "#" + i)` for `i = 0 … V−1` (typically 100–200). More points → arcs even out, and a departing node's load spreads across many neighbors instead of one. Capacity-weighting falls out for free: give a bigger node more virtual nodes.
+
 ## CAP & PACELC
 
 Under a network partition you get **two of three**: Consistency, Availability, Partition tolerance. Partitions are unavoidable, so the real choice is **C or A**. ([CAP entry](/system-design/study-list/#data--storage).)
