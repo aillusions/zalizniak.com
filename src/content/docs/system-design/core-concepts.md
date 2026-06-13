@@ -54,6 +54,17 @@ Comes up the moment your database is read-bound. Store hot data in fast memory (
 
 CDN caching (static assets at the edge) and in-process caching (small rarely-changed values like config/flags) are different tools; external Redis is the default for core app data.
 
+## Replication
+
+Keep copies of data on multiple nodes — for **read scaling** (fan reads across replicas) and **durability/HA** (survive a node loss). The first lever to pull before sharding. ([Replication entry](/system-design/study-list/#data--storage).)
+
+- **Leader-follower** is the common shape: the **leader** takes writes, **followers** serve reads and stand by to take over. Scales reads, not writes (every write still hits the leader).
+- **Sync vs async** — sync replication waits for follower acks (no data loss on failover, higher write latency); async acks immediately (fast, but a leader crash can lose the last writes). Async is the default.
+- **Replication lag** — followers trail the leader, so reads can be stale. This is the source of the read-your-writes problem: a user updates, then reads a lagging replica and sees the old value. Fix by reading your own writes from the leader, or pinning the session briefly.
+- **Failover** — on leader loss, a follower is promoted (manual or via leader election). Watch for **split-brain** (two leaders) and data loss of unreplicated writes.
+
+Replication scales **reads** and gives HA; **sharding** scales **writes** and storage. They compose — production systems usually shard *and* replicate each shard.
+
 ## Sharding
 
 Split data across independent servers once a single DB is outgrown — storage (TB+), write throughput (tens of thousands of writes/s), or read load replicas can't absorb. ([Sharding/partitioning](/system-design/study-list/#data--storage).)
@@ -65,26 +76,9 @@ Split data across independent servers once a single DB is outgrown — storage (
 
 ## Consistent hashing
 
-Fixes the resize problem in distributed caches and sharded stores. With `hash(key) % N`, adding/removing a server changes `N` and remaps almost every key — a migration disaster. Arrange servers and keys on a **virtual ring** instead: a key belongs to the next server clockwise, so adding/removing a server only moves the keys in that one arc.
+Fixes the resize problem in distributed caches and sharded stores. Arrange servers and keys on a **virtual ring**: a key belongs to the next server clockwise, so adding/removing a server only moves the keys in that one arc. Used by Redis Cluster, Memcached, Cassandra, DynamoDB, some CDNs and load balancers. In interviews it's usually enough to *name* it — bring it up when discussing elastic scaling. See [Distributed Systems](/system-design/distributed-systems/).
 
-Adding one node to a 10-node cluster moves ~90% of keys under modulo, ~10% under consistent hashing. Used by Redis Cluster, Memcached, Cassandra, DynamoDB, some CDNs and load balancers. In interviews it's usually enough to *name* it ("consistent hashing to distribute across cache nodes") — bring it up when discussing elastic scaling. See [Distributed Systems](/system-design/distributed-systems/).
-
-### How it works internally
-
-The "ring" is just the **hash output space wrapped into a circle** — positions `0 … 2^m − 1` (e.g. `m = 32`, so `0 … 2³²−1`), where the largest value wraps back to `0`.
-
-1. **Place each node.** `pos(node) = hash(node_id) mod 2^m`. Each server lands at a point on the ring.
-2. **Place each key.** `pos(key) = hash(key) mod 2^m` — same hash, same ring.
-3. **Assign by successor.** A key is owned by the **first node clockwise** from its position — the smallest `pos(node) ≥ pos(key)`, wrapping past `0` if there's none above it. In practice: keep node positions in a sorted array and **binary-search** for that successor → `O(log N)` lookup.
-
-```
-pos(K) = hash(key) % 2^m
-owner  = first node N on the ring where pos(N) ≥ pos(K)   (wrap to the lowest if none)
-```
-
-**Why resizing is cheap:** add a node at position `p` and only the keys in the arc between `p` and the *previous* node clockwise move to it — every other key keeps its successor. Remove a node and only its arc shifts to the next node. Nothing else is touched, because a key's owner depends only on its neighbors on the ring, not on `N`.
-
-**Virtual nodes** fix the catch: with few servers the arcs are wildly uneven (one node may own half the ring) and removing a node dumps its whole load on a single neighbor. So each physical node is hashed to **V positions** — `hash(node_id + "#" + i)` for `i = 0 … V−1` (typically 100–200). More points → arcs even out, and a departing node's load spreads across many neighbors instead of one. Capacity-weighting falls out for free: give a bigger node more virtual nodes.
+**Internally:** wrap the hash space (`0 … 2^m−1`) into a circle and place both nodes and keys with the same hash — `pos = hash(x) mod 2^m`. A key is owned by the **first node clockwise** (smallest `pos(node) ≥ pos(key)`, wrapping), found by binary search in `O(log N)`. Add/remove a node and only its one arc moves. **Virtual nodes** — each node hashed to ~100–200 ring points — even out lopsided arcs and spread a departing node's load across many neighbors.
 
 ## CAP & PACELC
 

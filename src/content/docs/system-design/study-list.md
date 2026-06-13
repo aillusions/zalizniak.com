@@ -138,6 +138,8 @@ Beyond the common pool — infrastructure-flavored, often staff-level. Not what 
 
 **WAL (Write-Ahead Log)** — the append-only log a database writes *before* applying changes; the basis of durability, crash recovery, and replication.
 
+**Inverted index** — maps each term → the list of documents (a *postings* list) containing it, so full-text search becomes a lookup instead of a full scan. The core structure behind Elasticsearch/Lucene and database full-text search; the search analog of a B-tree index.
+
 **Presigned URL** — a time-limited, signed URL that lets a client upload/download a blob (e.g. to S3) directly, keeping large files off your servers.
 
 **Blob / object storage** — store for large unstructured files (images, video) — S3/GCS — fronted by a CDN, referenced from the DB by key rather than stored inline.
