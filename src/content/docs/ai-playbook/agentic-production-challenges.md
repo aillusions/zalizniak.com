@@ -1,4 +1,9 @@
-# Agentic Production Challenges — a cross-teardown review
+---
+title: Agentic Production Challenges — a cross-teardown review
+description: A cross-teardown review of the technical challenges of running non-deterministic agents in production — ranked by severity × how underserved each is, with a shortlist of the 3 most underserved.
+sidebar:
+  order: 13
+---
 
 What actually breaks when you put a **non-deterministic agent into production** — implementing it, deploying it, and operating it — synthesized only from the published teardowns in this repo. The unit here is the *challenge*, lifted out of any one company and ranked by how badly it hurts against how poorly it's served today.
 
