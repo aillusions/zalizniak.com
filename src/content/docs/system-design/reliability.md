@@ -70,7 +70,12 @@ HA and FT are the top two rungs of a redundancy ladder. Each rung shortens the g
 You can't design reliability without a number to design *to*.
 
 - **Nines** — the downtime budget: 99.9% ≈ 8.8 h/yr, 99.99% ≈ 52 min/yr, 99.999% ≈ 5 min/yr ([full ladder](/system-design/core-concepts/#numbers-to-know)). Each nine ≈ 10× less downtime and roughly an order more cost — so name the target before chasing it.
-- **SLA / SLO / SLI** — the contract around the number: an **SLI** is the measured value (e.g. % of requests under 200 ms), an **SLO** is your internal target for it (e.g. 99.95%), and an **SLA** is the customer-facing promise with **penalties (service credits)** if missed. Keep the SLO tighter than the SLA so you have headroom before you owe credits.
+- **SLI / SLO / SLA** — the contract around the number:
+  - **SLI** (Service Level *Indicator*) — the measured value (e.g. % of requests under 200 ms).
+  - **SLO** (Service Level *Objective*) — your internal target for that SLI (e.g. 99.95%).
+  - **SLA** (Service Level *Agreement*) — the customer-facing promise with **penalties (service credits)** if missed.
+
+  Keep the SLO tighter than the SLA so you have headroom before you owe credits.
 - **Availability = MTBF / (MTBF + MTTR)** — the lever is usually **MTTR** (recover faster), which is exactly what HA's automated failover attacks.
 - **Redundancy multiplies it** — two *independent* 99% nodes fail only together: 99.99%. The catch is **independent**: two nodes sharing one power feed have a hidden SPOF. Conversely, **serial dependencies erode it** — a request through three 99.9% services is only ~99.7%.
 - **RTO / RPO** — recovery *time* (how fast you're back) vs recovery *point* (how much data you can lose); RPO is set by backup/replication frequency.
