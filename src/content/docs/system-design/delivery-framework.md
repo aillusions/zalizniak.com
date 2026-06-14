@@ -41,19 +41,7 @@ The sequence and rough timings for a ~45-minute slot (~35 min of actual design):
 
 **Functional requirements — pick 3–5 core features, then stop.** "Users should be able to…" statements. Drive them out as a back-and-forth with the interviewer and *prioritize* — a long list hurts you; many FAANG loops grade exactly this focus. For Twitter: *post a tweet, follow users, view the home timeline.* Add 1–2 more only if the interviewer pushes (search, notifications). And **say what you're cutting out loud**: "I'll scope out DMs and ads." Naming the cut is as much signal as naming the feature.
 
-**Non-functional requirements — pick 3–4 with teeth.** "The system should be…" statements about qualities, and they must be **quantified and contextual**. Choose the ones that actually *drive the design*, not generic wishes — "low latency" is meaningless (every system wants that), but "home timeline renders in < 200 ms" names the part that matters and gives a target. Pull your 3–4 from this checklist:
-
-- **CAP** — consistency vs. availability? (Partition tolerance is a given in a distributed system.)
-- **Availability / uptime** — what uptime does the system promise, *if it matters*? Quantify it: 99.9% ("three nines") ≈ 8.7h down/yr, 99.99% ≈ 52min/yr. The "A" in CAP, stated as a target.
-- **Scale (Scalability)** — DAU/MAU, QPS, bursty traffic, peak events, read:write ratio?
-- **Latency** — how fast, on which operations specifically?
-- **Environment** — mobile battery, limited memory/bandwidth?
-- **Durability** — how bad is data loss? (Social feed vs. bank ledger.)
-- **Security** — data protection, access control, compliance.
-- **Fault tolerance** — redundancy, failover, recovery.
-- **Compliance** — legal/regulatory/industry standards.
-
-A popular mnemonic for the checklist: **FCC + SLEDS** — *Fault tolerance, CAP, Compliance · Scalability, Latency, Environment, Durability, Security.*
+**Non-functional requirements — pick 3–4 with teeth.** "The system should be…" statements about qualities, and they must be **quantified and contextual**. Choose the ones that actually *drive the design*, not generic wishes — "low latency" is meaningless (every system wants that), but "home timeline renders in < 200 ms" names the part that matters and gives a target. Pull your 3–4 from the [Non-Functional Requirements](/system-design/non-functional-requirements/) checklist (mnemonic **FCC + SLEDS**).
 
 **Capacity estimation** — don't do it upfront just to prove arithmetic. Do the math *only when it changes a design decision* — e.g. estimating the number of trending topics to decide whether a single min-heap fits or you must shard it. Otherwise tell the interviewer you'll calculate while designing, when needed — in practice that lands in **deep dives** (below), where a number decides a shard count, cache size, or instance fan-out.
 
