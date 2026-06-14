@@ -77,7 +77,7 @@ Split data across independent servers once a single DB is outgrown — storage (
 
 ## Consistent hashing
 
-Fixes the resize problem in distributed caches and sharded stores. Arrange servers and keys on a **virtual ring**: a key belongs to the next server clockwise, so adding/removing a server only moves the keys in that one arc. Used by Redis Cluster, Memcached, Cassandra, DynamoDB, some CDNs and load balancers. In interviews it's usually enough to *name* it — bring it up when discussing elastic scaling. See [Distributed Systems](/system-design/distributed-systems/).
+Fixes the resize problem in distributed caches and sharded stores. Arrange servers and keys on a **virtual ring**: a key belongs to the next server clockwise, so adding/removing a server only moves the keys in that one arc. Used by Redis Cluster, Memcached, Cassandra, DynamoDB, some CDNs and load balancers. In interviews it's usually enough to *name* it — bring it up when discussing elastic scaling.
 
 **Internally:** wrap the hash space (`0 … 2^m−1`) into a circle and place both nodes and keys with the same hash — `pos = hash(x) mod 2^m`. A key is owned by the **first node clockwise** (smallest `pos(node) ≥ pos(key)`, wrapping), found by binary search in `O(log N)`. Add/remove a node and only its one arc moves. **Virtual nodes** — each node hashed to ~100–200 ring points — even out lopsided arcs and spread a departing node's load across many neighbors.
 
