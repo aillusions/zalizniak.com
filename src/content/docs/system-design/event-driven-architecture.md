@@ -3,7 +3,6 @@ title: Event-Driven Architecture
 description: "Message-driven, event-driven, and command-driven architecture for system design — the umbrella and the styles, choreography vs orchestration, EDA patterns (event notification, event-carried state transfer, event sourcing, CQRS), and the tradeoffs."
 sidebar:
   order: 12
-  label: Event-driven architecture
 ---
 
 The layer *above* the transports ([Kafka](/system-design/kafka/), [queues](/system-design/queues/), [Temporal](/system-design/temporal/)): how services actually talk. In **event-driven architecture (EDA)** — the standard name for this — services communicate by **asynchronous messages** instead of direct synchronous calls, which buys loose coupling, isolation, and resilience (a slow or dead consumer doesn't take the producer down).

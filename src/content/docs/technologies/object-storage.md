@@ -1,10 +1,9 @@
 ---
-title: Object Storage
+title: Object storage · S3 / MinIO
 slug: system-design/object-storage
 description: "How object storage works for system design — the flat object model (not a filesystem), the S3 API and presigned URLs, how it scales and survives failure via erasure coding and sharding (MinIO as the open vehicle, S3 as the reference), the consistency model, and when to reach for it."
 sidebar:
   order: 7
-  label: Object storage · S3 / MinIO
 ---
 
 Object storage is the **blob layer** of almost every system — images, video, backups, logs, data-lake files, [WAL](/system-design/postgres-internals/#wal-write-ahead-log) archives for [PITR](/system-design/postgres-internals/#wal-write-ahead-log). The reference is **Amazon S3** (its API is the de-facto standard); **MinIO** is the open-source, S3-compatible implementation you can self-host, read, and break — so it's the vehicle here for *how object storage is actually built*. It completes the data-store shelf: relational ([Postgres](/system-design/postgres-internals/)) · wide-column ([Cassandra](/system-design/cassandra/)) · columnar ([ClickHouse](/system-design/clickhouse/)) · **object (this)**.

@@ -1,10 +1,9 @@
 ---
-title: Temporal
+title: Temporal · durable execution
 slug: system-design/temporal
 description: "How Temporal and durable execution work for system design — workflows-as-code, activities, workers, deterministic replay from event history, retries/timeouts/durable timers, orchestration vs choreography (who owns the flow), and Nexus for cross-service coordination."
 sidebar:
   order: 11
-  label: Temporal · durable execution
 ---
 
 Temporal is a **durable execution** engine: you write a multi-step process as ordinary code, and it survives crashes, restarts, and waits of arbitrary length. The engine persists *every step* so a workflow that's halfway through — having charged a card, waiting three days for a callback — resumes exactly where it left off after a deploy or a node death. It's the answer to "I'm juggling retries, timeouts, correlation IDs, and brittle glue code across services" — that's not messaging, it's **workflow orchestration**. As the [Kafka page](/system-design/kafka/#kafka-vs-temporal--moving-data-vs-moving-work) puts it: **Kafka moves data; Temporal moves work.**

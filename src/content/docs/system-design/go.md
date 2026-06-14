@@ -1,9 +1,8 @@
 ---
-title: Go
+title: Go · backend & infra
 description: Go for backend & infrastructure — coming soon.
 sidebar:
   order: 16
-  label: Go · backend & infra
   badge:
     text: Soon
     variant: note

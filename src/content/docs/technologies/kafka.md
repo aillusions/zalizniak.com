@@ -1,10 +1,9 @@
 ---
-title: Kafka
+title: Kafka · event streaming
 slug: system-design/kafka
 description: "How Apache Kafka works for system design — the partitioned replicated log, topics/partitions/offsets, consumer groups, replication and ISR, log storage, delivery semantics (exactly-once), KRaft, and where it fits in a design."
 sidebar:
   order: 9
-  label: Kafka · event streaming
 ---
 
 Apache Kafka is a distributed, partitioned, replicated **commit log**. The mental model that unlocks everything else: it's an **append-only log you can replay**, not a queue that deletes on read. Producers append records; each consumer tracks its *own* position, so many independent consumers can read — and re-read — the same stream. That single design choice is why Kafka is the default **event backbone**: decoupling, buffering, pub/sub fan-out, CDC, and stream processing all fall out of "a durable, replayable, partitioned log."

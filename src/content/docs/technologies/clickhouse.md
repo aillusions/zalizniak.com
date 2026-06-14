@@ -1,10 +1,9 @@
 ---
-title: ClickHouse
+title: ClickHouse · columnar OLAP
 slug: system-design/clickhouse
 description: "How ClickHouse works for system design — columnar storage and vectorized execution, the MergeTree engine and sparse primary index, batch inserts and background merges, specialized merge engines and materialized views, sharding/replication, and when a columnar OLAP store fits."
 sidebar:
   order: 5
-  label: ClickHouse · columnar OLAP
 ---
 
 ClickHouse is a **columnar OLAP** database built to scan billions of rows and return aggregations in well under a second. Where [Postgres](/system-design/postgres-internals/) is row-oriented OLTP and [Cassandra](/system-design/cassandra/) is a write-optimized key-value/wide-column store, ClickHouse is for **analytics**: dashboards, observability, event and time-series data, ad-hoc `GROUP BY` over enormous tables. It's the concrete answer to the "analytics / stream aggregation" question pattern — and the store [Momentic](/teardowns/momentic/) leaned on to serve ~2M cache queries/day at ~250ms.

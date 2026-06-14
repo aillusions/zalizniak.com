@@ -1,10 +1,9 @@
 ---
-title: Message Queues
+title: Queues · jobs & tasks
 slug: system-design/queues
 description: "How message queues work for system design — the competing-consumers model, ack / visibility timeout / redelivery, dead-letter queues, ordering and FIFO, and the RabbitMQ vs SQS vs task-queue landscape. The queue counterpart to the Kafka log page."
 sidebar:
   order: 10
-  label: Queues · jobs & tasks
 ---
 
 A message queue is a durable buffer that hands each message to **one** worker and **deletes it on success**. That one sentence is the whole difference from a [log](/system-design/kafka/): a queue is *deliver-then-forget*, built for **tasks** — units of work to run once, retry on failure, and scale across workers. It's the counterpart to the Kafka page; reach for it when the message is a **command** ("do this"), not an event for many to observe (see [event vs task](/system-design/kafka/#event-vs-task--kafka-vs-a-queue)).

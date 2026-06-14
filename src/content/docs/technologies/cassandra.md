@@ -1,10 +1,9 @@
 ---
-title: Cassandra
+title: Cassandra · wide-column
 slug: system-design/cassandra
 description: "How Apache Cassandra works for system design — the wide-column data model, the token ring and consistent hashing, leaderless replication with tunable consistency, the LSM write/read path, compaction, last-write-wins conflict resolution, and anti-entropy (hinted handoff, read repair, gossip)."
 sidebar:
   order: 4
-  label: Cassandra · wide-column
 ---
 
 Apache Cassandra is a distributed **wide-column** store built for write-heavy, always-on, horizontally-scaled workloads. It fuses two lineages: **Dynamo's** leaderless replication + tunable consistency (no single point of failure, linear scale, multi-DC) and **Bigtable's** wide-column data model. If the [Distributed Systems](/system-design/distributed-systems/) page is the theory, Cassandra is the textbook **Dynamo-style** system — leaderless quorums, consistent hashing, eventual consistency, gossip — made concrete.
