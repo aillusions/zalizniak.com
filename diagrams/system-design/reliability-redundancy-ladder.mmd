@@ -1,0 +1,16 @@
+flowchart LR
+  classDef bad fill:#fdeaea,stroke:#d9534f,stroke-width:1.5px,color:#0f172a;
+  classDef mid fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef good fill:#e7f5ec,stroke:#3f9c5a,stroke-width:1.5px,color:#0f172a;
+  classDef note fill:#fef6e7,stroke:#d9a441,stroke-width:1.5px,color:#0f172a;
+  CostL{{"failure = outage<br/>data loss possible · cheapest"}}:::note
+  SPOF["No redundancy<br/>(single point of failure)"]:::bad
+  Cold["Cold standby<br/>boot + restore on failure"]:::mid
+  Warm["Warm standby<br/>running, promote on failure"]:::mid
+  Hot["Hot standby / active-passive<br/>live replica, instant promote"]:::good
+  AA["Active-active<br/>all nodes serve at once"]:::good
+  FT["Fault tolerant<br/>parallel / lockstep + voter"]:::good
+  CostR{{"no failover gap<br/>highest cost & complexity"}}:::note
+  CostL -.- SPOF
+  SPOF -->|"add redundancy"| Cold -->|"keep it warm"| Warm -->|"keep it live"| Hot -->|"serve from all"| AA -->|"vote, don't fail over"| FT
+  FT -.- CostR

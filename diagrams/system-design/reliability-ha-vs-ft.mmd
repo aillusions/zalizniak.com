@@ -1,0 +1,17 @@
+flowchart LR
+  classDef ok fill:#e7f5ec,stroke:#3f9c5a,stroke-width:1.5px,color:#0f172a;
+  classDef gap fill:#fdeaea,stroke:#d9534f,stroke-width:1.5px,color:#0f172a;
+  classDef step fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef fault fill:#fef6e7,stroke:#d9a441,stroke-width:1.5px,color:#0f172a;
+
+  subgraph HA["High availability — brief failover gap"]
+    direction LR
+    h0["serving"]:::ok --> h1["fault"]:::fault --> h2["detect<br/>(health check timeout)"]:::gap --> h3["promote standby<br/>+ repoint traffic"]:::gap --> h4["serving again"]:::ok
+  end
+
+  subgraph FT["Fault tolerance — no gap"]
+    direction LR
+    f0["serving<br/>(N replicas in parallel)"]:::ok --> f1["fault in one"]:::fault --> f2["peers already serving<br/>voter masks the fault"]:::ok
+  end
+
+  HA ~~~ FT
