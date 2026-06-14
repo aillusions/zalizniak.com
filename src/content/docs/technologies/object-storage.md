@@ -20,7 +20,7 @@ An object store is a **flat namespace** of immutable **objects**: a key, the byt
 
 - **Core verbs** — `PUT` / `GET` / `DELETE` / `LIST` (with prefix + pagination). Simple HTTP.
 - **Multipart upload** — large objects are uploaded in parts (parallel, resumable) and assembled server-side; the standard way to move multi-GB blobs.
-- **[Presigned URLs](/system-design/study-list/#data--storage)** — a time-limited signed URL lets a client upload/download *directly* to the store, keeping big files off your app servers (the upload/download path most designs reach for). Pair with a **CDN** for read fan-out.
+- **[Presigned URLs](/system-design/terminology/#data--storage)** — a time-limited signed URL lets a client upload/download *directly* to the store, keeping big files off your app servers (the upload/download path most designs reach for). Pair with a **CDN** for read fan-out.
 
 The system-design move: **store the blob in the object store, keep only the key (+ metadata) in your database.** Never stream large files through your app tier.
 

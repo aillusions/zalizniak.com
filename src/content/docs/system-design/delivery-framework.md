@@ -1,5 +1,5 @@
 ---
-title: The Delivery Framework
+title: Delivery Framework
 description: A step-by-step structure for the system design interview — Requirements, Core Entities, API, optional Data Flow, High-Level Design, and Deep Dives — with timings, so you deliver a complete working system instead of running out of time.
 sidebar:
   order: 1

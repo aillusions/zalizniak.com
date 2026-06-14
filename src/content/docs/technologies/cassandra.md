@@ -16,13 +16,13 @@ The mindset is the opposite of relational: **model around your queries, not your
 
 ## Partitioning: the token ring
 
-Cassandra places data with **[consistent hashing](/system-design/study-list/#data--storage)**: the partition key is hashed to a **token**, the ring of all tokens is divided into ranges, and each node owns a set of ranges. Adding or removing a node remaps only a slice of the ring, not the whole keyspace. **Vnodes** (many small token ranges per node) smooth out distribution and make rebalancing cheaper. This is the [partitioning](/system-design/distributed-systems/#replication--partitioning) half of the Distributed Systems page, in production.
+Cassandra places data with **[consistent hashing](/system-design/terminology/#data--storage)**: the partition key is hashed to a **token**, the ring of all tokens is divided into ranges, and each node owns a set of ranges. Adding or removing a node remaps only a slice of the ring, not the whole keyspace. **Vnodes** (many small token ranges per node) smooth out distribution and make rebalancing cheaper. This is the [partitioning](/system-design/distributed-systems/#replication--partitioning) half of the Distributed Systems page, in production.
 
 ## Replication & tunable consistency
 
 Each keyspace sets a **replication factor (RF)** per datacenter — every partition is stored on RF nodes, **all equal, no leader**. `NetworkTopologyStrategy` spreads replicas across racks and DCs. *Any* node can act as the **coordinator** for a request and forward to the replicas.
 
-Consistency is chosen **per query** via the **consistency level (CL)** — `ONE`, `QUORUM`, `LOCAL_QUORUM`, `ALL`. The key relation: **`R + W > RF`** gives you read-your-writes (a quorum read overlaps a quorum write on at least one current replica); `LOCAL_QUORUM` keeps multi-DC requests fast by staying in-region. This is the [PACELC](/system-design/distributed-systems/#cap--pacelc) latency-vs-consistency dial exposed as a per-query knob — the same [quorum](/system-design/study-list/#data--storage) math from the theory page.
+Consistency is chosen **per query** via the **consistency level (CL)** — `ONE`, `QUORUM`, `LOCAL_QUORUM`, `ALL`. The key relation: **`R + W > RF`** gives you read-your-writes (a quorum read overlaps a quorum write on at least one current replica); `LOCAL_QUORUM` keeps multi-DC requests fast by staying in-region. This is the [PACELC](/system-design/distributed-systems/#cap--pacelc) latency-vs-consistency dial exposed as a per-query knob — the same [quorum](/system-design/terminology/#data--storage) math from the theory page.
 
 ![Cassandra request path — a coordinator fanning a CL=QUORUM request to RF=3 replicas](/diagrams/system-design/cassandra-request.svg)
 
@@ -104,4 +104,4 @@ With no leader, replicas drift and must reconcile:
 
 ---
 
-These are working notes — Cassandra as the concrete embodiment of the leaderless, quorum-based ideas on the [Distributed Systems](/system-design/distributed-systems/) page, with the one-liner terms (quorum, consistent hashing, eventual consistency) in the [Study List](/system-design/study-list/#data--storage). The throughline: trade joins and default-strong consistency for linear write scale and no single point of failure.
+These are working notes — Cassandra as the concrete embodiment of the leaderless, quorum-based ideas on the [Distributed Systems](/system-design/distributed-systems/) page, with the one-liner terms (quorum, consistent hashing, eventual consistency) in the [Terminology](/system-design/terminology/#data--storage). The throughline: trade joins and default-strong consistency for linear write scale and no single point of failure.

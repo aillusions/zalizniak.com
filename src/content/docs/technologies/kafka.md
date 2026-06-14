@@ -65,7 +65,7 @@ A **consumer group** is a set of consumers that *together* read a topic: each pa
 
 - **Offsets & semantics** — each consumer commits its position (to the internal `__consumer_offsets` topic). Commit *after* processing → **at-least-once** (a crash replays the last batch); commit *before* → at-most-once. Exactly-once needs more (below).
 - **Rebalancing** — when consumers join/leave or partitions change, the group reassigns partitions. Classic rebalancing is stop-the-world; **cooperative** rebalancing reassigns incrementally to avoid pausing everyone.
-- **Pub/sub for free** — different groups read the same topic *independently*, each with its own offsets. One topic feeds the billing group, the analytics group, and the search-indexer group at once — fan-out without re-publishing. (The [pub/sub](/system-design/study-list/#async--messaging) pattern, built in.)
+- **Pub/sub for free** — different groups read the same topic *independently*, each with its own offsets. One topic feeds the billing group, the analytics group, and the search-indexer group at once — fan-out without re-publishing. (The [pub/sub](/system-design/terminology/#async--messaging) pattern, built in.)
 
 ## Replication & durability
 
@@ -104,12 +104,12 @@ Kafka is fast because the log structure plays to the hardware:
 
 - **Sequential append** — records are appended to on-disk **segment** files; sequential writes are vastly cheaper than random ones.
 - **Page cache + zero-copy** — Kafka leans on the OS page cache rather than a heap cache, and ships bytes to consumers with **`sendfile`** (zero-copy), avoiding a trip through user space. Hot data is served straight from cache.
-- **Retention by delete or compaction** — *delete* drops whole segments past a time/size bound; **log compaction** keeps only the *latest* record per key, turning a topic into a changelog/snapshot. Compaction is what makes a Kafka topic a durable [CDC](/system-design/study-list/#data--storage) stream and backs stateful stream processing.
+- **Retention by delete or compaction** — *delete* drops whole segments past a time/size bound; **log compaction** keeps only the *latest* record per key, turning a topic into a changelog/snapshot. Compaction is what makes a Kafka topic a durable [CDC](/system-design/terminology/#data--storage) stream and backs stateful stream processing.
 
 ## Delivery semantics
 
-- **At-least-once** is the practical default — retries plus commit-after-process mean a record can be processed more than once, so downstream consumers should be **[idempotent](/system-design/study-list/#async--messaging)**.
-- **Exactly-once (EOS)** — the idempotent producer plus **transactions** (atomically write output records *and* commit input offsets) make read-process-write pipelines exactly-once *within Kafka*. It's still effectively-once: external side effects (charging a card, sending an email) need their own idempotency key. ([Exactly-once is mostly a myth](/system-design/study-list/#async--messaging) once you cross the boundary.)
+- **At-least-once** is the practical default — retries plus commit-after-process mean a record can be processed more than once, so downstream consumers should be **[idempotent](/system-design/terminology/#async--messaging)**.
+- **Exactly-once (EOS)** — the idempotent producer plus **transactions** (atomically write output records *and* commit input offsets) make read-process-write pipelines exactly-once *within Kafka*. It's still effectively-once: external side effects (charging a card, sending an email) need their own idempotency key. ([Exactly-once is mostly a myth](/system-design/terminology/#async--messaging) once you cross the boundary.)
 
 ## KRaft (no more ZooKeeper)
 
@@ -120,10 +120,10 @@ Kafka historically used **ZooKeeper** for cluster metadata and controller electi
 When a design calls for an event backbone, this is usually the reach — and *why*:
 
 - **Decoupling** — producers and consumers evolve independently; new consumers attach without touching producers.
-- **Buffering & backpressure** — Kafka absorbs bursts; a slow consumer simply **lags** (its offset falls behind) instead of dropping data or stalling the producer. (See [backpressure](/system-design/study-list/#async--messaging).)
+- **Buffering & backpressure** — Kafka absorbs bursts; a slow consumer simply **lags** (its offset falls behind) instead of dropping data or stalling the producer. (See [backpressure](/system-design/terminology/#async--messaging).)
 - **Fan-out** — N consumer groups each get the full stream (billing, analytics, search index…).
 - **Stream processing** — Kafka Streams, Flink, or ksqlDB do windowed aggregation and joins directly on topics — the engine behind ad-click aggregation / metrics pipelines.
-- **Replay & event sourcing** — a retained or compacted log can rebuild state or backfill a brand-new consumer from offset 0 ([event sourcing](/system-design/study-list/#distributed-transactions--consistency)).
+- **Replay & event sourcing** — a retained or compacted log can rebuild state or backfill a brand-new consumer from offset 0 ([event sourcing](/system-design/terminology/#distributed-transactions--consistency)).
 
 **When *not* to reach for it.** Low-volume or request/response work (use RPC or a plain task queue); workloads needing per-message priority, arbitrary TTLs, or selective acks (a broker like SQS/RabbitMQ fits better); and small apps where Kafka's operational weight isn't worth it. Kafka shines at high-throughput, ordered, replayable streams — not as a general-purpose job queue. The next section is *why*.
 
@@ -147,10 +147,10 @@ The recurring confusion is "Kafka or a task queue?" — and it's settled by **wh
 
 ## Kafka vs Temporal — moving data vs moving work
 
-A close cousin of the queue confusion: gluing microservices into a **multi-step process** with Kafka. Event-driven *choreography* (services react to each other's events) is a legitimate pattern for simple flows — but the moment you find yourself hand-rolling **retries, timeouts, correlation IDs, compensation, and process state** across topics, that's no longer messaging. That's **workflow orchestration**, and a [durable-execution](/system-design/study-list/#async--messaging) engine like [Temporal](/system-design/temporal/) is built for exactly it: it persists each step, owns the retries/timeouts/compensation, and lets you write the flow as ordinary code instead of reconstructing it from event soup.
+A close cousin of the queue confusion: gluing microservices into a **multi-step process** with Kafka. Event-driven *choreography* (services react to each other's events) is a legitimate pattern for simple flows — but the moment you find yourself hand-rolling **retries, timeouts, correlation IDs, compensation, and process state** across topics, that's no longer messaging. That's **workflow orchestration**, and a [durable-execution](/system-design/terminology/#async--messaging) engine like [Temporal](/system-design/temporal/) is built for exactly it: it persists each step, owns the retries/timeouts/compensation, and lets you write the flow as ordinary code instead of reconstructing it from event soup.
 
 **Kafka moves data; Temporal moves work.** Kafka is the backbone for events and streams; once you're tracking *the state of a process* spanning services, reach for orchestration — not more glue code on the log.
 
 ---
 
-These are working notes — a model and a map, not a substitute for the [Kafka docs](https://kafka.apache.org/documentation/). The "append-only, replayable, partitioned log" idea is the one thing to internalize; topics, groups, replication, and EOS all follow from it. The one-liner terms (pub/sub, exactly-once, backpressure, CDC) live in the [Study List](/system-design/study-list/#async--messaging).
+These are working notes — a model and a map, not a substitute for the [Kafka docs](https://kafka.apache.org/documentation/). The "append-only, replayable, partitioned log" idea is the one thing to internalize; topics, groups, replication, and EOS all follow from it. The one-liner terms (pub/sub, exactly-once, backpressure, CDC) live in the [Terminology](/system-design/terminology/#async--messaging).

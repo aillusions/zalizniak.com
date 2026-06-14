@@ -43,7 +43,7 @@ flowchart LR
 </details>
 
 - **Ack-and-delete** — a worker pulls a message, processes it, and **acknowledges**; only then is it removed. No ack → it comes back.
-- **Visibility timeout** — while a worker holds a message it's hidden from others; if the worker dies or doesn't ack in time, the message **reappears** and another worker retries. This is what makes a queue survive worker crashes — and why processing must be **[idempotent](/system-design/study-list/#async--messaging)** (at-least-once delivery means retries can double-fire).
+- **Visibility timeout** — while a worker holds a message it's hidden from others; if the worker dies or doesn't ack in time, the message **reappears** and another worker retries. This is what makes a queue survive worker crashes — and why processing must be **[idempotent](/system-design/terminology/#async--messaging)** (at-least-once delivery means retries can double-fire).
 - **Dead-letter queue (DLQ)** — after *N* failed deliveries, the message is shunted to a DLQ instead of poisoning the queue forever — inspect and replay later.
 - **Knobs queues give you (and a log doesn't):** per-message **retry/backoff**, **priority**, **delay/TTL**, selective ack. These are exactly what job processing needs.
 
@@ -83,4 +83,4 @@ Three tools, three jobs — don't force one into another's role:
 
 ---
 
-These are working notes — the queue half of the messaging picture, paired with the [Kafka](/system-design/kafka/) log page. The one idea to keep: a queue **delivers a unit of work to one worker and forgets it on ack** — everything else (visibility timeout, DLQ, FIFO) follows from making *that* reliable. One-liners in the [Study List](/system-design/study-list/#async--messaging).
+These are working notes — the queue half of the messaging picture, paired with the [Kafka](/system-design/kafka/) log page. The one idea to keep: a queue **delivers a unit of work to one worker and forgets it on ack** — everything else (visibility timeout, DLQ, FIFO) follows from making *that* reliable. One-liners in the [Terminology](/system-design/terminology/#async--messaging).

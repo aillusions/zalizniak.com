@@ -1,48 +1,9 @@
 ---
-title: Study List
-description: A working study list of system design interview vocabulary — the design framework terms, the API/traffic edge, feed and timeline patterns, data and storage, caching, async messaging, distributed transactions, scaling/reliability, and storage internals — defined tight, one or two lines each.
+title: Terminology
+description: A system-design vocabulary reference — design-framework terms, the API/traffic edge, feed & timeline patterns, data & storage, caching, async messaging, distributed transactions, scaling & reliability, and storage internals. Tight definitions, one or two lines each.
 sidebar:
-  order: 2
+  order: 2.5
 ---
-
-A running study list of the vocabulary that comes up while practicing system design — terms collected as I hit them, defined for quick recall. Tight definitions, one or two lines each. Some entries (the API-edge cluster) are AWS-flavored because that's where they first showed up; the concepts generalize.
-
-## Question patterns to cover
-
-Like coding interviews, system design questions cluster into patterns. Practice at least one from each category so no shape catches you cold:
-
-| Pattern | Representative system | Core challenge |
-| --- | --- | --- |
-| Online ticketing | Ticketmaster | Consistency & concurrency under high-demand sales |
-| Streaming / content delivery | YouTube, Netflix | Real-time streaming, CDN, large blobs |
-| Location-based | Uber, Yelp | Geo indexing, location tracking, proximity search |
-| E-commerce | Amazon | Scalability + transaction management |
-| Social network | Twitter, FB News Feed, Instagram | Data scale, real-time updates, fan-out |
-| Messaging | WhatsApp, FB Live Comments | Real-time delivery, presence, notifications |
-| Banking / financial | Robinhood, payment system | Security, privacy, transaction consistency |
-| Collaborative editing | Google Docs | Concurrency & conflict resolution (CRDT/OT) |
-| Cloud storage | Dropbox | Efficient, scalable file storage & sharing |
-| Competition / leaderboards | LeetCode, top-K | Real-time interaction, ranking at scale |
-| URL shortener / ID generation | Bitly, TinyURL, Snowflake | Read-heavy lookups, short-key generation, no collisions |
-| Search / autocomplete | Typeahead, FB post search | Inverted index, prefix matching, ranking at scale |
-| Analytics / stream aggregation | Ad-click aggregator, metrics monitoring | High-volume ingest, windowed aggregation, approximate top-K |
-| Notifications | Push / email / SMS | Multi-channel fan-out, dedup, delivery guarantees |
-| Foundational component | Rate limiter, message queue, distributed cache, web crawler, job scheduler | One building block, deeply |
-
-### Advanced / infra deep dives
-
-Beyond the common pool — infrastructure-flavored, often staff-level. Not what you'd be handed in a typical product-design round, but high-value if you work on platforms or interview for infra roles. Several lean on the same internals as the [Postgres Internals](/system-design/postgres-internals/) page.
-
-| Problem | Angle | What it drills |
-| --- | --- | --- |
-| Payments API layer | Stripe | Idempotency keys, exactly-once charges, API versioning, webhook delivery |
-| Durable execution engine | Temporal, from scratch | Persisting workflow state, deterministic replay, timers, retries at scale |
-| Multi-tenant search service | Per-tenant SaaS search | Tenant isolation + relevance with no per-customer code |
-| Managed database service (DBaaS) | RDS / Aurora | Fleet provisioning, multi-tenant ops, control plane vs. data plane |
-| HA & automated failover | Replica promotion | Leader election, split-brain avoidance, RTO/RPO targets |
-| Zero-downtime upgrades | Rolling version changes | Connection draining, backward-compatible schemas, online migrations |
-| Backup & restore with PITR | Continuous WAL archiving | Point-in-time recovery, restore SLAs, [WAL](/system-design/postgres-internals/#wal-write-ahead-log)-based replay |
-| Control plane / data plane isolation | Any managed service | Keeping management-layer failures off the serving path |
 
 ## Design vocabulary
 
@@ -58,7 +19,7 @@ Beyond the common pool — infrastructure-flavored, often staff-level. Not what 
 
 **Availability over consistency** — the design preference to serve possibly-stale data rather than fail a request; argues for cached, precomputed reads.
 
-**Fault tolerance** — a system keeps running *continuously through* a component failure with no noticeable disruption or downtime, via **redundancy** (no single point of failure) and **automated failover**. Distinct from **high availability**: FT keeps serving with zero downtime because redundant components run in parallel (a hot/lockstep replica is *already* serving — no gap); HA *minimizes* downtime (measured in nines) but accepts a brief interruption while it detects the failure and brings a standby online. The difference is the failover gap: FT has none, HA has a small one. (Strictly, FT means zero downtime *for the failure modes you built redundancy for* — see [RTO/RPO](#advanced--infra-deep-dives) for the recovery-window targets HA is graded on.)
+**Fault tolerance** — a system keeps running *continuously through* a component failure with no noticeable disruption or downtime, via **redundancy** (no single point of failure) and **automated failover**. Distinct from **high availability**: FT keeps serving with zero downtime because redundant components run in parallel (a hot/lockstep replica is *already* serving — no gap); HA *minimizes* downtime (measured in nines) but accepts a brief interruption while it detects the failure and brings a standby online. The difference is the failover gap: FT has none, HA has a small one. (Strictly, FT means zero downtime *for the failure modes you built redundancy for* — see [RTO/RPO](/system-design/study-list/#advanced--infra-deep-dives) for the recovery-window targets HA is graded on.)
 
 **Modular monolith** — one deployable with clean internal module boundaries; the sane pre-microservices starting point, and usually the right interview default.
 
@@ -68,7 +29,7 @@ Beyond the common pool — infrastructure-flavored, often staff-level. Not what 
 
 **Management plane** — the operator-facing surface for administration, observability, and policy (consoles, admin APIs, billing, RBAC). Often folded into the control plane; called out separately when the human-/admin-facing layer is distinct from internal orchestration.
 
-**Control/data plane isolation** — keep the control plane's failures *off* the serving path, so the data plane keeps serving even when provisioning/management is down. A recurring cloud-architecture principle — and a [DBaaS design drill](#advanced--infra-deep-dives).
+**Control/data plane isolation** — keep the control plane's failures *off* the serving path, so the data plane keeps serving even when provisioning/management is down. A recurring cloud-architecture principle — and a [DBaaS design drill](/system-design/study-list/#advanced--infra-deep-dives).
 
 ## API & traffic edge
 
@@ -134,11 +95,11 @@ Beyond the common pool — infrastructure-flavored, often staff-level. Not what 
 
 **Clock drift** — physical clocks on different machines tick at slightly different rates and steadily diverge; NTP only *bounds* the error, so you can't trust wall-clock timestamps to order events across machines.
 
-**Clock skew** — the instantaneous offset between two machines' clocks at a given moment. It's why "which write happened first?" has no free answer across nodes — distributed systems construct order with [logical clocks](/system-design/distributed-systems/#time--ordering) instead of reading it off a clock.
+**Clock skew** — the instantaneous offset between two machines' clocks at a given moment. It's why "which write happened first?" has no free answer across nodes — distributed systems construct order with logical clocks instead of reading it off a clock.
 
 **Quorum (R + W > N)** — requiring a majority of replicas to ack a read/write so reads and writes overlap on at least one current node; the knob behind Dynamo-style tunable consistency.
 
-**Consensus (Raft / Paxos)** — getting a set of nodes to agree on one value, or one ordered log of values, despite failures — always via a majority **quorum**. **Raft** (explicit leader + replicated log) is the understandable standard; it's what runs under etcd, Kafka KRaft, and Postgres-HA leader election. See [consensus](/system-design/distributed-systems/#consensus).
+**Consensus (Raft / Paxos)** — getting a set of nodes to agree on one value, or one ordered log of values, despite failures — always via a majority **quorum**. **Raft** (explicit leader + replicated log) is the understandable standard; it's what runs under etcd, Kafka KRaft, and Postgres-HA leader election.
 
 **Denormalization** — duplicating data across rows/tables/stores to make reads cheap, accepting write-time duplication and consistency work. The storage analog of fan-out-on-write.
 

@@ -23,7 +23,7 @@ A common mistake: proposing WebSockets when long-polling or SSE would do. They'r
 Sketch 4–5 endpoints and move on — most interviewers want reasonable APIs, not perfect ones. Spending 10 minutes here is going too deep.
 
 - **REST by default** — resources to URLs, HTTP verbs to actions (`GET /users/{id}`, `POST /events/{id}/bookings`).
-- **Pagination** — [cursor- vs offset-based](/system-design/study-list/#data--storage): cursor for real-time data where items get inserted frequently, offset for most cases.
+- **Pagination** — [cursor- vs offset-based](/system-design/terminology/#data--storage): cursor for real-time data where items get inserted frequently, offset for most cases.
 - **Auth** — JWT for user sessions, API keys for service-to-service.
 - **Rate limiting** — mention it if abuse/bots are plausible; don't go deep unless asked.
 
@@ -32,7 +32,7 @@ Sketch 4–5 endpoints and move on — most interviewers want reasonable APIs, n
 The schema choices have massive downstream effects on performance and scalability.
 
 - **Relational vs NoSQL** — relational ([Postgres](/system-design/postgres-internals/)) for structured data with clear relationships, complex queries (SQL joins), transactions, and constraints. NoSQL (DynamoDB, MongoDB) for flexible schemas or horizontal scale without joins.
-- **Normalize vs [denormalize](/system-design/study-list/#data--storage)** — normalized splits data across tables (consistent, but reads need joins that get expensive at scale); denormalized duplicates data to kill joins (fast reads, but every copy must be updated). **Default: start normalized, denormalize specific hot paths** once you've identified a read problem — don't denormalize upfront.
+- **Normalize vs [denormalize](/system-design/terminology/#data--storage)** — normalized splits data across tables (consistent, but reads need joins that get expensive at scale); denormalized duplicates data to kill joins (fast reads, but every copy must be updated). **Default: start normalized, denormalize specific hot paths** once you've identified a read problem — don't denormalize upfront.
 - **NoSQL is access-pattern-first** — you design the partition/sort key around your queries. `user_id` as partition key makes "posts for user X" a fast single-partition lookup but makes "posts with hashtag Y" a full scan. You must know the queries up front.
 
 ## Indexing
@@ -41,11 +41,11 @@ Without an index, finding a user by email scans every row; with one, it's a mill
 
 - **B-tree** — the default; supports exact lookups *and* range queries. **Hash** is faster for exact matches only (no ranges). Specialized: **full-text** for search, **geospatial** for location.
 - **Index what you query frequently** — email for auth lookups, `user_id` on the orders table. **Compound index** for multi-column filters ("events in SF on Dec 25" → index on `(city, date)`).
-- **External indexes** — Elasticsearch for full-text, PostGIS for geo in Postgres. They sync from the primary via [CDC](/system-design/study-list/#data--storage), so reads lag slightly — stale by a small amount, almost always fine for search.
+- **External indexes** — Elasticsearch for full-text, PostGIS for geo in Postgres. They sync from the primary via [CDC](/system-design/terminology/#data--storage), so reads lag slightly — stale by a small amount, almost always fine for search.
 
 ## Caching
 
-Comes up the moment your database is read-bound. Store hot data in fast memory (Redis) and skip the DB for most reads — also offloading the DB so it can take more writes. ([Caching vocabulary](/system-design/study-list/#caching).)
+Comes up the moment your database is read-bound. Store hot data in fast memory (Redis) and skip the DB for most reads — also offloading the DB so it can take more writes. ([Caching vocabulary](/system-design/terminology/#caching).)
 
 - **Cache-aside + Redis** is the 90% pattern: check cache → on miss, query DB, populate with a TTL, return.
 - **Invalidation is the hard part** — on write, delete/update the cached copy or you serve stale data. Tools: invalidate-on-write, short TTLs, or both.
@@ -56,7 +56,7 @@ CDN caching (static assets at the edge) and in-process caching (small rarely-cha
 
 ## Replication
 
-Keep copies of data on multiple nodes — for **read scaling** (fan reads across replicas) and **durability/HA** (survive a node loss). The first lever to pull before sharding. ([Replication entry](/system-design/study-list/#data--storage).)
+Keep copies of data on multiple nodes — for **read scaling** (fan reads across replicas) and **durability/HA** (survive a node loss). The first lever to pull before sharding. ([Replication entry](/system-design/terminology/#data--storage).)
 
 - **Leader-follower** is the common shape: the **leader** takes writes, **followers** serve reads and stand by to take over. Scales reads, not writes (every write still hits the leader).
 - **Sync vs async** — sync replication waits for follower acks (no data loss on failover, higher write latency); async acks immediately (fast, but a leader crash can lose the last writes). Async is the default.
@@ -67,7 +67,7 @@ Replication scales **reads** and gives HA; **sharding** scales **writes** and st
 
 ## Sharding
 
-Split data across independent servers once a single DB is outgrown — storage (TB+), write throughput (tens of thousands of writes/s), or read load replicas can't absorb. ([Sharding/partitioning](/system-design/study-list/#data--storage).)
+Split data across independent servers once a single DB is outgrown — storage (TB+), write throughput (tens of thousands of writes/s), or read load replicas can't absorb. ([Sharding/partitioning](/system-design/terminology/#data--storage).)
 
 - **Shard key decides everything** — `user_id` keeps a user's data on one shard (fast user-scoped queries) but makes global queries ("trending across all users") hit every shard and aggregate. State the key and the tradeoff.
 - **Strategies** — **hash-based** (hash key, modulo to a shard) distributes evenly, avoids hot spots, most common; **range-based** works when access naturally partitions (multi-tenant) but risks hot ranges; **directory-based** (lookup table) is flexible but adds a dependency and latency — rarely worth it.
@@ -83,7 +83,7 @@ Fixes the resize problem in distributed caches and sharded stores. Arrange serve
 
 ## CAP & PACELC
 
-Under a network partition you get **two of three**: Consistency, Availability, Partition tolerance. Partitions are unavoidable, so the real choice is **C or A**. ([CAP entry](/system-design/study-list/#data--storage).)
+Under a network partition you get **two of three**: Consistency, Availability, Partition tolerance. Partitions are unavoidable, so the real choice is **C or A**. ([CAP entry](/system-design/terminology/#data--storage).)
 
 - **Choose consistency** → some nodes refuse requests during a partition rather than serve stale data (correct but may be down).
 - **Choose availability** → every node keeps serving, nodes may diverge until the partition heals.

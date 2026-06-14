@@ -56,7 +56,7 @@ What you'd otherwise hand-roll, Temporal owns:
 - **Automatic retries** — activities retry on failure per a configurable policy (backoff, max attempts), durably, across restarts.
 - **Timeouts** — per activity and per workflow; a stuck step fails cleanly instead of hanging forever.
 - **Durable timers** — `sleep(3 days)` actually works; the timer survives crashes and costs nothing while waiting.
-- **Saga compensation** — on failure partway through, run compensating steps to undo prior work — the [saga](/system-design/study-list/#distributed-transactions--consistency) pattern, but expressed as plain try/catch instead of a hand-built state machine.
+- **Saga compensation** — on failure partway through, run compensating steps to undo prior work — the [saga](/system-design/terminology/#distributed-transactions--consistency) pattern, but expressed as plain try/catch instead of a hand-built state machine.
 
 ## Orchestration vs choreography — who owns the flow
 
@@ -89,4 +89,4 @@ The axis to weigh: **a cluster to operate (Temporal/Cadence)** vs. **a library o
 
 ---
 
-These are working notes on durable execution. The one idea to keep: **persist every step so the process survives anything, and make one thing own the flow** — which is what separates orchestration from a pile of events and glue. Vocabulary in the [Study List](/system-design/study-list/#async--messaging); the data-vs-work contrast on the [Kafka page](/system-design/kafka/#kafka-vs-temporal--moving-data-vs-moving-work).
+These are working notes on durable execution. The one idea to keep: **persist every step so the process survives anything, and make one thing own the flow** — which is what separates orchestration from a pile of events and glue. Vocabulary in the [Terminology](/system-design/terminology/#async--messaging); the data-vs-work contrast on the [Kafka page](/system-design/kafka/#kafka-vs-temporal--moving-data-vs-moving-work).
