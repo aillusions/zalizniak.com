@@ -1,5 +1,6 @@
 ---
 title: ClickHouse
+slug: system-design/clickhouse
 description: "How ClickHouse works for system design — columnar storage and vectorized execution, the MergeTree engine and sparse primary index, batch inserts and background merges, specialized merge engines and materialized views, sharding/replication, and when a columnar OLAP store fits."
 sidebar:
   order: 5

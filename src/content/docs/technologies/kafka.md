@@ -1,5 +1,6 @@
 ---
 title: Kafka
+slug: system-design/kafka
 description: "How Apache Kafka works for system design — the partitioned replicated log, topics/partitions/offsets, consumer groups, replication and ISR, log storage, delivery semantics (exactly-once), KRaft, and where it fits in a design."
 sidebar:
   order: 9

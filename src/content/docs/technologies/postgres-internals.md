@@ -1,5 +1,6 @@
 ---
 title: Postgres Internals
+slug: system-design/postgres-internals
 description: "How Postgres actually works under the hood — the query lifecycle and extension hooks, access methods, MVCC, WAL, and the buffer manager — plus a hands-on track building a toy extension and a from-scratch search index with pgrx."
 sidebar:
   order: 6

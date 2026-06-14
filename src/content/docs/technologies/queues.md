@@ -1,5 +1,6 @@
 ---
 title: Message Queues
+slug: system-design/queues
 description: "How message queues work for system design — the competing-consumers model, ack / visibility timeout / redelivery, dead-letter queues, ordering and FIFO, and the RabbitMQ vs SQS vs task-queue landscape. The queue counterpart to the Kafka log page."
 sidebar:
   order: 10

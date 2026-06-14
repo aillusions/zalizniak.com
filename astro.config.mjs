@@ -62,6 +62,9 @@ export default defineConfig({
 					label: 'System Design',
 					items: [
 						{ autogenerate: { directory: 'system-design' } },
+						// Deep dives into specific technologies (Postgres, Kafka, …) —
+						// their own subgroup so they don't mix with the concept pages.
+						{ label: 'Technologies', items: [{ autogenerate: { directory: 'technologies' } }] },
 						// Worked end-to-end design problems — their own subgroup so
 						// they don't mix with the concept pages above.
 						{ label: 'Design Problems', items: [{ autogenerate: { directory: 'design-problems' } }] },

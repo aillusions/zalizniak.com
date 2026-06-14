@@ -1,5 +1,6 @@
 ---
 title: Kubernetes & Orchestration
+slug: system-design/kubernetes
 description: "A from-zero map of Kubernetes for system design — the declarative reconciliation model, control-plane vs node architecture, the core objects, and how CRDs + controllers (kubebuilder/controller-runtime) make Operators — with a worked architecture of a Postgres cluster run by an operator."
 sidebar:
   order: 8

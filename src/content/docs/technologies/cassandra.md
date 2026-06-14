@@ -1,5 +1,6 @@
 ---
 title: Cassandra
+slug: system-design/cassandra
 description: "How Apache Cassandra works for system design — the wide-column data model, the token ring and consistent hashing, leaderless replication with tunable consistency, the LSM write/read path, compaction, last-write-wins conflict resolution, and anti-entropy (hinted handoff, read repair, gossip)."
 sidebar:
   order: 4

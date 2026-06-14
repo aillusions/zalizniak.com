@@ -1,5 +1,6 @@
 ---
 title: Object Storage
+slug: system-design/object-storage
 description: "How object storage works for system design — the flat object model (not a filesystem), the S3 API and presigned URLs, how it scales and survives failure via erasure coding and sharding (MinIO as the open vehicle, S3 as the reference), the consistency model, and when to reach for it."
 sidebar:
   order: 7
