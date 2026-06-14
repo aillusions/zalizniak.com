@@ -46,6 +46,8 @@ Beyond the common pool — infrastructure-flavored, often staff-level. Not what 
 
 ## Design vocabulary
 
+**`≫` ("much greater than")** — notation for "prioritize the left far above the right" in a tradeoff. *availability ≫ consistency* = serve possibly-stale data rather than fail a request; *durability ≫ availability* = never lose committed data, even at the cost of brief downtime.
+
 **HLD (High-Level Design)** — the boxes and their data ownership; the structural skeleton you draw first.
 
 **Deep Dive** — the algorithms inside a box and the hard scaling mechanics (e.g. the fan-out strategy), worked after the HLD stands.
@@ -121,6 +123,8 @@ Beyond the common pool — infrastructure-flavored, often staff-level. Not what 
 **Consistent hashing** — a hashing scheme that maps keys onto a ring so adding/removing a node only remaps a small slice of keys, not the whole keyspace. Standard for distributing cache/DB partitions.
 
 **Replication** — keeping copies of data on multiple nodes for durability and read scaling. Leader-follower (primary handles writes) is the common shape.
+
+**ACID** — the transaction guarantees of a classic DB: **A**tomicity (all-or-nothing), **C**onsistency (invariants/constraints hold), **I**solation (concurrent txns don't interfere), **D**urability (once committed, survives crashes — via WAL/replication). Note: **durability is *not* a CAP property** — it's the storage/persistence guarantee, orthogonal to CAP's distributed C/A/P. And the **C in ACID ≠ the C in CAP**: ACID-C is *constraints hold*, CAP-C is *all nodes see the same latest value* (≈ linearizability).
 
 **CAP theorem** — under a network partition you must choose Consistency *or* Availability; partition tolerance isn't optional in a distributed system. The framing for "CP vs AP" design stances.
 
