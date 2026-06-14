@@ -70,6 +70,7 @@ HA and FT are the top two rungs of a redundancy ladder. Each rung shortens the g
 You can't design reliability without a number to design *to*.
 
 - **Nines** — the downtime budget: 99.9% ≈ 8.8 h/yr, 99.99% ≈ 52 min/yr, 99.999% ≈ 5 min/yr ([full ladder](/system-design/core-concepts/#numbers-to-know)). Each nine ≈ 10× less downtime and roughly an order more cost — so name the target before chasing it.
+- **SLA / SLO / SLI** — the contract around the number: an **SLI** is the measured value (e.g. % of requests under 200 ms), an **SLO** is your internal target for it (e.g. 99.95%), and an **SLA** is the customer-facing promise with **penalties (service credits)** if missed. Keep the SLO tighter than the SLA so you have headroom before you owe credits.
 - **Availability = MTBF / (MTBF + MTTR)** — the lever is usually **MTTR** (recover faster), which is exactly what HA's automated failover attacks.
 - **Redundancy multiplies it** — two *independent* 99% nodes fail only together: 99.99%. The catch is **independent**: two nodes sharing one power feed have a hidden SPOF. Conversely, **serial dependencies erode it** — a request through three 99.9% services is only ~99.7%.
 - **RTO / RPO** — recovery *time* (how fast you're back) vs recovery *point* (how much data you can lose); RPO is set by backup/replication frequency.
@@ -103,3 +104,22 @@ Reliability is **per-subsystem, not global** — for each part, ask what failure
 - **Best-effort** (analytics, recommendations, batch) → graceful degradation; let it lag without taking the core down.
 
 Then spend nothing on the nines you don't need.
+
+## Worked example: a B2B SaaS backend (e.g. e-signature)
+
+Target the **core API at 99.9%** (~8.8 h/yr) — the standard customers expect and what goes in the SLA. Don't reflexively chase 99.99%:
+
+- **Why not higher** — each extra nine costs ~10× more, and you're capped by dependencies anyway: a managed DB, an auth provider, and a third-party LLM each at ~99.9% multiply *down* (three serial 99.9% deps ≈ 99.7%). Buying 99.99% on your own code while sitting behind a 99.9% LLM buys nothing.
+- **Why not lower** — two nines is 3.65 days/yr of downtime; that's visible to customers and won't survive an SLA negotiation.
+- **SLA headroom** — promise 99.9% externally but run a tighter internal SLO (≈99.95%) so you have margin before you owe credits.
+
+Then split it per subsystem rather than holding the whole system to one number:
+
+| Subsystem | Target | Posture |
+| --- | --- | --- |
+| **Core API** (auth, CRUD, sign/read documents) | 99.9% | HA — multi-AZ, stateless, automated failover |
+| **Document store** (the signed artifacts) | durability ≫ availability | sync replication + backups, **RPO ≈ 0** — a lost executed document is unrecoverable and legally serious |
+| **AI / generation path** (LLM calls) | best-effort | graceful degradation; keep it **async + retryable** and off the critical sign path — its ceiling is the LLM provider's own SLA |
+| **Async workflows** (durable execution) | durability over uptime | a worker outage *delays*, doesn't lose work — the durable log replays on recovery |
+
+The pattern: **strong durability where data loss is unacceptable, HA on the request path, graceful degradation on the AI path** — and never put the slowest, least-reliable dependency (the LLM) on the path that has to stay up.
