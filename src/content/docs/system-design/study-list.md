@@ -52,7 +52,11 @@ Beyond the common pool — infrastructure-flavored, often staff-level. Not what 
 
 **NFR (Non-Functional Requirement)** — qualities, not features: availability, scale (100M DAU), latency (<200 ms), durability, security.
 
+**Below the line (out of scope)** — during requirements, list the core in-scope features *above the line*, then draw a line and park the rest *below* it as explicitly out of scope. Bounds the problem to what fits the interview, and signals you can spot the deferrable parts rather than missing them (e.g. "auth, payments, analytics — below the line for now").
+
 **Availability over consistency** — the design preference to serve possibly-stale data rather than fail a request; argues for cached, precomputed reads.
+
+**Fault tolerance** — a system keeps running *continuously through* a component failure with no noticeable disruption or downtime, via **redundancy** (no single point of failure) and **automated failover**. Distinct from **high availability**: FT keeps serving with zero downtime because redundant components run in parallel (a hot/lockstep replica is *already* serving — no gap); HA *minimizes* downtime (measured in nines) but accepts a brief interruption while it detects the failure and brings a standby online. The difference is the failover gap: FT has none, HA has a small one. (Strictly, FT means zero downtime *for the failure modes you built redundancy for* — see [RTO/RPO](#advanced--infra-deep-dives) for the recovery-window targets HA is graded on.)
 
 **Modular monolith** — one deployable with clean internal module boundaries; the sane pre-microservices starting point, and usually the right interview default.
 

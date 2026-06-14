@@ -60,7 +60,12 @@ export default defineConfig({
 				// in-room delivery framework, and worked question breakdowns.
 				{
 					label: 'System Design',
-					items: [{ autogenerate: { directory: 'system-design' } }],
+					items: [
+						{ autogenerate: { directory: 'system-design' } },
+						// Worked end-to-end design problems — their own subgroup so
+						// they don't mix with the concept pages above.
+						{ label: 'Design Problems', items: [{ autogenerate: { directory: 'design-problems' } }] },
+					],
 				},
 				// Cross-company synthesis: the recurring hard problems of applied
 				// AI and how teams across the teardowns solve them.

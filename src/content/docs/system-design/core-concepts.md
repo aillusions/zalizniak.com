@@ -63,7 +63,7 @@ Keep copies of data on multiple nodes — for **read scaling** (fan reads across
 - **Replication lag** — followers trail the leader, so reads can be stale. This is the source of the read-your-writes problem: a user updates, then reads a lagging replica and sees the old value. Fix by reading your own writes from the leader, or pinning the session briefly.
 - **Failover** — on leader loss, a follower is promoted (manual or via leader election). Watch for **split-brain** (two leaders) and data loss of unreplicated writes.
 
-Replication scales **reads** and gives HA; **sharding** scales **writes** and storage. They compose — production systems usually shard *and* replicate each shard.
+Replication scales **reads** and gives HA; **sharding** scales **writes** and storage. **The decision rule:** sharding solves *"too much data / too many writes for one node"*; replication solves *"too many reads"* and *"I need failover."* They compose — production systems usually shard *and* replicate each shard.
 
 ## Sharding
 
@@ -71,6 +71,7 @@ Split data across independent servers once a single DB is outgrown — storage (
 
 - **Shard key decides everything** — `user_id` keeps a user's data on one shard (fast user-scoped queries) but makes global queries ("trending across all users") hit every shard and aggregate. State the key and the tradeoff.
 - **Strategies** — **hash-based** (hash key, modulo to a shard) distributes evenly, avoids hot spots, most common; **range-based** works when access naturally partitions (multi-tenant) but risks hot ranges; **directory-based** (lookup table) is flexible but adds a dependency and latency — rarely worth it.
+- **Mapping keys to shards — two standard approaches.** **Fixed slots/buckets**: hash the key into a large fixed set of slots (Redis Cluster uses 16384), then assign slot ranges to nodes — moving a node reassigns *slots*, not a rehash of every key, and the slot→node map is small enough to gossip. **Consistent hashing / hash ring** (Cassandra, DynamoDB): place nodes and keys on a ring so adding/removing a node only shifts one arc (see below). Both are standard and solve the same resize problem; the slot layer just adds an indirection that decouples key count from node count. Redis chose fixed slots; Dynamo-lineage stores chose the ring.
 - **Don't shard too early** — a tuned single DB with read replicas goes far. Do the capacity math first; 10K writes/s and 100GB doesn't need it.
 - **New problems** — cross-shard transactions are near-impossible (design boundaries to avoid them, else sagas/distributed transactions); **hot spots** (one shard hammered); **resharding** is painful data movement.
 
@@ -95,6 +96,8 @@ Under a network partition you get **two of three**: Consistency, Availability, P
 You don't do back-of-envelope math up front — you do it when a decision needs it ("shard or not?", "one Redis enough?"). Modern hardware is bigger than most assume; 2010-era numbers make you shard and cache far too early.
 
 **Latency ladder** (the gaps that drive decisions): memory access ≈ nanoseconds · SSD reads ≈ microseconds · intra-datacenter network ≈ 1–10 ms · cross-continent ≈ tens–hundreds of ms.
+
+**Availability nines** (downtime budget per year): 99% ≈ 3.65 days · 99.9% ("three nines") ≈ 8.76 h · 99.99% ("four nines") ≈ ~52 min · 99.999% ("five nines") ≈ ~5 min. Each nine is 10× less downtime — and roughly an order more cost/complexity, so name the target before designing for it.
 
 | Component | Rough capacity | Scale triggers |
 | --- | --- | --- |

@@ -1,6 +1,6 @@
 ---
 title: Distributed Systems
-description: "The conceptual core of distributed systems for system design — why partial failure is hard, CAP/PACELC, consistency models (linearizable to eventual), consensus (Raft/Paxos), time and logical clocks, replication and partitioning, and coordination under failure."
+description: "The conceptual core of distributed systems for system design — why partial failure is hard, CAP/PACELC, consistency models (linearizable to eventual), consensus (Raft/Paxos/Zab), membership and gossip (SWIM), time and logical clocks, replication and partitioning, and coordination under failure."
 sidebar:
   order: 3
 ---
@@ -56,7 +56,7 @@ flowchart LR
 
 ## Consensus
 
-How a set of nodes **agree on one value** (or one ordered log of values) despite failures and message loss. **Raft** and **Paxos** are the algorithms; Raft won on understandability (explicit leader election + a replicated log). The recipe is always a **quorum** — a majority must agree — so the cluster survives a minority failing.
+How a set of nodes **agree on one value** (or one ordered log of values) despite failures and message loss. **Paxos/Multi-Paxos** is the original (correct, famously hard to implement — Chubby, Spanner); **Raft** won on understandability (explicit leader election + a replicated log — etcd, Consul, CockroachDB, TiKV); **Zab** is ZooKeeper's atomic-broadcast variant; **Viewstamped Replication** is an older cousin of Raft. The recipe is always a **quorum** — a majority must agree — so the cluster survives a minority failing.
 
 You rarely implement consensus; you *recognize where it already runs*:
 
@@ -65,6 +65,15 @@ You rarely implement consensus; you *recognize where it already runs*:
 - **Postgres HA** — Patroni uses a consensus store (etcd/Consul) to elect a single primary and avoid split-brain ([Postgres](/system-design/postgres-internals/#scaling-postgres)).
 
 Consensus is the expensive tool — use it for the *one* thing that must be globally agreed (who's leader, the commit order), not for every write.
+
+## Membership & gossip
+
+The other coordination family. When nodes only need an *eventually-consistent* view of who's alive and who owns what — not strict agreement — **gossip** beats consensus: each node periodically swaps state with a few random peers, information spreads epidemically, and there's no coordinator and no quorum, so it scales to thousands of nodes where Raft would choke.
+
+- **SWIM** — the dominant modern membership protocol (Scalable Weakly-consistent Infection-style Membership); separates failure detection from membership dissemination. Powers HashiCorp's `memberlist` (Serf, Consul).
+- **Cassandra / DynamoDB gossip** — spreads node membership, token ranges, and schema versions; Cassandra pairs it with a [phi-accrual detector](#coordination--failure). [Redis Cluster](/system-design/core-concepts/#sharding)'s bus is the same family — pure gossip even for slot ownership, with lightweight failover voting instead of full Raft, trading strict consistency for availability and speed.
+
+**The split in practice:** large systems run *both* — gossip for membership and failure detection (cheap, scalable, eventual), consensus for the few things that must be agreed exactly (leader, config, slot/range ownership), because running Raft across thousands of nodes doesn't scale but gossiping liveness does. Rule of thumb: **gossip when approximate/eventual membership is fine; consensus when everyone must agree on exactly one answer.**
 
 ## Time & ordering
 
