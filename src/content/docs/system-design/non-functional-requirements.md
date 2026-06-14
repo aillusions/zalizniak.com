@@ -35,3 +35,14 @@ This cluster gets conflated constantly. Keep them separate:
 - **Redundancy, failover, recovery are tools** — the mechanisms that implement HA/FT. Not requirements in themselves.
 
 So on a strict list the genuine NFRs are the **targets** (uptime %, durability, latency…). "Fault tolerance" is either the *means* to the uptime target or a sharper restatement of it — "survive an AZ loss with no gap" — not a separate axis.
+
+HA and FT aren't a binary — they're the top rungs of a redundancy ladder, each shortening the failover gap at higher cost. The line: HA still has a **promote step**, FT doesn't.
+
+| Posture | Backup state | Failover | |
+| --- | --- | --- | --- |
+| **No redundancy (SPOF)** | none | full outage | |
+| **Cold standby** | off | minutes–hours (boot + restore) | |
+| **Warm standby** | running, not serving | seconds–minutes (promote) | **HA** |
+| **Hot standby (active-passive)** | live, ready | sub-second (promote) | **HA** |
+| **Active-active** | all nodes serving | none — just lost capacity | **FT** |
+| **Lockstep + voter** | parallel, in sync | none — fault masked | **FT** |
