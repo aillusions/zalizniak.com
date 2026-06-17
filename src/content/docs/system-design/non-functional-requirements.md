@@ -1,6 +1,6 @@
 ---
 title: Non-Functional Requirements
-description: The non-functional requirements checklist for a system-design interview (FCC + SLEDS), plus the cluster people conflate — availability vs CAP's "A", high availability vs fault tolerance, and why redundancy/failover are tools, not requirements.
+description: The non-functional requirements checklist for a system-design interview, plus the cluster people conflate — availability vs CAP's "A", high availability vs fault tolerance, and why redundancy/failover are tools, not requirements.
 sidebar:
   order: 1.2
 ---
@@ -9,11 +9,12 @@ NFRs are the *qualities* a system must have ("the system should be…"), as oppo
 
 ## The checklist
 
-Pull your 3–4 from these. Mnemonic: **FCC + SLEDS**.
+Pull your 3–4 from these.
 
 | NFR | The question to ask |
 | --- | --- |
-| **Fault tolerance** | How well must it keep working through failures? |
+| **Uptime / downtime** | What % uptime, in nines (99.9% ≈ 8.7 h down/yr)? The target fault tolerance serves. |
+| **Fault tolerance** | How must it keep serving when components fail (lose a server / DB / AZ)? The umbrella "survive failures" prompt — not a number; uptime is its target. |
 | **CAP** | Consistency *or* availability under a network partition? (Partition tolerance is a given.) |
 | **Compliance** | Legal / regulatory / industry standards? |
 | **Scalability** | DAU/MAU, QPS, bursty traffic, read:write ratio? |
