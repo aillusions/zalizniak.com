@@ -101,6 +101,8 @@ sidebar:
 
 **Consensus (Raft / Paxos)** — getting a set of nodes to agree on one value, or one ordered log of values, despite failures — always via a majority **quorum**. **Raft** (explicit leader + replicated log) is the understandable standard; it's what runs under etcd, Kafka KRaft, and Postgres-HA leader election.
 
+**Tiebreaker (witness / arbiter)** — a lightweight extra voter added to an *even*-node cluster so a quorum always exists and a partition can't deadlock 1-vs-1 (split-brain). It holds no data — just a vote — so two data nodes plus a cheap witness behave like three for leader election. Why clusters are sized **odd** (3, 5): an even count buys no extra fault tolerance, only a tie to break.
+
 **Denormalization** — duplicating data across rows/tables/stores to make reads cheap, accepting write-time duplication and consistency work. The storage analog of fan-out-on-write.
 
 **CDC (Change Data Capture)** — streaming a database's row-level changes (often off the WAL) to other systems — search indexes, caches, analytics — so they stay in sync without dual writes.
