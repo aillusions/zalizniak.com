@@ -48,6 +48,8 @@ flowchart TB
 
 Rule of thumb: **choreography for a few independent reactions; orchestration once you must track the state of a process.**
 
+**Where Temporal fits:** it doesn't replace EDA — it's an abstraction layer *over* it. At runtime [Temporal](/system-design/temporal/) compiles ordinary sequential code into a durable, event-driven state machine: every completed step is appended to an event history, and state is rebuilt by replaying that log. So you write the flow as straight-line code, but get orchestration's payoff — the workflow state is **centralized and observable** instead of reconstructed from event soup, while async events can still trigger steps. The resilience that choreography makes you hand-roll — retries, timeouts, dead-letter queues, state durability — the engine owns. Reach for it when a flow spans time and must be tracked end-to-end (a payment saga, a long-running agent task), not for a couple of fire-and-forget reactions.
+
 ## EDA patterns
 
 Common shapes once you're event-driven:

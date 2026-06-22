@@ -21,3 +21,4 @@ npm-debug.log*
 # private planning notes & raw discovery scratch (not for the public site)
 # anchored to repo root so the public /src/content/docs/notes/ section is NOT ignored
 /notes/
+temp.txt
