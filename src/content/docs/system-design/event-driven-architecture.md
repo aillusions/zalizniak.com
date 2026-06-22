@@ -57,6 +57,27 @@ Common shapes once you're event-driven:
 - **[Event sourcing](/system-design/terminology/#distributed-transactions--consistency)** — the event log *is* the source of truth; state is a fold over events. Full audit + replay, harder to query.
 - **[CQRS](/system-design/terminology/#distributed-transactions--consistency)** — split the write model from read models kept in sync via events; often paired with event sourcing.
 
+## In an interview: what to name (and why)
+
+Interviewers grade the *justification*, not the brand — lead with the requirement, then the pick. "I need fan-out to many independent consumers with replay, so Kafka" scores; "Kafka because it's popular" doesn't. The menu by role:
+
+| Role | Default pick | Alternatives | Reach for it when |
+| --- | --- | --- | --- |
+| Event log / streaming backbone | **[Kafka](/system-design/kafka/)** | Kinesis (AWS-native), Pulsar (tiered storage, multi-tenant), Redpanda (Kafka-API, lower latency) | replay, multiple independent consumers, high throughput, event sourcing |
+| Task / work queue | **[SQS](/system-design/queues/)** (managed) / RabbitMQ | — | point-to-point, competing consumers, "do this job once," decoupled offload |
+| Async background jobs | SQS + workers | Celery + Redis/RabbitMQ (Python), Sidekiq (Ruby) | email, image processing, anything off the request path |
+| Workflow orchestration | **[Temporal](/system-design/temporal/)** | AWS Step Functions | durable multi-step flows with retries, compensation, sagas |
+| Pub/sub fan-out | SNS (AWS) | Kafka topics, Redis Pub/Sub (ephemeral), Google Pub/Sub | notify many subscribers of one event |
+
+The 90% answer for a generic design: **Kafka for the event backbone, SQS/RabbitMQ for task queues, and call out the [outbox pattern](/system-design/terminology/#async--messaging) for reliable publishing.** Then bend it to the problem: replay/multiple consumers → Kafka; simple decoupled jobs → SQS; long stateful flows → Temporal/Step Functions.
+
+Patterns worth name-dropping (they signal you've shipped this):
+
+- **Outbox** — write the event to a DB table in the same transaction as the state change, relay it out-of-band; closes the dual-write gap between DB commit and publish.
+- **CDC / Debezium** — capture DB changes as a stream instead of dual-writing at all.
+- **Dead-letter queue** — where poison messages go after N failed retries, so one bad message doesn't wedge the consumer.
+- **[Event sourcing + CQRS](/system-design/terminology/#distributed-transactions--consistency)** — when the domain genuinely wants an audit log and split read/write models; don't reach for it by default.
+
 ## The tradeoffs
 
 Message-/event-driven isn't free — know what you're buying:
