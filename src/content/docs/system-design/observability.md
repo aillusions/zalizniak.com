@@ -51,6 +51,25 @@ The whole pitch is **vendor-neutral emission**: instrument once, then point at J
 
 **The Collector is signal-agnostic.** `receiver → processor → exporter` is one architecture; you wire **separate pipelines per signal** (`traces:`, `metrics:`, `logs:`, `profiles:`) under `service.pipelines` — same binary, same shape, just different data flowing through.
 
+**Emission path.** The SDK exports **OTLP (gRPC/HTTP)** to a Collector endpoint — but:
+
+- The Collector is **optional** — the SDK can export straight to a backend (Jaeger, Datadog, …).
+- When used, the common shape is **two tiers**: an **agent** Collector local to the app (same host / sidecar / daemonset) that the app talks to → a central **gateway** Collector it forwards to. So "the app contacts the Collector" usually means the local agent, not the central one.
+
+**Why a Collector** (vs SDK → backend direct):
+
+- **Decoupling** — app exports to one local endpoint; swap/add/fan-out backends via Collector config, no app redeploy.
+- **Batch / buffer / retry** — Collector owns the queue and backend-down retries instead of burning app memory.
+- **Processing** — filter noisy spans, drop/redact PII, **tail-based sampling** (needs the whole trace — impossible in one app instance), enrich (k8s/host metadata).
+- **Translation** — receive OTLP, also scrape Prometheus / tail log files; export whatever each backend speaks. App only emits OTLP.
+- **Offload** — keeps instrumentation overhead out of the app process.
+
+*Local/dev: usually skip it* — only worth running to mirror prod topology or for multi-backend fan-out.
+
+**Storage:** none by default — **in-memory only** (receive → process → batch in RAM → export). Crash = in-flight data lost (an optional file-backed persistent queue can guard against this).
+
+**One event ≠ one network call.** The SDK **batches** in-process (BatchSpanProcessor + metric/log equivalents) and flushes one OTLP request per batch on a size or timer trigger (~5s); metrics export on an interval (~60s). One-to-one only with a simple/sync processor — dev-only, kills throughput in prod.
+
 ## Monitoring vs observability
 
 - **Monitoring** — predefined dashboards + alerts for failure modes you *predicted* → **known-unknowns**.
