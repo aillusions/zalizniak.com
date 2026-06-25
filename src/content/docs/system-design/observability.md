@@ -155,6 +155,8 @@ logs.getLogger('my-app').emit({
 
 </details>
 
+**Why only three signals here:** profiling has **no stable OTel JS SDK** — no `NodeSDK` knob or `exporter-profiling-*` to drop in like the other three. For profiling in Node today you go *outside* this pipeline (Pyroscope/Grafana's own SDK or a vendor agent).
+
 ## Monitoring vs observability
 
 - **Monitoring** — predefined dashboards + alerts for failure modes you *predicted* → **known-unknowns**.
@@ -181,7 +183,19 @@ logs.getLogger('my-app').emit({
 **Metric types** — the "quantitative/time measurements" made precise:
 
 - **Prometheus model:** *counter* (monotonic, resets on restart), *gauge* (up/down), *histogram* (pre-defined buckets → `_bucket` / `_sum` / `_count`; quantiles computed server-side via `histogram_quantile`), *summary* (client-computed quantiles — **cannot aggregate across instances**).
-- **OTel model:** *Counter, UpDownCounter, Histogram, Gauge* + async "Observable" variants. Maps onto Prometheus, not identical.
+- **OTel model:** seven instruments, maps onto Prometheus but not identical. Three **synchronous/push** (you call `.add()` / `.record()` inline) + a sync Gauge, and three **asynchronous/observable/pull** (register a callback, SDK runs it at export):
+  - **Counter** — push, monotonic (only up); e.g. requests served.
+  - **UpDownCounter** — push, non-monotonic; e.g. active connections, queue size.
+  - **Histogram** — push, value distribution → percentiles; e.g. request latency.
+  - **Gauge** — push, current-value snapshot at a point in code (sync, newer).
+  - **ObservableCounter** — pull, monotonic via callback; e.g. cumulative CPU time.
+  - **ObservableUpDownCounter** — pull, non-monotonic via callback; e.g. memory usage.
+  - **ObservableGauge** — pull, snapshot via callback; e.g. event-loop utilization.
+
+**Push vs pull** (SDK-internal collection timing — distinct from the Collector→backend network leg):
+
+- **Push** (sync instruments) — *your code* decides when: call `.add()`/`.record()` at the moment the event happens. Use for counting discrete events as they occur.
+- **Pull** (observable instruments) — *the SDK* decides when: it invokes your callback on each export tick and reads the current value; nothing fires at event time. Use for sampling a current state on a schedule (CPU, memory, ELU).
 
 The concepts that actually trip people:
 
