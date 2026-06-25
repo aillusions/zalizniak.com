@@ -47,6 +47,10 @@ In the canonical stack: **Collector = transport, Prometheus = storage (+ its own
 
 The whole pitch is **vendor-neutral emission**: instrument once, then point at Jaeger / Datadog / Tempo / whatever without touching app code.
 
+**Signals:** traces, metrics, logs — plus **profiling** as the official **fourth** signal (newest; OTLP profiles support is still relatively recent and less mature than the other three).
+
+**The Collector is signal-agnostic.** `receiver → processor → exporter` is one architecture; you wire **separate pipelines per signal** (`traces:`, `metrics:`, `logs:`, `profiles:`) under `service.pipelines` — same binary, same shape, just different data flowing through.
+
 ## Monitoring vs observability
 
 - **Monitoring** — predefined dashboards + alerts for failure modes you *predicted* → **known-unknowns**.
@@ -126,7 +130,7 @@ The "three pillars" framing's value isn't three silos, it's **correlation**:
 
 ## Emerging signals
 
-- **Continuous profiling** — the oft-cited "fourth pillar": CPU/memory flame graphs in prod. **Grafana Pyroscope**, **Parca**; OTel added a profiling signal.
+- **Continuous profiling** — CPU/memory flame graphs in prod; OTel's official fourth signal (above). Tools: **Grafana Pyroscope**, **Parca**.
 - **eBPF** — zero-code auto-instrumentation by hooking the kernel instead of editing app code: **Grafana Beyla**, **Pixie**.
 
 ## The OSS anchor — LGTM
