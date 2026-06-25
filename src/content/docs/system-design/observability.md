@@ -1,0 +1,136 @@
+---
+title: Observability
+description: "Notes on observability — the telemetry pipeline, what OpenTelemetry actually is (and isn't), the three signals (logs, metrics, traces), correlation, RED/USE/Golden Signals, SLI/SLO/SLA, and the OSS tool landscape."
+sidebar:
+  order: 12.5
+---
+
+## The telemetry pipeline
+
+Same four layers for all three signals:
+
+![The four-layer telemetry pipeline: instrument → collect/transport → store → query/viz/alert, with OpenTelemetry spanning only the first two layers](/diagrams/system-design/observability-pipeline.svg)
+
+<details>
+<summary>Mermaid source</summary>
+
+```mermaid
+flowchart LR
+  classDef otel fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef store fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef viz fill:#e8f5ee,stroke:#34a085,stroke-width:1.5px,color:#0f172a;
+  subgraph OT["OpenTelemetry — emission + transport only (layers 1–2)"]
+    direction LR
+    I["<b>1. Instrument</b><br/>app + libs + runtime<br/>API / SDK"]:::otel --> C["<b>2. Collect / transport</b><br/>Collector: receivers →<br/>processors → exporters<br/>OTLP wire protocol"]:::otel
+  end
+  C --> S["<b>3. Store</b><br/>TSDB · log index<br/>· trace store"]:::store
+  S --> Q["<b>4. Query / viz / alert</b><br/>dashboards · ad-hoc<br/>queries · alerts"]:::viz
+```
+
+</details>
+
+1. **Instrument** — code emits telemetry (your app + libraries + runtime).
+2. **Collect / transport** — shipped and processed *in flight*: batched, filtered, enriched, sampled.
+3. **Store** — a backend persists it: TSDB for metrics, search index or object store for logs, a trace store for traces.
+4. **Query / viz / alert** — dashboards, ad-hoc queries, alerts.
+
+In the canonical stack: **Collector = transport, Prometheus = storage (+ its own scrape-collection), Grafana = pure query/viz (stores nothing — it queries data sources).**
+
+## What OpenTelemetry actually is
+
+**OTel is layers 1–2, and nothing else** — not a backend, not storage, not a UI. It's the OpenTracing + OpenCensus merger. Four parts:
+
+- **API / SDK** per language — instrument code.
+- **OTLP** — the wire protocol.
+- **Collector** — a pipeline binary structured as **receivers → processors → exporters**.
+- **Semantic conventions** — standardized attribute names (`http.request.method`, `service.name`).
+
+The whole pitch is **vendor-neutral emission**: instrument once, then point at Jaeger / Datadog / Tempo / whatever without touching app code.
+
+## Monitoring vs observability
+
+- **Monitoring** — predefined dashboards + alerts for failure modes you *predicted* → **known-unknowns**.
+- **Observability** — ask *new* questions of a running system without shipping code → **unknown-unknowns**. Term borrowed from control theory: a system is observable if you can infer internal state from its outputs.
+
+## Logs
+
+- **Structured vs unstructured** is the dividing line. `log.info("user 123 failed")` vs `{"event":"login_failed","user_id":123,"trace_id":"…"}`. Structured (JSON) is the modern default — queryable without regex archaeology.
+- **`trace_id` in every log line** is the bridge to tracing: jump from "error in logs" to the full distributed trace of that request. *The single highest-value habit in this whole topic.*
+- **Cost is the dominant constraint** — logs are the most expensive signal at volume (full-text indexing). Drives sampling and cheaper-backend choices.
+- OTel has a **logs signal** but it's the least mature of the three — usually you *bridge* existing loggers into it rather than emit natively.
+
+| Tool | Note |
+| --- | --- |
+| **CloudWatch Logs** | AWS-integrated, low-effort, expensive, weak ad-hoc query |
+| **ELK / Elastic** | Elasticsearch + Logstash + Kibana; full-text index, powerful, costly |
+| **OpenSearch** | AWS fork of Elastic post license-change (Dashboards = Kibana fork) |
+| **Grafana Loki** | "Prometheus for logs" — indexes only labels, chunks in object storage, **LogQL**; cheap (no full-text index) |
+| **Splunk** | enterprise heavyweight; **Datadog Logs / Sumo Logic / Graylog** adjacent |
+| *Forwarders* | **Fluent Bit** (lightweight C, k8s-daemonset default), **Fluentd** (older Ruby), **Logstash**, **Vector** (Datadog's Rust pipeline) — distinct from backends; the OTel Collector also handles logs |
+
+## Metrics
+
+**Metric types** — the "quantitative/time measurements" made precise:
+
+- **Prometheus model:** *counter* (monotonic, resets on restart), *gauge* (up/down), *histogram* (pre-defined buckets → `_bucket` / `_sum` / `_count`; quantiles computed server-side via `histogram_quantile`), *summary* (client-computed quantiles — **cannot aggregate across instances**).
+- **OTel model:** *Counter, UpDownCounter, Histogram, Gauge* + async "Observable" variants. Maps onto Prometheus, not identical.
+
+The concepts that actually trip people:
+
+- **Cardinality is *the* constraint.** One time series = one unique combo of metric name + label values. Put `user_id` / `request_id` in a label → millions of series → TSDB blows up. **Rule: metrics = low-cardinality aggregates; high cardinality belongs in traces/logs.** (Cleanest dividing line for *which signal to reach for*.)
+- **Pull vs push.** Prometheus is **pull** — scrapes targets' `/metrics` endpoints on an interval via service discovery. Short-lived/batch jobs that die before a scrape use the **Pushgateway** (overused — an anti-pattern). The OTel Collector is **push** (OTLP in, remote-write out). Hybrid is common: SDK → Collector → Prometheus remote-write, *or* Prometheus scrapes the Collector.
+- **Percentile gotcha:** you can't average percentiles, and can't aggregate summary quantiles across instances. Histograms exist for exactly this — aggregate the buckets, *then* compute the quantile.
+- **PromQL** = query language; **TSDB** = storage engine. Local TSDB doesn't scale horizontally or retain long-term → add **Thanos**, **Grafana Mimir** (Cortex successor), or **VictoriaMetrics**.
+- **OTel↔Prom friction:** *temporality.* OTel can emit *delta* metrics; Prometheus is *cumulative* — delta→Prom needs conversion. Real papercut.
+
+CW vs this world: CloudWatch is push, integrated, low-effort — but expensive, weak at ad-hoc query and cardinality. Prometheus/Grafana is more powerful and cheaper to run, but you operate it.
+
+## Tracing
+
+- A **trace** is a tree/DAG of **spans** for one request's path across services. One **root span**; child spans per operation, each with start/end, **attributes** (tags), **events**, **status**, **links**.
+- **Context propagation** is what makes it *distributed*: the trace context (trace ID + parent span ID) crosses service boundaries, normally via HTTP headers. Standard = **W3C Trace Context** (`traceparent`, `tracestate`); older = **B3** (from Zipkin).
+- **Instrumentation:** *auto* (OTel hooks common libraries with zero code) vs *manual* (you wrap your own logic in spans).
+- **Sampling** — can't keep every trace at scale, and *where* you decide matters:
+  - **Head-based** — decide at trace start, propagate the decision. Cheap, but may drop exactly the slow/error traces you wanted.
+  - **Tail-based** — the Collector buffers all spans of a trace and decides *after* completion (keep all errors, anything >1s). Keeps the interesting traces, but needs memory **and forces all spans of a trace to the same collector instance** — a load-balancing constraint.
+
+| Tool | Note |
+| --- | --- |
+| **Jaeger** | CNCF, default OSS choice; stores in Cassandra / ES / Badger |
+| **Zipkin** | the original (Twitter) |
+| **Grafana Tempo** | object-storage-backed, cheap (barely indexes — find by ID or correlation); **TraceQL** |
+| **Honeycomb** | columnar, high-cardinality, built for unknown-unknowns |
+| **AWS X-Ray / Datadog APM** | managed/commercial |
+
+## Correlation — the real product
+
+The "three pillars" framing's value isn't three silos, it's **correlation**:
+
+- **`trace_id` in logs** (logs → trace) and **exemplars** — attach a trace ID to a specific metric sample, so you click a latency spike in a Grafana histogram and jump to an example trace that caused it (metrics → trace). This glue *is* the product.
+- Reach-for-which-signal follows cardinality: aggregates → metrics; one request's path → traces; detailed events → logs.
+
+## What to measure
+
+| Framework | Measures | Scope | Origin |
+| --- | --- | --- | --- |
+| **RED** | **R**ate, **E**rrors, **D**uration | per service (request-driven) | Tom Wilkie |
+| **USE** | **U**tilization, **S**aturation, **E**rrors | per resource (CPU, disk, queue) | Brendan Gregg |
+| **Four Golden Signals** | Latency, Traffic, Errors, Saturation | per service | Google SRE |
+
+## SLI / SLO / SLA + error budgets
+
+- **SLI** — the measurement (% requests < 200 ms).
+- **SLO** — the target (99.9%).
+- **SLA** — the contract with penalties (external).
+- **Error budget = 1 − SLO** — governs release velocity: burn it slowly → ship; budget exhausted → freeze and stabilize. Pure Google SRE.
+
+## Emerging signals
+
+- **Continuous profiling** — the oft-cited "fourth pillar": CPU/memory flame graphs in prod. **Grafana Pyroscope**, **Parca**; OTel added a profiling signal.
+- **eBPF** — zero-code auto-instrumentation by hooking the kernel instead of editing app code: **Grafana Beyla**, **Pixie**.
+
+## The OSS anchor — LGTM
+
+The clean OTel-native counterpart to the CloudWatch / Datadog / Elastic worlds:
+
+**L**oki (logs) · **G**rafana (viz) · **T**empo (traces) · **M**imir (metrics) — all fed by **OTel / OTLP**.

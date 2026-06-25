@@ -1,0 +1,10 @@
+flowchart LR
+  classDef otel fill:#eef0fe,stroke:#6366f1,stroke-width:1.5px,color:#0f172a;
+  classDef store fill:#eef2f8,stroke:#94a3b8,stroke-width:1.5px,color:#0f172a;
+  classDef viz fill:#e8f5ee,stroke:#34a085,stroke-width:1.5px,color:#0f172a;
+  subgraph OT["OpenTelemetry — emission + transport only (layers 1–2)"]
+    direction LR
+    I["<b>1. Instrument</b><br/>app + libs + runtime<br/>API / SDK"]:::otel --> C["<b>2. Collect / transport</b><br/>Collector: receivers →<br/>processors → exporters<br/>OTLP wire protocol"]:::otel
+  end
+  C --> S["<b>3. Store</b><br/>TSDB · log index<br/>· trace store"]:::store
+  S --> Q["<b>4. Query / viz / alert</b><br/>dashboards · ad-hoc<br/>queries · alerts"]:::viz

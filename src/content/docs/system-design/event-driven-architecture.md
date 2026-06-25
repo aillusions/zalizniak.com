@@ -85,7 +85,7 @@ Patterns worth name-dropping (they signal you've shipped this):
 Message-/event-driven isn't free — know what you're buying:
 
 - **Wins:** loose coupling, independent scaling and deployment, resilience (absorb bursts, survive a down consumer), and easy extension (new consumers attach without touching producers).
-- **Costs:** **eventual consistency** (no synchronous "it's done"), much harder **debugging and observability** (a request's path is spread across services and time — lean on [tracing](/system-design/otel/)), ordering and duplicate handling ([idempotency](/system-design/terminology/#async--messaging)), and — in pure choreography — **no single owner** of the flow.
+- **Costs:** **eventual consistency** (no synchronous "it's done"), much harder **debugging and observability** (a request's path is spread across services and time — lean on [tracing](/system-design/observability/#tracing)), ordering and duplicate handling ([idempotency](/system-design/terminology/#async--messaging)), and — in pure choreography — **no single owner** of the flow.
 
 Reach for it when components must scale and fail independently and reactions are many/unknown. Keep a plain synchronous call when you need an immediate answer and the coupling is fine.
 
