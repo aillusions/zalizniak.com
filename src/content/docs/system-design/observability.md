@@ -70,6 +70,91 @@ The whole pitch is **vendor-neutral emission**: instrument once, then point at J
 
 **One event ≠ one network call.** The SDK **batches** in-process (BatchSpanProcessor + metric/log equivalents) and flushes one OTLP request per batch on a size or timer trigger (~5s); metrics export on an interval (~60s). One-to-one only with a simple/sync processor — dev-only, kills throughput in prod.
 
+### App side — Node SDK end to end
+
+The whole app contract in one file: configure a `resource` (who am I), wire one exporter per signal at one endpoint (the local Collector), `start()`, then emit a span / counter / log. Batching, periodic metric export, and graceful flush-on-shutdown are all here.
+
+<details open>
+<summary>Node SDK example — traces + metrics + logs → Collector</summary>
+
+```ts
+import { NodeSDK } from '@opentelemetry/sdk-node';
+import { resourceFromAttributes } from '@opentelemetry/resources';
+import { ATTR_SERVICE_NAME } from '@opentelemetry/semantic-conventions';
+
+// gRPC exporters (port 4317). Alternative: swap each `-grpc` for `-http`
+// (port 4318) — same API, just HTTP/protobuf transport.
+import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-grpc';
+import { OTLPMetricExporter } from '@opentelemetry/exporter-metrics-otlp-grpc';
+import { OTLPLogExporter } from '@opentelemetry/exporter-logs-otlp-grpc';
+
+import { PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
+import { BatchLogRecordProcessor } from '@opentelemetry/sdk-logs';
+import { trace, metrics } from '@opentelemetry/api';
+import { logs } from '@opentelemetry/api-logs';
+
+// One endpoint = the local Collector. Alternative: point straight at a
+// backend (Tempo/Datadog/etc.) and skip the Collector entirely.
+const ENDPOINT = 'http://localhost:4317';
+
+const sdk = new NodeSDK({
+  // Identifies the emitting service to the backend. Add more attrs here
+  // (deployment.environment, service.version) for richer filtering.
+  resource: resourceFromAttributes({
+    [ATTR_SERVICE_NAME]: 'my-app',
+  }),
+
+  // TRACES — batched by default (BatchSpanProcessor under the hood).
+  traceExporter: new OTLPTraceExporter({ url: ENDPOINT }),
+
+  // METRICS — periodic export. Tune the interval to taste.
+  metricReader: new PeriodicExportingMetricReader({
+    exporter: new OTLPMetricExporter({ url: ENDPOINT }),
+    exportIntervalMillis: 60000,
+    // Alternative: add `views: [...]` here to override histogram buckets.
+  }),
+
+  // LOGS — batched. Alternative: SimpleLogRecordProcessor (dev only,
+  // one-call-per-record, kills throughput in prod).
+  logRecordProcessors: [
+    new BatchLogRecordProcessor(new OTLPLogExporter({ url: ENDPOINT })),
+  ],
+});
+
+sdk.start();
+
+// Graceful shutdown — flushes the final batch before exit. Without this a
+// short run loses its last interval of data.
+process.on('SIGTERM', async () => {
+  await sdk.shutdown();
+});
+
+// --- emit ---
+
+// TRACE
+const tracer = trace.getTracer('my-app');
+tracer.startActiveSpan('handleRequest', (span) => {
+  // Semantic-convention attribute name — standardized key.
+  span.setAttribute('http.request.method', 'GET');
+  span.end();
+});
+
+// METRIC (push: Counter). Alternatives: createHistogram (latency) or
+// createObservableGauge (pull/callback, e.g. event-loop utilization).
+const meter = metrics.getMeter('my-app');
+const counter = meter.createCounter('requests.count');
+counter.add(1, { route: '/checkout' });
+
+// LOG
+logs.getLogger('my-app').emit({
+  severityText: 'INFO',
+  body: 'order placed',
+  attributes: { 'order.id': 123 },
+});
+```
+
+</details>
+
 ## Monitoring vs observability
 
 - **Monitoring** — predefined dashboards + alerts for failure modes you *predicted* → **known-unknowns**.
