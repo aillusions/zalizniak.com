@@ -167,6 +167,7 @@ logs.getLogger('my-app').emit({
 - **Structured vs unstructured** is the dividing line. `log.info("user 123 failed")` vs `{"event":"login_failed","user_id":123,"trace_id":"…"}`. Structured (JSON) is the modern default — queryable without regex archaeology.
 - **`trace_id` in every log line** is the bridge to tracing: jump from "error in logs" to the full distributed trace of that request. *The single highest-value habit in this whole topic.*
 - **Cost is the dominant constraint** — logs are the most expensive signal at volume (full-text indexing). Drives sampling and cheaper-backend choices.
+- **Prod default = INFO, not DEBUG.** DEBUG in prod explodes volume/cost, is slow, and leaks internals/PII. "How do I see what broke?" → well-structured ERROR/WARN with context + a `trace_id`, plus traces — beats a DEBUG flood. For depth on demand use **dynamic log levels**: bump one module to DEBUG at runtime (actuator/log-level endpoint, env+reload) without redeploying.
 - OTel has a **logs signal** but it's the least mature of the three — usually you *bridge* existing loggers into it rather than emit natively.
 
 | Tool | Note |
