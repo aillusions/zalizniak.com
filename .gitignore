@@ -22,3 +22,5 @@ npm-debug.log*
 # anchored to repo root so the public /src/content/docs/notes/ section is NOT ignored
 /notes/
 temp.txt
+# Private raw chat logs / research scratch
+speccraft-assets/*.txt
