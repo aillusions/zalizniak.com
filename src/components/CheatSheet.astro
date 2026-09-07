@@ -1,0 +1,127 @@
+---
+// Renders a cheat sheet in the same look as practice/math/math-pdf.py's
+// printable PDF: a colored banner per area, a small bold colored subheading
+// per group, and a dense multi-column list of "label — fact" bullets.
+import type { CheatArea } from '../data/cheatsheets/math';
+
+interface Props {
+	areas: CheatArea[];
+}
+
+const { areas } = Astro.props;
+---
+
+<div class="cheatsheet not-content">
+	{
+		areas.map((area) => (
+			<section class="area">
+				<h2 class="area-banner" style={`background:${area.color}`}>
+					{area.name}
+				</h2>
+				<div class="area-body">
+					{area.subs.map((sub) => (
+						<div class="sub-group">
+							{sub.title && (
+								<h3 class="sub-title" style={`color:${area.color}`}>
+									{sub.title}
+								</h3>
+							)}
+							<ul>
+								{sub.items.map((item) => (
+									<li>
+										{item.label ? (
+											<>
+												<b>{item.label}</b> — {item.text}
+											</>
+										) : (
+											item.text
+										)}
+									</li>
+								))}
+							</ul>
+						</div>
+					))}
+				</div>
+			</section>
+		))
+	}
+</div>
+
+<style>
+	.cheatsheet {
+		font-family: Georgia, 'Times New Roman', serif;
+		font-size: 0.82rem;
+		line-height: 1.35;
+		color: var(--sl-color-text);
+	}
+
+	.area {
+		break-inside: avoid-column;
+		margin-bottom: 0.6rem;
+	}
+
+	.area-banner {
+		font-family: 'Helvetica Neue', Arial, sans-serif;
+		font-size: 0.95rem;
+		font-weight: bold;
+		color: #fff;
+		margin: 0 0 0.5rem;
+		padding: 0.3rem 0.6rem;
+		border-radius: 3px;
+		letter-spacing: 0.02em;
+		break-after: avoid-column;
+	}
+
+	.area-body {
+		columns: 260px 3;
+		column-gap: 1.4rem;
+		column-rule: 1px solid var(--sl-color-hairline-shade);
+	}
+
+	.sub-group {
+		break-inside: avoid-column;
+		margin-bottom: 0.7rem;
+	}
+
+	.sub-title {
+		font-family: 'Helvetica Neue', Arial, sans-serif;
+		font-size: 0.78rem;
+		font-weight: bold;
+		text-transform: uppercase;
+		letter-spacing: 0.04em;
+		margin: 0 0 0.2rem;
+		break-after: avoid-column;
+	}
+
+	ul {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	li {
+		margin: 0 0 0.4rem;
+		break-inside: avoid-column;
+		overflow-wrap: break-word;
+	}
+
+	li b {
+		font-weight: bold;
+	}
+
+	@media print {
+		.cheatsheet {
+			font-size: 8pt;
+			line-height: 1.2;
+		}
+		.area-body {
+			columns: 3;
+			column-gap: 4mm;
+		}
+		.area,
+		.sub-group,
+		li {
+			break-inside: avoid;
+		}
+	}
+</style>

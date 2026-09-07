@@ -55,6 +55,13 @@ export default defineConfig({
 			lastUpdated: true,
 			sidebar: [
 				{ label: 'Home', link: '/' },
+				// Public, living reference pages, separate from the archived
+				// study notes below since these get updated as the underlying
+				// practice cheat sheets change, not left to accumulate history.
+				{
+					label: 'Cheat Sheets',
+					items: [{ autogenerate: { directory: 'cheat-sheets' } }],
+				},
 				// Everything except the landing page now lives under a single
 				// collapsed "Archive" group so the root nav stays minimal; the
 				// content directories moved under src/content/docs/archive/ to match.
