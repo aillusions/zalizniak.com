@@ -71,7 +71,7 @@ export default defineConfig({
 						{ label: 'Math for Programmers', link: '/cheat-sheets/math.pdf' },
 						{ label: 'TypeScript Type System', link: '/cheat-sheets/typescript-types.pdf' },
 						{ label: 'Functional Programming', link: '/cheat-sheets/functional-programming.pdf' },
-						{ label: 'Model Checking (States & Invariants)', link: '/cheat-sheets/model-checking.pdf' },
+						{ label: 'Model Checking', link: '/cheat-sheets/model-checking.pdf' },
 					],
 				},
 				// Everything except the landing page now lives under a single
