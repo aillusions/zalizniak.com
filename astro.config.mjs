@@ -68,10 +68,10 @@ export default defineConfig({
 				{
 					label: 'Cheat Sheets',
 					items: [
-						{ label: 'Math for Programmers', link: '/cheat-sheets/math.pdf' },
-						{ label: 'TypeScript Type System', link: '/cheat-sheets/typescript-types.pdf' },
-						{ label: 'Functional Programming', link: '/cheat-sheets/functional-programming.pdf' },
-						{ label: 'Model Checking', link: '/cheat-sheets/model-checking.pdf' },
+						{ label: 'Math for Programmers', link: '/cheat-sheets/math.pdf', attrs: { target: '_blank' } },
+						{ label: 'TypeScript Type System', link: '/cheat-sheets/typescript-types.pdf', attrs: { target: '_blank' } },
+						{ label: 'Functional Programming', link: '/cheat-sheets/functional-programming.pdf', attrs: { target: '_blank' } },
+						{ label: 'Formal Model Checking', link: '/cheat-sheets/model-checking.pdf', attrs: { target: '_blank' } },
 					],
 				},
 				// Everything except the landing page now lives under a single
