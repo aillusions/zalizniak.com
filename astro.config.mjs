@@ -6,6 +6,13 @@ import rehypeExternalLinks from 'rehype-external-links';
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://zalizniak.com',
+	// The cheat sheets used to be HTML pages at these URLs; they are now
+	// served as the actual PDFs, so keep the old links working.
+	redirects: {
+		'/cheat-sheets/math': '/cheat-sheets/math.pdf',
+		'/cheat-sheets/typescript-types': '/cheat-sheets/typescript-types.pdf',
+		'/cheat-sheets/functional-programming': '/cheat-sheets/functional-programming.pdf',
+	},
 	markdown: {
 		// Open every off-site link in a new tab; rel guards against tabnabbing.
 		rehypePlugins: [
@@ -55,12 +62,17 @@ export default defineConfig({
 			lastUpdated: true,
 			sidebar: [
 				{ label: 'Home', link: '/' },
-				// Public, living reference pages, separate from the archived
-				// study notes below since these get updated as the underlying
-				// practice cheat sheets change, not left to accumulate history.
+				// Living reference sheets, served as the actual printable PDFs
+				// (copied from the practice repo into public/cheat-sheets/),
+				// not as HTML pages — the browser opens them inline.
 				{
 					label: 'Cheat Sheets',
-					items: [{ autogenerate: { directory: 'cheat-sheets' } }],
+					items: [
+						{ label: 'Math for Programmers', link: '/cheat-sheets/math.pdf' },
+						{ label: 'TypeScript Type System', link: '/cheat-sheets/typescript-types.pdf' },
+						{ label: 'Functional Programming', link: '/cheat-sheets/functional-programming.pdf' },
+						{ label: 'Model Checking (States & Invariants)', link: '/cheat-sheets/model-checking.pdf' },
+					],
 				},
 				// Everything except the landing page now lives under a single
 				// collapsed "Archive" group so the root nav stays minimal; the
