@@ -76,22 +76,6 @@ export default defineConfig({
 						{ label: 'Formal Model Checking', link: '/cheat-sheets/model-checking.pdf', attrs: { target: '_blank' } },
 					],
 				},
-				// Personal study notes for system design interview prep — a
-				// general (not AI-specific) reference: the prep method, the
-				// in-room delivery framework, and worked question breakdowns.
-				{
-					label: 'System Design',
-					collapsed: true,
-					items: [
-						{ autogenerate: { directory: 'system-design' } },
-						// Deep dives into specific technologies (Postgres, Kafka, …) —
-						// their own subgroup so they don't mix with the concept pages.
-						{ label: 'Technologies', items: [{ autogenerate: { directory: 'technologies' } }] },
-						// Worked end-to-end design problems — their own subgroup so
-						// they don't mix with the concept pages above.
-						{ label: 'Design Problems', items: [{ autogenerate: { directory: 'design-problems' } }] },
-					],
-				},
 				// Cross-company synthesis: the recurring hard problems of applied
 				// AI and how teams across the teardowns solve them.
 				{
