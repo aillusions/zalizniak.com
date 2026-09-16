@@ -9,6 +9,8 @@ export default defineConfig({
 	// The cheat sheets used to be HTML pages at these URLs; they are now
 	// served as the actual PDFs, so keep the old links working.
 	redirects: {
+		// The content used to live under /archive/; keep the old URLs working.
+		'/archive/[...slug]': '/[...slug]',
 		'/cheat-sheets/math': '/cheat-sheets/math.pdf',
 		'/cheat-sheets/typescript-types': '/cheat-sheets/typescript-types.pdf',
 		'/cheat-sheets/functional-programming': '/cheat-sheets/functional-programming.pdf',
@@ -74,9 +76,8 @@ export default defineConfig({
 						{ label: 'Formal Model Checking', link: '/cheat-sheets/model-checking.pdf', attrs: { target: '_blank' } },
 					],
 				},
-				// Everything except the landing page now lives under a single
-				// collapsed "Archive" group so the root nav stays minimal; the
-				// content directories moved under src/content/docs/archive/ to match.
+				// Everything except the landing page lives under a single
+				// collapsed "Archive" group so the root nav stays minimal.
 				{
 					label: 'Archive',
 					collapsed: true,
@@ -87,36 +88,36 @@ export default defineConfig({
 						{
 							label: 'System Design',
 							items: [
-								{ autogenerate: { directory: 'archive/system-design' } },
+								{ autogenerate: { directory: 'system-design' } },
 								// Deep dives into specific technologies (Postgres, Kafka, …) —
 								// their own subgroup so they don't mix with the concept pages.
-								{ label: 'Technologies', items: [{ autogenerate: { directory: 'archive/technologies' } }] },
+								{ label: 'Technologies', items: [{ autogenerate: { directory: 'technologies' } }] },
 								// Worked end-to-end design problems — their own subgroup so
 								// they don't mix with the concept pages above.
-								{ label: 'Design Problems', items: [{ autogenerate: { directory: 'archive/design-problems' } }] },
+								{ label: 'Design Problems', items: [{ autogenerate: { directory: 'design-problems' } }] },
 							],
 						},
 						// Cross-company synthesis: the recurring hard problems of applied
 						// AI and how teams across the teardowns solve them.
 						{
 							label: 'AI Playbook',
-							items: [{ autogenerate: { directory: 'archive/ai-playbook' } }],
+							items: [{ autogenerate: { directory: 'ai-playbook' } }],
 						},
 						// Forward-looking companion to the teardowns: industries and
 						// workflows where an AI agent could own high-value pain nobody
 						// has built for yet — each scored on profit, pain, and whitespace.
 						{
 							label: 'Opportunities',
-							items: [{ autogenerate: { directory: 'archive/opportunities' } }],
+							items: [{ autogenerate: { directory: 'opportunities' } }],
 						},
 						{
 							label: 'Teardowns',
-							items: [{ autogenerate: { directory: 'archive/teardowns' } }],
+							items: [{ autogenerate: { directory: 'teardowns' } }],
 						},
 						// Working glossaries / reference notes — kept at the bottom.
 						{
 							label: 'Notes',
-							items: [{ autogenerate: { directory: 'archive/notes' } }],
+							items: [{ autogenerate: { directory: 'notes' } }],
 						},
 					],
 				},
