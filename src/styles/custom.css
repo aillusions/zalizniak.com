@@ -10,3 +10,13 @@
 .sl-markdown-content h3 {
 	font-size: 1.15rem;
 }
+
+/* Sidebar entries that open in a new tab (the cheat-sheet PDFs) get a small
+   north-east arrow after the label, the usual "leaves this page" mark. Keyed
+   off target="_blank" so any future new-tab entry is marked automatically. */
+#starlight__sidebar a[target='_blank']::after {
+	content: '↗';
+	margin-left: 0.35em;
+	font-size: 0.85em;
+	opacity: 0.55;
+}
