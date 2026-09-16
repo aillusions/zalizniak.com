@@ -74,7 +74,7 @@ export default defineConfig({
 						{ label: 'TypeScript Core', link: '/cheat-sheets/typescript-core.pdf', attrs: { target: '_blank' } },
 						{ label: 'TypeScript Async & Concurrency', link: '/cheat-sheets/typescript-async.pdf', attrs: { target: '_blank' } },
 						{ label: 'TypeScript Type System', link: '/cheat-sheets/typescript-types.pdf', attrs: { target: '_blank' } },
-						{ label: 'TypeScript OOP & Patterns', link: '/cheat-sheets/typescript-oop.pdf', attrs: { target: '_blank' } },
+						{ label: 'OOP & Design Patterns', link: '/cheat-sheets/typescript-oop.pdf', attrs: { target: '_blank' } },
 						{ label: 'Functional Programming', link: '/cheat-sheets/functional-programming.pdf', attrs: { target: '_blank' } },
 						{ label: 'Formal Model Checking', link: '/cheat-sheets/model-checking.pdf', attrs: { target: '_blank' } },
 					],
