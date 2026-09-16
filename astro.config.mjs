@@ -76,50 +76,47 @@ export default defineConfig({
 						{ label: 'Formal Model Checking', link: '/cheat-sheets/model-checking.pdf', attrs: { target: '_blank' } },
 					],
 				},
-				// Everything except the landing page lives under a single
-				// collapsed "Archive" group so the root nav stays minimal.
+				// Personal study notes for system design interview prep — a
+				// general (not AI-specific) reference: the prep method, the
+				// in-room delivery framework, and worked question breakdowns.
 				{
-					label: 'Archive',
+					label: 'System Design',
 					collapsed: true,
 					items: [
-						// Personal study notes for system design interview prep — a
-						// general (not AI-specific) reference: the prep method, the
-						// in-room delivery framework, and worked question breakdowns.
-						{
-							label: 'System Design',
-							items: [
-								{ autogenerate: { directory: 'system-design' } },
-								// Deep dives into specific technologies (Postgres, Kafka, …) —
-								// their own subgroup so they don't mix with the concept pages.
-								{ label: 'Technologies', items: [{ autogenerate: { directory: 'technologies' } }] },
-								// Worked end-to-end design problems — their own subgroup so
-								// they don't mix with the concept pages above.
-								{ label: 'Design Problems', items: [{ autogenerate: { directory: 'design-problems' } }] },
-							],
-						},
-						// Cross-company synthesis: the recurring hard problems of applied
-						// AI and how teams across the teardowns solve them.
-						{
-							label: 'AI Playbook',
-							items: [{ autogenerate: { directory: 'ai-playbook' } }],
-						},
-						// Forward-looking companion to the teardowns: industries and
-						// workflows where an AI agent could own high-value pain nobody
-						// has built for yet — each scored on profit, pain, and whitespace.
-						{
-							label: 'Opportunities',
-							items: [{ autogenerate: { directory: 'opportunities' } }],
-						},
-						{
-							label: 'Teardowns',
-							items: [{ autogenerate: { directory: 'teardowns' } }],
-						},
-						// Working glossaries / reference notes — kept at the bottom.
-						{
-							label: 'Notes',
-							items: [{ autogenerate: { directory: 'notes' } }],
-						},
+						{ autogenerate: { directory: 'system-design' } },
+						// Deep dives into specific technologies (Postgres, Kafka, …) —
+						// their own subgroup so they don't mix with the concept pages.
+						{ label: 'Technologies', items: [{ autogenerate: { directory: 'technologies' } }] },
+						// Worked end-to-end design problems — their own subgroup so
+						// they don't mix with the concept pages above.
+						{ label: 'Design Problems', items: [{ autogenerate: { directory: 'design-problems' } }] },
 					],
+				},
+				// Cross-company synthesis: the recurring hard problems of applied
+				// AI and how teams across the teardowns solve them.
+				{
+					label: 'AI Playbook',
+					collapsed: true,
+					items: [{ autogenerate: { directory: 'ai-playbook' } }],
+				},
+				// Forward-looking companion to the teardowns: industries and
+				// workflows where an AI agent could own high-value pain nobody
+				// has built for yet — each scored on profit, pain, and whitespace.
+				{
+					label: 'Opportunities',
+					collapsed: true,
+					items: [{ autogenerate: { directory: 'opportunities' } }],
+				},
+				{
+					label: 'Teardowns',
+					collapsed: true,
+					items: [{ autogenerate: { directory: 'teardowns' } }],
+				},
+				// Working glossaries / reference notes — kept at the bottom.
+				{
+					label: 'Notes',
+					collapsed: true,
+					items: [{ autogenerate: { directory: 'notes' } }],
 				},
 			],
 		}),
