@@ -189,4 +189,4 @@ job. Now you have a place to write it down and a machine that holds you to it.
 
 The vocabulary of this method (variables, actions, invariants, traces,
 fairness) is collected in the
-[Formal Model Checking cheat sheet](/cheat-sheets/model-checking.pdf).
+[Formal Methods cheat sheet](/cheat-sheets/formal-methods.pdf).
