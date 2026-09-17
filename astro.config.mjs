@@ -83,7 +83,7 @@ export default defineConfig({
 						{ label: 'TypeScript Type System', link: '/cheat-sheets/typescript-types.pdf', attrs: { target: '_blank' } },
 						{ label: 'OOP & Design Patterns', link: '/cheat-sheets/oop.pdf', attrs: { target: '_blank' } },
 						{ label: 'Functional Programming', link: '/cheat-sheets/functional-programming.pdf', attrs: { target: '_blank' } },
-						{ label: 'Formal Model Checking', link: '/cheat-sheets/model-checking.pdf', attrs: { target: '_blank' } },
+						{ label: 'Formal Methods', link: '/cheat-sheets/formal-methods.pdf', attrs: { target: '_blank' } },
 					],
 				},
 				// Cross-company synthesis: the recurring hard problems of applied
