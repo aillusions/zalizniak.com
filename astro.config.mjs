@@ -64,6 +64,13 @@ export default defineConfig({
 			lastUpdated: true,
 			sidebar: [
 				{ label: 'Home', link: '/' },
+				// Applying formal specification and model checking to ordinary
+				// production code: case studies and method write-ups.
+				{
+					label: 'Formal Methods',
+					collapsed: true,
+					items: [{ autogenerate: { directory: 'formal-methods' } }],
+				},
 				// Living reference sheets, served as the actual printable PDFs
 				// (copied from the practice repo into public/cheat-sheets/),
 				// not as HTML pages — the browser opens them inline.
