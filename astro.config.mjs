@@ -78,6 +78,7 @@ export default defineConfig({
 					label: 'Cheat Sheets',
 					items: [
 						{ label: 'Math for Programmers', link: '/cheat-sheets/math.pdf', attrs: { target: '_blank' } },
+						{ label: 'Logic for Programmers', link: '/cheat-sheets/logic.pdf', attrs: { target: '_blank' } },
 						{ label: 'TypeScript Core', link: '/cheat-sheets/typescript-core.pdf', attrs: { target: '_blank' } },
 						{ label: 'TypeScript Async & Concurrency', link: '/cheat-sheets/typescript-async.pdf', attrs: { target: '_blank' } },
 						{ label: 'TypeScript Type System', link: '/cheat-sheets/typescript-types.pdf', attrs: { target: '_blank' } },
