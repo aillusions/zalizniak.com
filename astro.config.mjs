@@ -37,6 +37,10 @@ export default defineConfig({
 				SiteTitle: './src/components/SiteTitle.astro',
 				// Add click-to-enlarge (lightbox) for diagram images.
 				Head: './src/components/Head.astro',
+				// Start first-time visitors on the light theme instead of the system one.
+				ThemeProvider: './src/components/ThemeProvider.astro',
+				// A single sun/moon toggle instead of the Dark/Light/Auto dropdown.
+				ThemeSelect: './src/components/ThemeSelect.astro',
 			},
 			description:
 				'Oleksandr Zalizniak — Product Engineer & Backend Architect building AI-native products, and Applied AI Teardowns: architecture teardowns of applied-AI startups reconstructed from public signals.',
