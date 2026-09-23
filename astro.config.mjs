@@ -73,7 +73,7 @@ export default defineConfig({
 				{
 					label: 'Formal Methods',
 					collapsed: true,
-					items: [{ autogenerate: { directory: 'formal-methods' } }],
+					items: [{ label: 'SpecCraft', link: 'https://speccraft.io/', attrs: { target: '_blank' } }],
 				},
 				// Living reference sheets, served as the actual printable PDFs
 				// (copied from the practice repo into public/cheat-sheets/),
