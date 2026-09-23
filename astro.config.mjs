@@ -66,6 +66,8 @@ export default defineConfig({
 			// Show a git-based "Last updated" date in the footer of every page;
 			// per-page `lastUpdated` frontmatter can pin/override it.
 			lastUpdated: true,
+			// No right-hand "On this page" table of contents on any page.
+			tableOfContents: false,
 			sidebar: [
 				{ label: 'Home', link: '/' },
 				// Applying formal specification and model checking to ordinary
