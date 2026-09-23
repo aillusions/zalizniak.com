@@ -72,7 +72,6 @@ export default defineConfig({
 				// production code: case studies and method write-ups.
 				{
 					label: 'Formal Methods',
-					collapsed: true,
 					items: [{ label: 'SpecCraft', link: 'https://speccraft.io/', attrs: { target: '_blank' } }],
 				},
 				// Living reference sheets, served as the actual printable PDFs
