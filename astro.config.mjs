@@ -68,6 +68,8 @@ export default defineConfig({
 			lastUpdated: true,
 			// No right-hand "On this page" table of contents on any page.
 			tableOfContents: false,
+			// No site search: hides the header search bar and skips the Pagefind index.
+			pagefind: false,
 			sidebar: [
 				{ label: 'Home', link: '/' },
 				// Applying formal specification and model checking to ordinary
