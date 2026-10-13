@@ -43,7 +43,7 @@ export default defineConfig({
 				ThemeSelect: './src/components/ThemeSelect.astro',
 			},
 			description:
-				'Oleksandr Zalizniak — Product Engineer & Backend Architect building AI-native products, and Applied AI Teardowns: architecture teardowns of applied-AI startups reconstructed from public signals.',
+				'Oleksandr Zalizniak. Founder & Systems Engineer building Flowrensic, forensics for durable execution. Also Applied AI Teardowns: architecture teardowns of applied-AI startups reconstructed from public signals.',
 			favicon: '/favicon.ico',
 			head: [
 				{ tag: 'link', attrs: { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32x32.png' } },
@@ -60,8 +60,8 @@ export default defineConfig({
 				},
 			],
 			social: [
-				{ icon: 'github', label: 'GitHub', href: 'https://github.com/aillusions/zalizniak.com' },
 				{ icon: 'linkedin', label: 'LinkedIn', href: 'https://www.linkedin.com/in/ozalizniak/' },
+				{ icon: 'github', label: 'GitHub', href: 'https://github.com/aillusions/zalizniak.com' },
 			],
 			// Show a git-based "Last updated" date in the footer of every page;
 			// per-page `lastUpdated` frontmatter can pin/override it.
@@ -72,11 +72,15 @@ export default defineConfig({
 			pagefind: false,
 			sidebar: [
 				{ label: 'Home', link: '/' },
-				// Applying formal specification and model checking to ordinary
-				// production code: case studies and method write-ups.
+				// The products I build, newest/most active first. External brand
+				// sites, so these are plain links rather than pages in this repo.
 				{
-					label: 'Formal Methods',
-					items: [{ label: 'SpecCraft', link: 'https://speccraft.io/', attrs: { target: '_blank' } }],
+					label: 'What I Build',
+					items: [
+						{ label: 'Flowrensic', link: 'https://flowrensic.com/', attrs: { target: '_blank' } },
+						{ label: 'SpecCraft', link: 'https://speccraft.io/', attrs: { target: '_blank' } },
+						{ label: 'Signus.ai', link: 'https://signus.ai/', attrs: { target: '_blank' } },
+					],
 				},
 				// Living reference sheets, served as the actual printable PDFs
 				// (copied from the practice repo into public/cheat-sheets/),
