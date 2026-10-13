@@ -87,6 +87,7 @@ export default defineConfig({
 				// not as HTML pages — the browser opens them inline.
 				{
 					label: 'Cheat Sheets',
+					collapsed: true,
 					items: [
 						{ label: 'Math for Programmers', link: '/cheat-sheets/math.pdf', attrs: { target: '_blank' } },
 						{ label: 'Logic for Programmers', link: '/cheat-sheets/logic.pdf', attrs: { target: '_blank' } },
