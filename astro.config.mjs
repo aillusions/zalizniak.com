@@ -43,7 +43,7 @@ export default defineConfig({
 				ThemeSelect: './src/components/ThemeSelect.astro',
 			},
 			description:
-				'Oleksandr Zalizniak. Founder & Systems Engineer building Flowrensic, forensics for durable execution. Also Applied AI Teardowns: architecture teardowns of applied-AI startups reconstructed from public signals.',
+				'Oleksandr Zalizniak. Founder & Systems Engineer building Flowrensic, forensics for durable execution: why workflows get stuck, fail, or quietly burn money.',
 			favicon: '/favicon.ico',
 			head: [
 				{ tag: 'link', attrs: { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32x32.png' } },
@@ -98,32 +98,6 @@ export default defineConfig({
 						{ label: 'Functional Programming', link: '/cheat-sheets/functional-programming.pdf', attrs: { target: '_blank' } },
 						{ label: 'Formal Methods', link: '/cheat-sheets/formal-methods.pdf', attrs: { target: '_blank' } },
 					],
-				},
-				// Cross-company synthesis: the recurring hard problems of applied
-				// AI and how teams across the teardowns solve them.
-				{
-					label: 'AI Playbook',
-					collapsed: true,
-					items: [{ autogenerate: { directory: 'ai-playbook' } }],
-				},
-				// Forward-looking companion to the teardowns: industries and
-				// workflows where an AI agent could own high-value pain nobody
-				// has built for yet — each scored on profit, pain, and whitespace.
-				{
-					label: 'Opportunities',
-					collapsed: true,
-					items: [{ autogenerate: { directory: 'opportunities' } }],
-				},
-				{
-					label: 'Teardowns',
-					collapsed: true,
-					items: [{ autogenerate: { directory: 'teardowns' } }],
-				},
-				// Working glossaries / reference notes — kept at the bottom.
-				{
-					label: 'Notes',
-					collapsed: true,
-					items: [{ autogenerate: { directory: 'notes' } }],
 				},
 			],
 		}),
