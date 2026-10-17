@@ -61,7 +61,6 @@ export default defineConfig({
 			],
 			social: [
 				{ icon: 'linkedin', label: 'LinkedIn', href: 'https://www.linkedin.com/in/ozalizniak/' },
-				{ icon: 'github', label: 'GitHub', href: 'https://github.com/aillusions/zalizniak.com' },
 			],
 			// Show a git-based "Last updated" date in the footer of every page;
 			// per-page `lastUpdated` frontmatter can pin/override it.
