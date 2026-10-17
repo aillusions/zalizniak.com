@@ -8,17 +8,17 @@ Render one diagram:
 
 ```sh
 npx mmdc -c diagrams/mermaid-theme.json -b transparent \
-  -i diagrams/system-design/architecture.mmd \
-  -o public/diagrams/system-design/architecture.svg
+  -i diagrams/<section>/architecture.mmd \
+  -o public/diagrams/<section>/architecture.svg
 ```
 
 Re-render a whole directory:
 
 ```sh
-for f in diagrams/system-design/*.mmd; do
+for f in diagrams/<section>/*.mmd; do
   n=$(basename "$f" .mmd)
   npx mmdc -c diagrams/mermaid-theme.json -b transparent \
-    -i "$f" -o "public/diagrams/system-design/$n.svg"
+    -i "$f" -o "public/diagrams/<section>/$n.svg"
 done
 ```
 
