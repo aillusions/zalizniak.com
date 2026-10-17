@@ -26,9 +26,6 @@ export default defineConfig({
 			title: 'Oleksandr Zalizniak',
 			// Site-wide CSS tweaks (smaller in-content headings, etc.).
 			customCss: ['./src/styles/custom.css'],
-			// Add an "Edit page" link in each doc footer, pointing at the file
-			// in the public repo (PR-based contribution).
-			editLink: { baseUrl: 'https://github.com/aillusions/zalizniak.com/edit/main/' },
 			components: {
 				// Make header social icons open in a new tab.
 				SocialIcons: './src/components/SocialIcons.astro',
