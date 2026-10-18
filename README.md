@@ -7,8 +7,6 @@ deployed to AWS Amplify.
 - **Landing page** (`src/content/docs/index.mdx`) — the personal profile: what
   I'm building, background, and links. Rendered as a normal doc page so it keeps
   the sidebar.
-- **Cheat sheets** (`public/cheat-sheets/`) — printable reference PDFs, linked
-  from the sidebar and served as the actual files.
 
 ## Run locally (Node 20+)
 

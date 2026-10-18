@@ -6,14 +6,9 @@ import rehypeExternalLinks from 'rehype-external-links';
 // https://astro.build/config
 export default defineConfig({
 	site: 'https://zalizniak.com',
-	// The cheat sheets used to be HTML pages at these URLs; they are now
-	// served as the actual PDFs, so keep the old links working.
 	redirects: {
 		// The content used to live under /archive/; keep the old URLs working.
 		'/archive/[...slug]': '/[...slug]',
-		'/cheat-sheets/math': '/cheat-sheets/math.pdf',
-		'/cheat-sheets/typescript-types': '/cheat-sheets/typescript-types.pdf',
-		'/cheat-sheets/functional-programming': '/cheat-sheets/functional-programming.pdf',
 	},
 	markdown: {
 		// Open every off-site link in a new tab; rel guards against tabnabbing.
@@ -76,23 +71,6 @@ export default defineConfig({
 						{ label: 'Flowrensic', link: 'https://flowrensic.com/', attrs: { target: '_blank' } },
 						{ label: 'SpecCraft', link: 'https://speccraft.io/', attrs: { target: '_blank' } },
 						{ label: 'Signus.ai', link: 'https://signus.ai/', attrs: { target: '_blank' } },
-					],
-				},
-				// Living reference sheets, served as the actual printable PDFs
-				// (copied from the practice repo into public/cheat-sheets/),
-				// not as HTML pages — the browser opens them inline.
-				{
-					label: 'Cheat Sheets',
-					collapsed: true,
-					items: [
-						{ label: 'Math for Programmers', link: '/cheat-sheets/math.pdf', attrs: { target: '_blank' } },
-						{ label: 'Logic for Programmers', link: '/cheat-sheets/logic.pdf', attrs: { target: '_blank' } },
-						{ label: 'TypeScript Core', link: '/cheat-sheets/typescript-core.pdf', attrs: { target: '_blank' } },
-						{ label: 'TypeScript Async & Concurrency', link: '/cheat-sheets/typescript-async.pdf', attrs: { target: '_blank' } },
-						{ label: 'TypeScript Type System', link: '/cheat-sheets/typescript-types.pdf', attrs: { target: '_blank' } },
-						{ label: 'OOP & Design Patterns', link: '/cheat-sheets/oop.pdf', attrs: { target: '_blank' } },
-						{ label: 'Functional Programming', link: '/cheat-sheets/functional-programming.pdf', attrs: { target: '_blank' } },
-						{ label: 'Formal Methods', link: '/cheat-sheets/formal-methods.pdf', attrs: { target: '_blank' } },
 					],
 				},
 			],

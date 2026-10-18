@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-> **Repo scope:** the source for **zalizniak.com** (Astro Starlight, deployed to AWS Amplify at the apex + `www`; Terraform in `infra/`). The site is the personal landing page (`src/content/docs/index.mdx`, a normal doc page that keeps the sidebar) plus the cheat-sheet PDFs served from `public/cheat-sheets/`.
+> **Repo scope:** the source for **zalizniak.com** (Astro Starlight, deployed to AWS Amplify at the apex + `www`; Terraform in `infra/`). The site is the personal landing page (`src/content/docs/index.mdx`, a normal doc page that keeps the sidebar).
 
 ## Tech stack (decided — don't relitigate without reason)
 
