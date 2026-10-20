@@ -10,25 +10,6 @@ const links = config.social || [];
 {
 	links.length > 0 && (
 		<>
-			{/* Brand links with their own favicons, not built-in icons. */}
-			<a
-				href="https://flowrensic.com/"
-				target="_blank"
-				rel="me noopener noreferrer"
-				class="sl-flex brand-link"
-			>
-				<span class="sr-only">Flowrensic</span>
-				<img src="/flowrensic-icon.svg" alt="" width="16" height="16" decoding="async" />
-			</a>
-			<a
-				href="https://speccraft.io/"
-				target="_blank"
-				rel="me noopener noreferrer"
-				class="sl-flex brand-link"
-			>
-				<span class="sr-only">SpecCraft</span>
-				<img src="/speccraft-icon.png" alt="" width="16" height="16" decoding="async" />
-			</a>
 			{links.map(({ label, href, icon }) => (
 				<a {href} target="_blank" rel="me noopener noreferrer" class="sl-flex">
 					<span class="sr-only">{label}</span>
@@ -48,13 +29,6 @@ const links = config.social || [];
 		}
 		a:hover {
 			color: var(--sl-color-white);
-		}
-		/* Match the built-in social SVG icons' rendered size. */
-		.brand-link img {
-			display: block;
-			width: 1em;
-			height: 1em;
-			border-radius: 3px;
 		}
 	}
 </style>

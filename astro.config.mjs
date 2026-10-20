@@ -35,7 +35,7 @@ export default defineConfig({
 				ThemeSelect: './src/components/ThemeSelect.astro',
 			},
 			description:
-				'Oleksandr Zalizniak. Founder & Systems Engineer building Flowrensic, forensics for durable execution: why workflows get stuck, fail, or quietly burn money.',
+				'Oleksandr Zalizniak. Founder & Systems Engineer. Twenty years building backend systems at scale. Now building the tools that make them reliable.',
 			favicon: '/favicon.ico',
 			head: [
 				{ tag: 'link', attrs: { rel: 'icon', type: 'image/png', sizes: '32x32', href: '/favicon-32x32.png' } },
@@ -68,8 +68,6 @@ export default defineConfig({
 				{
 					label: 'What I Build',
 					items: [
-						{ label: 'Flowrensic', link: 'https://flowrensic.com/', attrs: { target: '_blank' } },
-						{ label: 'SpecCraft', link: 'https://speccraft.io/', attrs: { target: '_blank' } },
 						{ label: 'Signus.ai', link: 'https://signus.ai/', attrs: { target: '_blank' } },
 					],
 				},
