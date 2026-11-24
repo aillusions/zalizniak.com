@@ -34,3 +34,28 @@
 			auto;
 	}
 }
+
+/* Product logos in the home page section titles (Flowrensic, Signus.ai). Each sits in
+   a square box of the same size, so marks of different shapes read as one set. The
+   heading stays inline, as Starlight needs for its anchor link. The dark image swaps
+   in only on the dark theme. */
+.product-logo {
+	display: inline-block;
+	width: 1.2em;
+	height: 1.2em;
+	margin-inline-end: 0.4em;
+	vertical-align: -0.22em;
+}
+.product-logo img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+}
+.product-logo .logo-dark,
+:root[data-theme='dark'] .product-logo .logo-light {
+	display: none;
+}
+:root[data-theme='dark'] .product-logo .logo-dark {
+	display: block;
+}
