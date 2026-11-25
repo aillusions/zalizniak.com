@@ -9,6 +9,8 @@ export default defineConfig({
 	redirects: {
 		// The content used to live under /archive/; keep the old URLs working.
 		'/archive/[...slug]': '/[...slug]',
+		// Short link to my Google Calendar booking page.
+		'/meet': 'https://calendar.app.google/o6N4MunzkjjqYEJcA',
 	},
 	markdown: {
 		// Open every off-site link in a new tab; rel guards against tabnabbing.
