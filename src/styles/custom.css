@@ -2,13 +2,50 @@
 
 /* Starlight's default in-content H2/H3 run large; on dense reference pages
    (glossary, teardowns with many sections) they dominate the page. Shrink the
-   in-content headings a notch so sections read as section breaks, not banners. */
-.sl-markdown-content h2 {
-	font-size: 1.45rem;
-	margin-top: 1.75rem;
+   in-content headings a notch so sections read as section breaks, not banners.
+   Set through Starlight's size variables, not on h2/h3 directly: Starlight also
+   sizes the heading's wrapper (and so its anchor link icon) from them, and a size
+   set on the heading alone leaves the icon too large and overlapping the text. */
+.sl-markdown-content {
+	--sl-text-h2: 1.45rem;
+	--sl-text-h3: 1.15rem;
 }
-.sl-markdown-content h3 {
-	font-size: 1.15rem;
+/* Starlight spaces a heading by 1.5em of its size; keep that space at Starlight's
+   default heading sizes so sections stay as far apart as before. */
+.sl-markdown-content :not(h1, h2, h3, h4, h5, h6, .sl-heading-wrapper) + .sl-heading-wrapper.level-h2 {
+	margin-top: calc(1.5 * var(--sl-text-3xl));
+}
+.sl-markdown-content :not(h1, h2, h3, h4, h5, h6, .sl-heading-wrapper) + .sl-heading-wrapper.level-h3 {
+	margin-top: calc(1.5 * var(--sl-text-2xl));
+}
+
+@media (min-width: 50em) {
+	.sl-markdown-content :not(h1, h2, h3, h4, h5, h6, .sl-heading-wrapper) + .sl-heading-wrapper.level-h2 {
+		margin-top: calc(1.5 * var(--sl-text-4xl));
+	}
+	.sl-markdown-content :not(h1, h2, h3, h4, h5, h6, .sl-heading-wrapper) + .sl-heading-wrapper.level-h3 {
+		margin-top: calc(1.5 * var(--sl-text-3xl));
+	}
+}
+
+/* The chain link icon after each heading: small, muted, with a clear gap after the
+   text, and shown only while the heading is hovered or the link has keyboard focus
+   (Starlight shows it all the time on touch screens). */
+.sl-markdown-content .sl-heading-wrapper {
+	--sl-anchor-icon-size: 0.6em;
+	--sl-anchor-icon-gap: 0.45em;
+}
+.sl-markdown-content .sl-anchor-link {
+	color: var(--sl-color-gray-3);
+	opacity: 0;
+	transition: opacity 0.15s;
+}
+.sl-markdown-content .sl-heading-wrapper:hover .sl-anchor-link,
+.sl-markdown-content .sl-anchor-link:focus-visible {
+	opacity: 1;
+}
+.sl-markdown-content .sl-anchor-link:hover {
+	color: var(--sl-color-text-accent);
 }
 
 /* Sidebar entries that open in a new tab (the external product sites) get a small
