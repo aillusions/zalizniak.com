@@ -69,6 +69,7 @@ export default defineConfig({
 					label: 'What I Build',
 					items: [
 						{ label: 'Flowrensic', link: 'https://flowrensic.com/', attrs: { target: '_blank' } },
+						{ label: 'SpecCraft', link: 'https://speccraft.io/', attrs: { target: '_blank' } },
 						{ label: 'Signus.ai', link: 'https://signus.ai/', attrs: { target: '_blank' } },
 					],
 				},
