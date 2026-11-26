@@ -11,6 +11,8 @@ export default defineConfig({
 		'/archive/[...slug]': '/[...slug]',
 		// Short link to my Google Calendar booking page.
 		'/meet': 'https://calendar.app.google/o6N4MunzkjjqYEJcA',
+		// Short link to my Google Meet room.
+		'/join': 'https://meet.google.com/xtq-iqwx-inm',
 	},
 	markdown: {
 		// Open every off-site link in a new tab; rel guards against tabnabbing.
